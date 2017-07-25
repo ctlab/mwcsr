@@ -1,0 +1,21 @@
+Package: mwcsr
+Title: Solvers for various Maximum Weight Connected Subgraph Problems
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Alexander", "Loboda", email = "loboda@rain.ifmo.ru", role = c("aut", "cre")), 
+    person("Alexey", "Sergushichev", email = "alsergbox@gmail.com", role = "aut"))
+Description: The package implements algorithms for solving various Maximum
+    Weight Connected Subgraph Problems, including variants with 
+    budget-constraints, cardinallity constraints, weighted edges and signal 
+    variant of the problem.
+Depends: R (>= 3.4)
+Imports:
+    igraph
+Suggests:
+    testthat
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+URL: https://github.com/ctlab/mwcsr
+BugReports: https://github.com/ctlab/mwcsr/issues
