@@ -1,0 +1,8 @@
+# R project
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# vim temp files
+*~
