@@ -3,6 +3,8 @@ Title: Solvers for various Maximum Weight Connected Subgraph Problems
 Version: 0.0.0.9000
 Authors@R: c(
     person("Alexander", "Loboda", email = "loboda@rain.ifmo.ru", role = c("aut", "cre")), 
+    person("Eduardo", "Alvarez-Miranda", email = "ealvarez@utalca.cl", role = "aut"), 
+    person("Markus", "Sinnl", email = "markus.sinnl@univie.ac.at", role = "aut"), 
     person("Alexey", "Sergushichev", email = "alsergbox@gmail.com", role = "aut"))
 Description: The package implements algorithms for solving various Maximum
     Weight Connected Subgraph Problems, including variants with 
@@ -10,7 +12,9 @@ Description: The package implements algorithms for solving various Maximum
     variant of the problem.
 Depends: R (>= 3.4)
 Imports:
-    igraph
+    igraph,
+    Rcpp, 
+    BH
 Suggests:
     testthat
 License: MIT + file LICENSE
@@ -19,3 +23,4 @@ LazyData: true
 RoxygenNote: 6.0.1
 URL: https://github.com/ctlab/mwcsr
 BugReports: https://github.com/ctlab/mwcsr/issues
+LinkingTo: Rcpp
