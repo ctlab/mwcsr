@@ -1,7 +1,7 @@
 BOOST_LDFLAGS= -lboost_program_options -lboost_filesystem -lboost_system 
 CCLNFLAGS = -lm -lrt -pthread
 
-PKG_CPPFLAGS = -Irmwcs -DNDEBUG -pthread
+PKG_CPPFLAGS = -Irmwcs -pthread -std=gnu++11
 PKG_LIBS = $(BOOST_LDFLAGS) $(CCLNFLAGS) 
 CXX_STD = CXX11
 
