@@ -1,0 +1,14 @@
+BOOST_LDFLAGS= -lboost_program_options -lboost_filesystem -lboost_system 
+CCLNFLAGS = -lm -lrt -pthread
+
+PKG_CPPFLAGS = -Irmwcs -DNDEBUG -pthread
+PKG_LIBS = $(BOOST_LDFLAGS) $(CCLNFLAGS) 
+CXX_STD = CXX11
+
+SOURCES = rmwcs/utility/ProgramOptions.cpp rmwcs/instance/Instance.cpp \
+    rmwcs/solverLag/SolverClassic.cpp rmwcs/solverLag/SolverLag.cpp \
+    rmwcs/solverLag/SolverCardinality.cpp rmwcs/solverLag/SolverBudget.cpp
+
+OBJECTS = rmwcs/utility/ProgramOptions.o rmwcs/instance/Instance.o \
+    rmwcs/solverLag/SolverClassic.o rmwcs/solverLag/SolverLag.o \
+    rmwcs/solverLag/SolverCardinality.o rmwcs/solverLag/SolverBudget.o
