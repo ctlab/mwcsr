@@ -5,7 +5,7 @@
  *      Author: markus
  */
 
-#include "Instance.h"
+#include "instance/Instance.h"
 #include "utility/ProgramOptions.h"
 
 #include <sstream>

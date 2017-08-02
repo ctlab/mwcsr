@@ -5,7 +5,7 @@
  *      Author: markus
  */
 
-#include "ProgramOptions.h"
+#include "utility/ProgramOptions.h"
 #include <boost/program_options.hpp>
 
 using namespace std;

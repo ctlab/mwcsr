@@ -5,7 +5,7 @@
  *      Author: markus
  */
 
-#include "SolverClassic.h"
+#include "solverLag/SolverClassic.h"
 #include <iostream>
 #include <queue>
 #include <stack>
