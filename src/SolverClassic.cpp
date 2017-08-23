@@ -6,7 +6,7 @@
  */
 
 #include "solverLag/SolverClassic.h"
-#include "utility/ProgramOptions.h"
+#include "utility/Parameters.h"
 #include <algorithm>
 #include <iostream>
 #include <limits>
@@ -17,10 +17,6 @@
 
 SolverClassic::SolverClassic(Instance &_instance, int _maxIterations)
     : SolverLag(_instance, _maxIterations) {
-
-    if (params.inputformat == 3) {
-        incumbentObj = -instance.nNodes + 1;
-    }
 }
 
 SolverClassic::~SolverClassic() {}

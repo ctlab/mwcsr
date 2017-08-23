@@ -5,14 +5,12 @@
  *      Author: markus
  */
 
-#include "utility/ProgramOptions.h"
+#include "utility/Parameters.h"
 #include <algorithm>
 #include <cmath>
-#include <limits>
 #include <queue>
 #include <solverLag/SolverLag.h>
 #include <stack>
-//#include <time.h>
 #include <boost/filesystem.hpp>
 #include <chrono>
 #include <iomanip> // std::setprecision
@@ -31,14 +29,14 @@ SolverLag::SolverLag(Instance &_instance, int _maxIterations)
       fixedToZero{vector<int>(instance.nNodes, 0)}, fixedToOne{vector<int>(
                                                         instance.nNodes, 0)},
       incumbentObj{0.0}, subgradientSquared{1}, subgradientNorm{0},
-      directionPrevSquared{0}, alpha{params.beta}, noImprov{0},
+      directionPrevSquared{0}, alpha{instance.params.beta}, noImprov{0},
       numberOfComponents{0}, bestBound{std::numeric_limits<double>::max()},
       currentBound{std::numeric_limits<double>::max()},
       previousBound{std::numeric_limits<double>::max()},
       bestBoundCFT{std::numeric_limits<double>::max()},
       worstBoundCFT{std::numeric_limits<double>::lowest()}, counterCFT{0},
-      maxIterations{_maxIterations}, iterations{0}, sepIter(params.sepIter),
-      sepIterFreeze(params.sepIterFreeze), inRins(false), savedObj(0.0),
+      maxIterations{_maxIterations}, iterations{0}, sepIter(instance.params.sepIter),
+      sepIterFreeze(instance.params.sepIterFreeze), inRins(false), savedObj(0.0),
       runtime(0.0) {}
 
 SolverLag::~SolverLag() {}
@@ -46,12 +44,11 @@ SolverLag::~SolverLag() {}
 int SolverLag::solve() {
 
     solveSubgradient(maxIterations);
-    if (params.solver == 1) {
+    if (instance.params.solver == 1) {
         // writeCutsToInstance();
         writeFixingToInstance();
         writeSolutionToInstance();
     }
-
     return 1;
 }
 
@@ -105,7 +102,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
     chrono::time_point<std::chrono::system_clock> startTime =
         chrono::system_clock::now();
     iterations = 0;
-    // if(params.outputlag)
+    // if(instance.params.outputlag)
     //	cout<<"fixed "<<costBasedFixing()<<" variables to zero due to cost in
     //component"<<endl;
 
@@ -113,7 +110,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
 
     int nFixed = 0;
 
-    if (params.integer) {
+    if (instance.params.integer) {
         eps = 0;
     }
 
@@ -144,17 +141,17 @@ int SolverLag::solveSubgradient(int maxIterations) {
             // "<<(currentBound>bestBound)<<endl;
             bestBound = currentBound;
             boundImprov = true;
-            if (params.solver == 1) {
+            if (instance.params.solver == 1) {
                 writeCutsToInstance();
             }
         }
 
-        if (params.subgradient != 2) {
+        if (instance.params.subgradient != 2) {
             if (boundImprov) {
                 noImprov = 0;
                 bestBound = currentBound;
 
-                // if(params.subgradient==1)
+                // if(instance.params.subgradient==1)
                 {
                     for (int i = 0; i < instance.nNodes; ++i) {
                         dualIncumbent[i] = currentSolution[i];
@@ -166,7 +163,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
 
         // previousBound=currentBound;
 
-        if (params.subgradient == 2) {
+        if (instance.params.subgradient == 2) {
             if (boundImprov) {
                 bestBound = currentBound;
                 for (cut &c : myCuts) {
@@ -183,7 +180,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
         }
 
         double bestBoundCheck = bestBound;
-        if (params.integer) {
+        if (instance.params.integer) {
             bestBoundCheck = floor(bestBoundCheck);
         }
 
@@ -191,12 +188,12 @@ int SolverLag::solveSubgradient(int maxIterations) {
 
         // if(iterations%50==0 && iterations>0) RINS(100);
 
-        if (iterations % params.heurIter == 0) {
+        if (iterations % instance.params.heurIter == 0) {
             primalHeuristic();
         }
 
         nFixed = 0;
-        if ((boundImprov) && params.pegging > 0 && !inRins) {
+        if ((boundImprov) && instance.params.pegging > 0 && !inRins) {
             // calculateCurrentSolution(false);
             for (unsigned c = 0; c < instance.components.size(); ++c) {
                 if (instance.maxRevenueInComponent[c] < incumbentObj &&
@@ -230,7 +227,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
             break;
         }
 
-        if (params.outputlag) {
+        if (instance.params.outputlag) {
             if (inRins) {
                 cout << "RINS ";
             }
@@ -256,7 +253,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
         // cout<<alpha<<" "<< sqrt(subgradientSquared)<<endl;
     }
 
-    if (params.outputlag) {
+    if (instance.params.outputlag) {
         cout << "finished" << endl;
         cout << std::setprecision(9) << "iteration: \t" << iterations
              << "\t lagrangian bound: \t"
@@ -324,7 +321,7 @@ double SolverLag::calculateReducedCosts() {
 void SolverLag::writeStatistics() {
 
     // std::string
-    // filename(boost::filesystem::path(params.file).stem().string());
+    // filename(boost::filesystem::path(instance.params.file).stem().string());
 
     instance.bestBoundLag = bestBound;
     instance.incumbentObjLag = incumbentObj;
@@ -339,15 +336,15 @@ void SolverLag::writeStatistics() {
             instance.incumbent[instance.map[i]] = true;
         }
     }
-
+/*
     instance.gapLag = (instance.transformInternalValue(bestBound) -
                        instance.transformInternalValue(incumbentObj)) /
                       instance.transformInternalValue(incumbentObj) * 100;
-    if (params.inputformat == 0) {
+    if (instance.params.inputformat == 0) {
         instance.gapLag = (instance.transformInternalValue(incumbentObj) -
                            instance.transformInternalValue(bestBound)) /
                           instance.transformInternalValue(bestBound) * 100;
-    }
+    }*/
 
     if (instance.gapLag < epsOpt)
         instance.gapLag = 0;
@@ -376,11 +373,11 @@ int SolverLag::createCuts(int iter) {
 }
 
 void SolverLag::updateMultipliersSherali() {
-    if (noImprov > params.betaIter) {
+    if (noImprov > instance.params.betaIter) {
         noImprov = 0;
         alpha /= 2;
-        if (params.outputlag)
-            cout << "no improvement for" << params.betaIter
+        if (instance.params.outputlag)
+            cout << "no improvement for" << instance.params.betaIter
                  << " iterations, new alpha is " << alpha << endl;
         currentBound = bestBound;
         for (int n = 0; n < instance.nNodes; ++n) {
@@ -455,11 +452,11 @@ void SolverLag::updateMultipliersSherali() {
 }
 
 void SolverLag::updateMultipliersLucena() {
-    if (noImprov > params.betaIter) {
+    if (noImprov > instance.params.betaIter) {
         noImprov = 0;
         alpha /= 2;
-        if (params.outputlag)
-            cout << "no improvement for" << params.betaIter
+        if (instance.params.outputlag)
+            cout << "no improvement for" << instance.params.betaIter
                  << " iterations, new alpha is " << alpha << endl;
     }
 
@@ -481,7 +478,7 @@ void SolverLag::updateMultipliersLucena() {
 
 void SolverLag::updateMultipliersCFT() {
     // cout<<noImprov<<endl;
-    if (noImprov >= params.betaIter) {
+    if (noImprov >= instance.params.betaIter) {
         noImprov = 0;
         alpha /= 2;
         for (cut &c : myCuts) {
@@ -528,7 +525,7 @@ void SolverLag::updateMultipliersCFT() {
                         {
                                 c.lambda=c.bestLambda;
                         }
-                        alpha=params.beta;
+                        alpha=instance.params.beta;
                 }*/
                 // cout<<"alpha"<<alpha<<endl;
             }
@@ -549,17 +546,17 @@ void SolverLag::updateMultipliersCFT() {
 }
 
 void SolverLag::upgradeMultipliers() {
-    if (params.subgradient == 2) {
+    if (instance.params.subgradient == 2) {
         updateMultipliersCFT();
         return;
     }
 
-    if (params.subgradient == 0) {
+    if (instance.params.subgradient == 0) {
         updateMultipliersLucena();
         return;
     }
 
-    if (params.subgradient == 1) {
+    if (instance.params.subgradient == 1) {
         updateMultipliersSherali();
         return;
     }
@@ -686,12 +683,12 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
             c.violated = false;
             c.age++;
 
-            if (c.lambda == 0 && c.subgradient > 0 && c.age > params.maxAge) {
+            if (c.lambda == 0 && c.subgradient > 0 && c.age > instance.params.maxAge) {
                 c.subgradient = 0;
             }
 
             if (c.lambda == 0 && c.subgradient == 0 &&
-                c.directionPrevious > 0 && c.age > params.maxAge) {
+                c.directionPrevious > 0 && c.age > instance.params.maxAge) {
                 // directionPrevSquared-=(c.directionPrevious*c.directionPrevious);
                 // c.directionPrevious=0.0;
             }
@@ -900,7 +897,7 @@ int SolverLag::separateCuts() {
             cut myCut;
 
             myCut.lambda = 0;
-            if (params.sepIterFreeze == 0)
+            if (instance.params.sepIterFreeze == 0)
                 myCut.frozen = false;
 
             double prizeMin = -99999999;
@@ -936,7 +933,7 @@ int SolverLag::separateCuts() {
             myCut.rhs.push_back(n);
             // cout<<myComponents[i].sumPrize<<" "<<incumbentObj<<endl;
             if (myComponents[i].sumPrize + epsInt >= incumbentObj ||
-                params.separation == 0) {
+                instance.params.separation == 0) {
                 nodevaluepair m;
                 m.value = 1.0;
                 m.id = myComponents[other].components[0];
@@ -982,7 +979,7 @@ int SolverLag::separateCuts() {
 
             vector<int> myBoundary;
 
-            if (params.separation == 0) {
+            if (instance.params.separation == 0) {
 
                 int otherBoundarySize =
                     myComponents[other].boundaryIndexed.size();

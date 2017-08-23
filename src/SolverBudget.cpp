@@ -5,14 +5,12 @@
  *      Author: markus
  */
 
-#include "utility/ProgramOptions.h"
+#include "utility/Parameters.h"
 #include <algorithm>
 #include <cmath>
-#include <limits>
 #include <queue>
 #include <solverLag/SolverBudget.h>
 #include <stack>
-//#include "combo.h"
 
 SolverBudget::SolverBudget(Instance &_instance, int _maxIterations)
     : SolverLag(_instance, _maxIterations), M{vector<vector<double>>(

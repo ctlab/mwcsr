@@ -8,19 +8,13 @@
 #ifndef INSTANCE_INSTANCE_H_
 #define INSTANCE_INSTANCE_H_
 
-//#include <ogdf/basic/Graph.h>
+#include <Rcpp.h>
 #include <vector>
+#include "utility/Parameters.h"
 
 using namespace std;
 
 class Instance {
-
-    void readMWCS();
-    void readPCSTP();
-    void readDilkina();
-    void readSTP();
-    void readMWCSBudget();
-
     int calculateComponents();
 
     int preprocessing();
@@ -33,8 +27,8 @@ class Instance {
     vector<bool> nodesToRemove;
 
   public:
-    Instance();
-    ~Instance();
+    Instance(List, List);
+    ~Instance() = default;
 
     struct cut {
         double rhsConst = 0;
@@ -43,6 +37,8 @@ class Instance {
     };
 
     double transformInternalValue(double value) const;
+
+    Parameters params;
 
     vector<double> myPrizes;
     vector<double> myBudgetCost;
@@ -60,7 +56,7 @@ class Instance {
     vector<double> maxRevenueInComponent;
     vector<int> componentFixed;
 
-    int nNodes;
+    unsigned nNodes;
     int nEdges;
     int nTerminals;
     int nTrueNodes;
@@ -94,16 +90,9 @@ class Instance {
     double bestBoundLag = -999999999999;
     double incumbentObjLag = 999999999999;
     double gapLag = -1;
-    double runtimeCplex = -1;
-    double bestBoundCplex = -999999999999;
-    double incumbentObjCplex = 999999999999;
-    double gapCplex = -1;
-    double roottime = -1;
-    double rootgap = -1;
-    double rootbound = -1;
-    int nBBNodes = -1;
-    int cplexStatus = -1;
     int solSize = 0;
+
+    void readInstance(List vector);
 };
 
 #endif /* INSTANCE_INSTANCE_H_ */
