@@ -1,4 +1,4 @@
-#' export
+#' @export
 rmwcs <- function(timelimit = 1800L,
                   max_iterations = 1000L,
                   beta_iterations = 5L,
@@ -32,7 +32,7 @@ rmwcs <- function(timelimit = 1800L,
 
     function(g, max_cardinallity, budget) {
         scores <- V(g)$scores
-        stopifnot(length(scores) != length(V(g)))
+        stopifnot(length(scores) == length(V(g)))
         scores <- as.numeric(scores)
         instance <- list(edgelist = as_edgelist(g), scores = scores)
         rmwcs_solve(instance, args)
