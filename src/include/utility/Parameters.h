@@ -10,7 +10,6 @@
 #ifndef PROGRAMOPTIONS_H_
 #define PROGRAMOPTIONS_H_
 
-#include <iostream>
 #include <Rcpp.h>
 
 struct Parameters {

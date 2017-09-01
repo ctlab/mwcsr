@@ -36,7 +36,6 @@ Instance::Instance(List& parameters, List& network)
         Rcout << "Budget:  \t \t " << budget << "\n";
     if (params.problem == 2)
         Rcout << "Cardinality:  \t \t " << params.cardCons << "\n";
-    // exit(0);
     if (preprocessing() > 0) {
         rebuildDatastructures();
         Rcout << "Size after preprocessing" << "\n";

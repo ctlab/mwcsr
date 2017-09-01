@@ -354,7 +354,7 @@ int SolverBudget::lagrangianPegging() {
         if (addedObj > objHeur + 0.0001) {
             Rcout << "bug " << addedObj << " " << objHeur << " "
                  << additionalCost << "\n";
-            exit(1);
+            Rf_error("Lagrangian pegging bug");
         }
 
         // Rcout<<addedObj<<" "<<incumbentObj<<"\n";

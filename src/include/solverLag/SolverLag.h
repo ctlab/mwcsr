@@ -9,7 +9,6 @@
 #define SOLVERLAG_H_
 
 #include "instance/Instance.h"
-#include <iostream>
 #include <list>
 #include <sstream>
 #include <string>
