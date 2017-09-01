@@ -13,7 +13,6 @@ rmwcs <- function(timelimit = 1800L,
                   beta = 2.0) {
 
     args <- mget(names(formals()), sys.frame(sys.nframe()))
-    print(args)
     fs <- formals()
     for(arg in names(args)){
         if(is.null(args[[arg]]) || is.na(args[[arg]])){

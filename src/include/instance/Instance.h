@@ -12,8 +12,6 @@
 #include <vector>
 #include "utility/Parameters.h"
 
-using namespace std;
-
 class Instance {
     int calculateComponents();
 
@@ -24,37 +22,37 @@ class Instance {
     void rebuildDatastructures();
     int degreeZeroTest();
 
-    vector<bool> nodesToRemove;
+    std::vector<bool> nodesToRemove;
 
   public:
-    Instance(List, List);
+    Instance(Rcpp::List&, Rcpp::List&);
     ~Instance() = default;
 
     struct cut {
         double rhsConst = 0;
-        vector<int> lhs;
-        vector<int> rhs;
+        std::vector<int> lhs;
+        std::vector<int> rhs;
     };
 
     double transformInternalValue(double value) const;
 
     Parameters params;
 
-    vector<double> myPrizes;
-    vector<double> myBudgetCost;
+    std::vector<double> myPrizes;
+    std::vector<double> myBudgetCost;
 
-    vector<bool> realTerminals;
-    vector<int> myTerminals;
-    vector<bool> trueTerminals;
-    vector<int> myTrueTerminals;
-    vector<vector<int>> adjList;
+    std::vector<bool> realTerminals;
+    std::vector<int> myTerminals;
+    std::vector<bool> trueTerminals;
+    std::vector<int> myTrueTerminals;
+    std::vector<std::vector<int>> adjList;
 
-    vector<int> map;
+    std::vector<int> map;
 
-    vector<int> componentArray;
-    vector<vector<int>> components;
-    vector<double> maxRevenueInComponent;
-    vector<int> componentFixed;
+    std::vector<int> componentArray;
+    std::vector<std::vector<int>> components;
+    std::vector<double> maxRevenueInComponent;
+    std::vector<int> componentFixed;
 
     unsigned nNodes;
     int nEdges;
@@ -76,12 +74,12 @@ class Instance {
     int nFlowArcs;
     std::pair<int, int> *flowArcs;
 
-    vector<int> fixedToZero;
-    vector<int> fixedToOne;
-    vector<cut> myCuts;
+    std::vector<int> fixedToZero;
+    std::vector<int> fixedToOne;
+    std::vector<cut> myCuts;
 
     bool incumbentFound = false;
-    vector<bool> incumbent;
+    std::vector<bool> incumbent;
 
     int nFixedZero = 0;
     int nFixedOne = 0;
@@ -92,7 +90,7 @@ class Instance {
     double gapLag = -1;
     int solSize = 0;
 
-    void readInstance(List vector);
+    void readInstance(Rcpp::List instance);
 };
 
 #endif /* INSTANCE_INSTANCE_H_ */

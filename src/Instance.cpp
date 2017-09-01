@@ -14,8 +14,12 @@ using Rcpp::NumericVector;
 using Rcpp::List;
 using Rcpp::NumericMatrix;
 using Rcpp::as;
+using Rcpp::Rcout;
 
-Instance::Instance(List parameters, List network)
+using std::vector;
+using std::queue;
+
+Instance::Instance(List& parameters, List& network)
     : components{vector<vector<int>>()},
       maxRevenueInComponent{vector<double>()}, nComponents{0}, maxPrize{0},
       minWeight{std::numeric_limits<double>::max()}, sumPrizes{0},
@@ -23,29 +27,24 @@ Instance::Instance(List parameters, List network)
 
     readInstance(network);
 
-    cout << "Instance reading finished" << endl;
-    cout << "Nodes: \t \t \t" << nNodes << endl;
-    cout << "Edges: \t \t \t" << nEdges << endl;
-    cout << "TerminalsRead: \t \t" << nTerminals << endl;
-
     nTrueNodes = nNodes;
     nTrueEdges = nEdges;
 
     nComponents = calculateComponents();
-    cout << "Components:  \t \t " << nComponents << endl;
+    Rcout << "Components:  \t \t " << nComponents << "\n";
     if (params.problem == 1)
-        cout << "Budget:  \t \t " << budget << endl;
+        Rcout << "Budget:  \t \t " << budget << "\n";
     if (params.problem == 2)
-        cout << "Cardinality:  \t \t " << params.cardCons << endl;
+        Rcout << "Cardinality:  \t \t " << params.cardCons << "\n";
     // exit(0);
     if (preprocessing() > 0) {
         rebuildDatastructures();
-        cout << "Size after preprocessing" << endl;
-        cout << "Nodes: \t \t \t" << nNodes << endl;
-        cout << "Edges: \t \t \t" << nEdges << endl;
-        cout << "Terminals:  \t \t" << nTerminals << endl;
+        Rcout << "Size after preprocessing" << "\n";
+        Rcout << "Nodes: \t \t \t" << nNodes << "\n";
+        Rcout << "Edges: \t \t \t" << nEdges << "\n";
+        Rcout << "Terminals:  \t \t" << nTerminals << "\n";
         nComponents = calculateComponents();
-        cout << "Components:  \t \t " << nComponents << endl;
+        Rcout << "Components:  \t \t " << nComponents << "\n";
     }
 
     fixedToOne = vector<int>(nNodes, 0);
@@ -68,214 +67,6 @@ Instance::Instance(List parameters, List network)
         }
     }
 }
-
-/*void Instance::readMWCS() {
-
-    std::ifstream infile(params.file);
-    std::string line;
-
-    std::string magicNumber;
-    std::getline(infile, line);
-    std::istringstream iss(line);
-    iss.precision(16);
-
-    iss >> magicNumber;
-
-    if (magicNumber != "33D32945") {
-        cout << "Not in STP Format" << endl;
-        exit(0);
-    }
-
-    minWeight = 0;
-    int srcID, dstID;
-    int edgeCounter = 0;
-    int termID;
-    double prize;
-    int termCounter = 0;
-    int count = 0;
-    int countRealTerminals = 0;
-    while (std::getline(infile, line)) {
-        if (line.empty())
-            continue;
-
-        iss.clear();
-        iss.str(line);
-        std::string token;
-
-        iss >> token;
-        // cerr<<count<<" "<<token<<" "<<line<<" "<<iss.str()<<endl;
-        count++;
-        if (token == "Nodes") {
-
-            iss >> nNodes;
-            adjList = vector<vector<int>>(nNodes);
-            adjList = vector<vector<int>>(nNodes);
-            realTerminals = vector<bool>(nNodes, false);
-            trueTerminals = vector<bool>(nNodes, false);
-            myPrizes = vector<double>(nNodes);
-            myBudgetCost = vector<double>(nNodes, 1);
-            nodesToRemove = vector<bool>(nNodes);
-            for (int i = 0; i < nNodes; i++) {
-                adjList[i] = vector<int>();
-            }
-
-        } else if (token == "Edges") {
-            iss >> nEdges;
-            // cerr<<nEdges<<endl;
-
-        } else if (token == "E") {
-            iss >> srcID >> dstID;
-            // cerr<<edgeCounter<<endl;
-            adjList[srcID - 1].push_back(dstID - 1);
-            adjList[dstID - 1].push_back(srcID - 1);
-            // myCost[edgeCounter]=0;
-            edgeCounter++;
-            edgeCounter++;
-        } else if (token == "Terminals") {
-            iss >> nTerminals;
-            myTerminals = vector<int>(nTerminals, -1);
-        } else if (token == "T") {
-            iss >> termID >> prize;
-            myTerminals[termCounter] = termID - 1;
-            myPrizes[termID - 1] = prize;
-            // cout.precision(16);
-            // cout<<(termID-1)<<" "<<prize<<endl;
-
-            if (myPrizes[termID - 1] > 0) {
-                realTerminals[termID - 1] = true;
-                countRealTerminals++;
-            }
-
-            if (myPrizes[termID - 1] > maxPrize) {
-                maxPrize = myPrizes[termID - 1];
-            }
-
-            termCounter++;
-        }
-    }
-
-    if (params.problem == 2 && params.cardMultiplier >= 1) {
-        int nPositive = 0;
-        for (unsigned i = 0; i < myPrizes.size(); ++i) {
-            if (myPrizes[i] > 0) {
-                nPositive++;
-            }
-        }
-        params.cardCons = floor(nPositive * params.cardMultiplier / 100.0);
-    }
-
-    // cout<<"Real Terminals \t"<<countRealTerminals<<endl;
-}
-
-void Instance::readMWCSBudget() {
-
-    std::ifstream infile(params.file);
-    std::string line;
-
-    std::string magicNumber;
-    std::getline(infile, line);
-    std::istringstream iss(line);
-    iss.precision(16);
-
-    iss >> magicNumber;
-
-    if (magicNumber != "33D32945") {
-        cout << "Not in STP Format" << endl;
-        exit(0);
-    }
-
-    minWeight = 0;
-    int srcID, dstID;
-    int edgeCounter = 0;
-    int termID;
-    double prize;
-    int termCounter = 0;
-    int count = 0;
-    int countRealTerminals = 0;
-    int myMaxPrize = 0;
-    while (std::getline(infile, line)) {
-        if (line.empty())
-            continue;
-
-        iss.clear();
-        iss.str(line);
-        std::string token;
-
-        iss >> token;
-        // cerr<<count<<" "<<token<<" "<<line<<" "<<iss.str()<<endl;
-        count++;
-        if (token == "Nodes") {
-
-            iss >> nNodes;
-            adjList = vector<vector<int>>(nNodes);
-            // cerr<<nNodes<<endl;
-            adjList = vector<vector<int>>(nNodes);
-            realTerminals = vector<bool>(nNodes, false);
-            trueTerminals = vector<bool>(nNodes, false);
-            myPrizes = vector<double>(nNodes);
-            myBudgetCost = vector<double>(nNodes);
-            nodesToRemove = vector<bool>(nNodes);
-            for (int i = 0; i < nNodes; i++) {
-                adjList[i] = vector<int>();
-            }
-
-        } else if (token == "Edges") {
-            iss >> nEdges;
-            // cerr<<nEdges<<endl;
-
-        } else if (token == "E") {
-            iss >> srcID >> dstID;
-            // cerr<<edgeCounter<<endl;
-            adjList[srcID - 1].push_back(dstID - 1);
-            adjList[dstID - 1].push_back(srcID - 1);
-            // myCost[edgeCounter]=0;
-            edgeCounter++;
-            edgeCounter++;
-        } else if (token == "Terminals") {
-            iss >> nTerminals;
-            myTerminals = vector<int>(nTerminals, -1);
-        } else if (token == "T") {
-            iss >> termID >> prize >> myMaxPrize;
-            myTerminals[termCounter] = termID - 1;
-            myPrizes[termID - 1] = prize;
-            myBudgetCost[termID - 1] = myMaxPrize;
-            // cout.precision(16);
-            // cout<<(termID-1)<<" "<<prize<<endl;
-            if (myPrizes[termID - 1] > 0) {
-                realTerminals[termID - 1] = true;
-                countRealTerminals++;
-            }
-
-            if (myPrizes[termID - 1] > maxPrize) {
-                maxPrize = myPrizes[termID - 1];
-            }
-
-            termCounter++;
-        }
-    }
-
-    if (params.problem == 2 && params.cardMultiplier >= 1) {
-        int nPositive = 0;
-        for (unsigned i = 0; i < myPrizes.size(); ++i) {
-            if (myPrizes[i] > 0) {
-                nPositive++;
-            }
-        }
-        params.cardCons = floor(nPositive * params.cardMultiplier / 100.0);
-    }
-
-    if (params.problem == 1 && params.budgetMultiplier >= 1) {
-        double totalCost = 0;
-        for (int i = 0; i < nNodes; ++i) {
-            totalCost += myBudgetCost[i];
-            // cout<<myBudgetCost[i]<<" "<<myPrizes[i]<<endl;
-        }
-
-        budget = floor(totalCost * params.budgetMultiplier / 100.0);
-    }
-
-    cout << "Real Terminals \t" << countRealTerminals << endl;
-}*/
 
 void Instance::rebuildDatastructures() {
 
@@ -348,7 +139,7 @@ int Instance::uselessComponentsTest() {
     int numberRemoved = 0;
 
     for (int i = 0; i < nComponents; ++i) {
-        // cerr<<maxRevenueInComponent[i]<<" "<<maxPrize<<endl;
+        // cerr<<maxRevenueInComponent[i]<<" "<<maxPrize<<"\n";
         if (maxRevenueInComponent[i] <= maxPrize) {
             numberRemoved += components[i].size();
             for (unsigned j = 0; j < components[i].size(); ++j) {
@@ -397,8 +188,8 @@ int Instance::degreeOneTest() {
                     break;
                 }
             }
-            // cout<<j<<" "<<adjList[adjacentNode].size()<<endl;
-            // cout<<node<<" "<<adjList[adjacentNode][j]<<endl;
+            // Rcout<<j<<" "<<adjList[adjacentNode].size()<<"\n";
+            // Rcout<<node<<" "<<adjList[adjacentNode][j]<<"\n";
             adjList[adjacentNode].erase(adjList[adjacentNode].begin() + j);
         }
 
@@ -429,19 +220,19 @@ int Instance::calculateComponents() {
 
     for (int n = 0; n < nNodes; n++) {
         if (componentArray[n] == 0) {
-            // cerr<<n<<endl;
+            // cerr<<n<<"\n";
             vector<int> componentHelper;
             double revInComp = 0.0;
             numberOfComponents++;
             componentArray[n] = numberOfComponents;
-            // cout<<n<<endl;
-            // cout<<myPrizes[n]<<endl;
+            // Rcout<<n<<"\n";
+            // Rcout<<myPrizes[n]<<"\n";
             if (myPrizes[n] > 0)
                 revInComp += myPrizes[n];
             componentHelper.push_back(n);
             queue<int> myQueue;
             myQueue.push(n);
-            // cerr<<"component "<<n<<" "<<myCurrentLabel<<endl;
+            // cerr<<"component "<<n<<" "<<myCurrentLabel<<"\n";
             while (!myQueue.empty()) {
                 int m = myQueue.front();
                 myQueue.pop();
@@ -461,11 +252,11 @@ int Instance::calculateComponents() {
         }
     }
 
-    /*cout<<"number of components "<<numberOfComponents<<endl;
+    /*Rcout<<"number of components "<<numberOfComponents<<"\n";
     for(int i=0;i<numberOfComponents;++i)
     {
-            cout<<"size: \t"<<components[i].size()<<"\t
-    "<<maxRevenueInComponent[i]<<endl;
+            Rcout<<"size: \t"<<components[i].size()<<"\t
+    "<<maxRevenueInComponent[i]<<"\n";
     }*/
 
     return numberOfComponents;

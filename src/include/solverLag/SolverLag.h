@@ -38,11 +38,11 @@ class SolverLag {
     struct CompStruct {
         // int id=-1;
         double sumPrize = 0.0;
-        vector<bool> boundary;
-        vector<int> boundaryIndexed;
-        vector<int> components;
-        // vector<vector<int>> componentsNested;
-        vector<int> boundaryIndexedNested;
+        std::vector<bool> boundary;
+        std::vector<int> boundaryIndexed;
+        std::vector<int> components;
+        // std::vector<vector<int>> componentsNested;
+        std::vector<int> boundaryIndexedNested;
 
         bool operator<(const CompStruct &other) const {
             // cout<<"sdsfdsf"<<endl;
@@ -57,8 +57,8 @@ class SolverLag {
     struct cut {
         bool violated = true;
         double rhsConst = 0;
-        vector<nodevaluepair> lhs;
-        vector<nodevaluepair> rhs;
+        std::vector<nodevaluepair> lhs;
+        std::vector<nodevaluepair> rhs;
 
         int age = 0;
         double lambda = 0.0;
@@ -88,24 +88,24 @@ class SolverLag {
     };
 
   protected:
-    vector<CompStruct> myComponents;
-    list<double> cftBounds;
-    list<double> cftBoundsBest;
-    list<cut> myCuts;
-    list<cut> myNewCuts;
+    std::vector<CompStruct> myComponents;
+    std::list<double> cftBounds;
+    std::list<double> cftBoundsBest;
+    std::list<cut> myCuts;
+    std::list<cut> myNewCuts;
 
-    unordered_set<long> myCutHash;
+    std::unordered_set<long> myCutHash;
 
-    vector<double> realPrizes;
-    vector<double> currentSolution;
-    vector<double> previousSolution;
-    vector<int> sumSolution;
-    vector<bool> incumbent;
-    vector<int> dualIncumbent;
-    vector<int> labels;
+    std::vector<double> realPrizes;
+    std::vector<double> currentSolution;
+    std::vector<double> previousSolution;
+    std::vector<int> sumSolution;
+    std::vector<bool> incumbent;
+    std::vector<int> dualIncumbent;
+    std::vector<int> labels;
 
-    vector<int> fixedToZero;
-    vector<int> fixedToOne;
+    std::vector<int> fixedToZero;
+    std::vector<int> fixedToOne;
 
     double incumbentObj;
 
@@ -167,7 +167,7 @@ class SolverLag {
     static constexpr double epsInt = 1e-3;
     static constexpr double epsOpt = 1e-6;
 
-    int setVariableFixing(const vector<int> &toZero, const vector<int> &toOne);
+    int setVariableFixing(const std::vector<int> &toZero, const std::vector<int> &toOne);
     int initCuts();
 
     // bool initCuts;
@@ -175,7 +175,7 @@ class SolverLag {
   public:
     SolverLag(Instance &_instance, int _maxIterations);
     virtual ~SolverLag();
-    string statf;
+    std::string statf;
 
     int writeCutsToInstance();
     int writeFixingToInstance();
@@ -185,9 +185,9 @@ class SolverLag {
 
     inline double getIncumbentObj() const { return incumbentObj; }
 
-    inline vector<bool> getIncumbent() const { return incumbent; }
+    inline std::vector<bool> getIncumbent() const { return incumbent; }
 
-    inline list<SolverLag::cut> getCuts() const { return myCuts; }
+    inline std::list<SolverLag::cut> getCuts() const { return myCuts; }
 
     inline double getDirectionPrevSquared() const {
         return directionPrevSquared;
@@ -197,9 +197,9 @@ class SolverLag {
         directionPrevSquared = dps;
     }
 
-    void initCuts(list<SolverLag::cut> &cuts);
+    void initCuts(std::list<SolverLag::cut> &cuts);
 
-    string getStatistics() { return statf; }
+    std::string getStatistics() { return statf; }
 
     int solve();
 };

@@ -13,8 +13,6 @@
 #include <iostream>
 #include <Rcpp.h>
 
-using Rcpp::List;
-
 struct Parameters {
     /// Input file (instance)
     int problem = 1;
@@ -37,7 +35,7 @@ struct Parameters {
     int timelimit = 1800;
     int setting = 0;
 
-    explicit Parameters(List);
+    explicit Parameters(Rcpp::List);
     ~Parameters() = default;
 };
 

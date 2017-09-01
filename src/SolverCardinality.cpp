@@ -9,12 +9,13 @@
 #include <queue>
 #include <stack>
 
-// using namespace std;
+using std::vector;
+using std::priority_queue;
+
+using Rcpp::Rcout;
 
 SolverCardinality::SolverCardinality(Instance &_instance, int _maxIterations)
-    : SolverLag(_instance, _maxIterations), weightLast{0.0}, weightOutside{
-                                                                 0.0} {
-}
+        : SolverLag(_instance, _maxIterations), weightLast{0.0}, weightOutside{0.0} {}
 
 SolverCardinality::~SolverCardinality() {}
 
@@ -66,7 +67,7 @@ bool SolverCardinality::primalHeuristic() {
     //	iter=1;
 
     // if(myComponents.size()==1)
-    //	cout<<"component size 1!!!"<<endl;
+    //	Rcout<<"component size 1!!!"<<"\n";
 
     vector<int> myHeurTerminals;
     vector<bool> myHeurTerminalsBool = vector<bool>(instance.nNodes, false);
@@ -74,7 +75,7 @@ bool SolverCardinality::primalHeuristic() {
     vector<double> lpValue;
 
     for (int i = 0; i < instance.nNodes; ++i) {
-        // cout<<(double)sumSolution[i]/iterations<<endl;
+        // Rcout<<(double)sumSolution[i]/iterations<<"\n";
         // lpValue.push_back((double)sumSolution[i]/iterations);
 
         if (currentSolution[i]) {
@@ -97,7 +98,7 @@ bool SolverCardinality::primalHeuristic() {
             for (unsigned i = 0; i < myComponents[myIter].components.size();
                  ++i) {
                 int c = myComponents[myIter].components[i];
-                // cout<<c<<" "<<realPrizes[c]<<" "<<instance.myPrizes[c]<<endl;
+                // Rcout<<c<<" "<<realPrizes[c]<<" "<<instance.myPrizes[c]<<"\n";
 
                 if (myHeurTerminalsBool[c] && realPrizes[c] > bestVal) {
                     startID = c;
@@ -122,15 +123,15 @@ bool SolverCardinality::primalHeuristic() {
         vector<int> pred = vector<int>(instance.nNodes, -1);
         vector<bool> extracted = vector<bool>(instance.nNodes, false);
         vector<double> distance =
-            vector<double>(instance.nNodes, std::numeric_limits<double>::max());
+                vector<double>(instance.nNodes, std::numeric_limits<double>::max());
         vector<int> hop =
-            vector<int>(instance.nNodes, std::numeric_limits<int>::max());
+                vector<int>(instance.nNodes, std::numeric_limits<int>::max());
 
         priority_queue<nodevaluepair, std::vector<nodevaluepair>,
-                       std::greater<nodevaluepair>>
-            myPQueue;
+                std::greater<nodevaluepair>>
+                myPQueue;
         vector<int> myBestSol =
-            vector<int>(instance.nNodes, instance.nNodes + 1);
+                vector<int>(instance.nNodes, instance.nNodes + 1);
 
         myBestSol[startID] = 0;
         inComponentBool[startID] = true;
@@ -143,9 +144,9 @@ bool SolverCardinality::primalHeuristic() {
         obj += instance.myPrizes[startID];
         myPQueue.push(n);
 
-        // cout<<startID<<" "<<obj<<" "<<myIter<<endl;
+        // Rcout<<startID<<" "<<obj<<" "<<myIter<<"\n";
 
-        // cout<<obj<<endl;
+        // Rcout<<obj<<"\n";
 
         double best = obj;
         int numTerms = 0;
@@ -164,23 +165,23 @@ bool SolverCardinality::primalHeuristic() {
 
             extracted[k] = true;
 
-            // cout<<"k "<<k<<" "<<distance[k]<<"
-            // "<<myHeurTerminalsBool[k]<<endl;
+            // Rcout<<"k "<<k<<" "<<distance[k]<<"
+            // "<<myHeurTerminalsBool[k]<<"\n";
 
             if (!myHeurTerminalsBool[k] || inComponentBool[k]) {
                 double toAdd = -instance.myPrizes[k] * (1 - lpValue[k]);
                 if (toAdd <= 0)
                     toAdd = epsOpt;
-                // cout<<toAdd<<endl;
+                // Rcout<<toAdd<<"\n";
 
                 for (int l : instance.adjList[k]) {
                     if (distance[l] > distance[k] + toAdd + epsOpt ||
                         (distance[l] == distance[k] + toAdd &&
                          hop[l] > hop[k] + 1))
-                    // if (hop[l]>hop[k]+(1-lpValue[k]))
+                        // if (hop[l]>hop[k]+(1-lpValue[k]))
                     {
                         // cerr<<distance[l]<<" "<<distance[k] +
-                        // (realPrizes[l]>0?realPrizes[l]:0)<<endl;
+                        // (realPrizes[l]>0?realPrizes[l]:0)<<"\n";
 
                         distance[l] = distance[k] + toAdd;
                         hop[l] = hop[k] + 1;
@@ -191,15 +192,15 @@ bool SolverCardinality::primalHeuristic() {
                         lNv.id = l;
                         lNv.value = distance[l];
                         myPQueue.push(lNv);
-                        // cout<<l<<" "<<k<<" "<<distance[l]<<"
+                        // Rcout<<l<<" "<<k<<" "<<distance[l]<<"
                         // "<<distance[k]<<" "<<currentSolution[l]<<"
-                        // "<<lNv.value<<endl;
+                        // "<<lNv.value<<"\n";
                     }
 
                     if (distance[l] < 0) {
-                        cout << l << " " << distance[l] << " " << distance[k]
-                             << " " << toAdd << " " << inComponentBool[k]
-                             << endl;
+                        Rcout << l << " " << distance[l] << " " << distance[k]
+                              << " " << toAdd << " " << inComponentBool[k]
+                              << "\n";
                         exit(1);
                     }
                 }
@@ -209,7 +210,7 @@ bool SolverCardinality::primalHeuristic() {
                 bool fit = true;
                 int add = 0;
                 while (!inComponentBool[currentNode]) {
-                    // cout<<currentNode<<" "<<pred[currentNode]<<endl;
+                    // Rcout<<currentNode<<" "<<pred[currentNode]<<"\n";
 
                     add++;
                     if (currentSize + add > instance.params.cardCons) {
@@ -219,12 +220,12 @@ bool SolverCardinality::primalHeuristic() {
                     currentNode = pred[currentNode];
                 }
 
-                // cout<<add<<" "<<currentSize<<" "<<fit<<endl;
+                // Rcout<<add<<" "<<currentSize<<" "<<fit<<"\n";
 
                 if (fit) {
                     currentNode = k;
                     while (!inComponentBool[currentNode]) {
-                        // cerr<<currentNode<<endl;
+                        // cerr<<currentNode<<"\n";
                         inComponentBool[currentNode] = true;
                         hop[currentNode] = 0;
                         distance[currentNode] = 0;
@@ -237,28 +238,28 @@ bool SolverCardinality::primalHeuristic() {
                         obj += instance.myPrizes[currentNode];
                         currentNode = pred[currentNode];
                         currentSize++;
-                        // cout<<"pushed"<<endl;
+                        // Rcout<<"pushed"<<"\n";
                     }
                     numTerms++;
                     if (obj > best) {
                         best = obj;
                         numBest = numTerms;
                         bestSize = currentSize;
-                        // cout<<"best"<<obj<<" "<<currentSize<<endl;
+                        // Rcout<<"best"<<obj<<" "<<currentSize<<"\n";
                     }
                 }
             }
         }
 
-        // cout<<obj<<" "<<currentSize<<endl;
+        // Rcout<<obj<<" "<<currentSize<<"\n";
         if (best > incumbentObj && false) {
             obj = 0.0;
             currentSize = 0;
-            // cout<<"best "<<best<<" "<<numBest<<endl;
+            // Rcout<<"best "<<best<<" "<<numBest<<"\n";
             inComponentBool = vector<int>(instance.nNodes, false);
 
             myPQueue = priority_queue<nodevaluepair, std::vector<nodevaluepair>,
-                                      std::greater<nodevaluepair>>();
+                    std::greater<nodevaluepair>>();
 
             pred = vector<int>(instance.nNodes, -1);
             extracted = vector<bool>(instance.nNodes, false);
@@ -290,23 +291,23 @@ bool SolverCardinality::primalHeuristic() {
 
                 extracted[k] = true;
 
-                // cout<<"k "<<k<<" "<<distance[k]<<"
-                // "<<myHeurTerminalsBool[k]<<endl;
+                // Rcout<<"k "<<k<<" "<<distance[k]<<"
+                // "<<myHeurTerminalsBool[k]<<"\n";
 
                 if (!myHeurTerminalsBool[k] || inComponentBool[k]) {
                     double toAdd = -instance.myPrizes[k] * (1 - lpValue[k]);
                     if (toAdd <= 0)
                         toAdd = epsOpt;
-                    // cout<<toAdd<<endl;
+                    // Rcout<<toAdd<<"\n";
 
                     for (int l : instance.adjList[k]) {
                         if (distance[l] > distance[k] + toAdd + epsOpt ||
                             (distance[l] == distance[k] + toAdd &&
                              hop[l] > hop[k] + 1))
-                        // if (hop[l]>hop[k]+(1-lpValue[k]))
+                            // if (hop[l]>hop[k]+(1-lpValue[k]))
                         {
                             // cerr<<distance[l]<<" "<<distance[k] +
-                            // (realPrizes[l]>0?realPrizes[l]:0)<<endl;
+                            // (realPrizes[l]>0?realPrizes[l]:0)<<"\n";
 
                             distance[l] = distance[k] + toAdd;
                             pred[l] = k;
@@ -316,15 +317,15 @@ bool SolverCardinality::primalHeuristic() {
                             lNv.id = l;
                             lNv.value = distance[l];
                             myPQueue.push(lNv);
-                            // cout<<l<<" "<<k<<" "<<distance[l]<<"
+                            // Rcout<<l<<" "<<k<<" "<<distance[l]<<"
                             // "<<distance[k]<<" "<<currentSolution[l]<<"
-                            // "<<lNv.value<<endl;
+                            // "<<lNv.value<<"\n";
                         }
 
                         if (distance[l] < 0) {
-                            cout << l << " " << distance[l] << " "
-                                 << distance[k] << " " << toAdd << " "
-                                 << inComponentBool[k] << endl;
+                            Rcout << l << " " << distance[l] << " "
+                                  << distance[k] << " " << toAdd << " "
+                                  << inComponentBool[k] << "\n";
                             exit(1);
                         }
                     }
@@ -334,7 +335,7 @@ bool SolverCardinality::primalHeuristic() {
                     bool fit = true;
                     int add = 0;
                     while (!inComponentBool[currentNode]) {
-                        // cout<<currentNode<<" "<<pred[currentNode]<<endl;
+                        // Rcout<<currentNode<<" "<<pred[currentNode]<<"\n";
 
                         add++;
                         if (currentSize + add > instance.params.cardCons) {
@@ -344,15 +345,15 @@ bool SolverCardinality::primalHeuristic() {
                         currentNode = pred[currentNode];
                     }
 
-                    // cout<<add<<" "<<currentSize<<" "<<fit<<endl;
+                    // Rcout<<add<<" "<<currentSize<<" "<<fit<<"\n";
 
                     if (fit) {
                         currentNode = k;
 
-                        // cout<<k<<" "<<myHeurTerminalsBool[k]<<"
-                        // "<<instance.myPrizes[k]<<" "<<distance[k]<<endl;
+                        // Rcout<<k<<" "<<myHeurTerminalsBool[k]<<"
+                        // "<<instance.myPrizes[k]<<" "<<distance[k]<<"\n";
                         while (!inComponentBool[currentNode]) {
-                            // cerr<<currentNode<<endl;
+                            // cerr<<currentNode<<"\n";
                             inComponentBool[currentNode] = true;
                             distance[currentNode] = 0;
                             extracted[currentNode] = false;
@@ -361,22 +362,22 @@ bool SolverCardinality::primalHeuristic() {
                             nv.value = distance[currentNode];
                             myPQueue.push(nv);
                             hop[currentNode] = 0;
-                            // cout<<instance.myPrizes[currentNode]<<endl;
+                            // Rcout<<instance.myPrizes[currentNode]<<"\n";
                             obj += instance.myPrizes[currentNode];
                             currentNode = pred[currentNode];
                             currentSize++;
-                            // cout<<"pushed"<<endl;
+                            // Rcout<<"pushed"<<"\n";
                         }
                         countTerm++;
-                        // cout<<countTerm<<" "<<numBest<<" "<<obj<<endl;
+                        // Rcout<<countTerm<<" "<<numBest<<" "<<obj<<"\n";
                         if (countTerm == numBest) {
-                            // cout<<"inbetween"<<obj<<endl;
+                            // Rcout<<"inbetween"<<obj<<"\n";
                             break;
                         }
                     }
                 }
             }
-            // cout<<"best"<<obj<<endl;
+            // Rcout<<"best"<<obj<<"\n";
         }
 
         // post-processing
@@ -384,7 +385,7 @@ bool SolverCardinality::primalHeuristic() {
             inComponentBool[i] = 0;
             if (myBestSol[i] < numBest)
                 inComponentBool[i] = 1;
-            // cout<<myBestSol[i]<<" "<<numBest<<endl;
+            // Rcout<<myBestSol[i]<<" "<<numBest<<"\n";
         }
         currentSize = bestSize;
 
@@ -393,7 +394,7 @@ bool SolverCardinality::primalHeuristic() {
 
         do {
             toAdd.clear();
-            // cout<<"before postprocessing "<<obj<<" "<<currentSize<<endl;
+            // Rcout<<"before postprocessing "<<obj<<" "<<currentSize<<"\n";
 
             for (int n = 0; n < instance.nNodes; ++n) {
                 if (currentSize >= instance.params.cardCons)
@@ -412,8 +413,8 @@ bool SolverCardinality::primalHeuristic() {
 
             sort(toAdd.begin(), toAdd.end(), std::greater<nodevaluepair>());
 
-            // cout<<"before"<<obj<<" "<<currentSize<<endl;
-            // cout<<"before"<<obj<<endl;
+            // Rcout<<"before"<<obj<<" "<<currentSize<<"\n";
+            // Rcout<<"before"<<obj<<"\n";
 
             for (unsigned i = 0; i < toAdd.size(); ++i) {
                 int node = toAdd[i].id;
@@ -427,9 +428,9 @@ bool SolverCardinality::primalHeuristic() {
             }
         } while (toAdd.size() > 0);
 
-        // cout<<obj<<" "<<currentSize<<endl;
+        // Rcout<<obj<<" "<<currentSize<<"\n";
 
-        // cout<<toAdd.size()<<" "<<obj<<endl;
+        // Rcout<<toAdd.size()<<" "<<obj<<"\n";
 
         if (obj > incumbentObj) {
             incumbentObj = obj;
@@ -438,7 +439,7 @@ bool SolverCardinality::primalHeuristic() {
                 incumbent[i] = inComponentBool[i];
             }
 
-            // cout<<"improved "<<obj<<endl;
+            // Rcout<<"improved "<<obj<<"\n";
         }
     }
     return improved;
@@ -447,7 +448,7 @@ bool SolverCardinality::primalHeuristic() {
 int SolverCardinality::lagrangianPegging() {
     int nFixed = 0;
     double boundPegging = 0;
-    // cout<<"pegging"<<endl;
+    // Rcout<<"pegging"<<"\n";
 
     vector<int> fixToZero;
     vector<int> fixToOne;
@@ -457,12 +458,12 @@ int SolverCardinality::lagrangianPegging() {
             fabs(realPrizes[i] - epsOpt) < epsOpt)
             continue;
 
-        //	cout<<i<<" "<<fixedToZero[i]<<" "<<fixedToOne[i]<<endl;
+        //	Rcout<<i<<" "<<fixedToZero[i]<<" "<<fixedToOne[i]<<"\n";
 
         if (!currentSolution[i]) {
             boundPegging = currentBound + realPrizes[i] - weightLast;
-            // cout<<"boundPegging"<<boundPegging<<" "<<incumbentObj<<"
-            // "<<realPrizes[i]<<" "<<currentSolution[i]<<" "<<i<<endl;
+            // Rcout<<"boundPegging"<<boundPegging<<" "<<incumbentObj<<"
+            // "<<realPrizes[i]<<" "<<currentSolution[i]<<" "<<i<<"\n";
 
             if (boundPegging < incumbentObj) {
                 fixToZero.push_back(i);
@@ -470,14 +471,14 @@ int SolverCardinality::lagrangianPegging() {
             }
         } else if (currentSolution[i]) {
             boundPegging = currentBound - realPrizes[i] + weightOutside;
-            // cout<<"boundPegging"<<boundPegging<<endl;
+            // Rcout<<"boundPegging"<<boundPegging<<"\n";
             if (boundPegging < incumbentObj) {
                 fixToOne.push_back(i);
                 nFixed++;
             }
         }
     }
-    // cout<<fixToZero.size()<<" "<<fixToOne.size()<<endl;
+    // Rcout<<fixToZero.size()<<" "<<fixToOne.size()<<"\n";
     for (int i : fixToZero) {
         fixedToZero[i] = true;
         instance.nFixedZero++;
@@ -491,13 +492,13 @@ int SolverCardinality::lagrangianPegging() {
         }
         instance.adjList[i].clear();
 
-        // cout<<i<<endl;
+        // Rcout<<i<<"\n";
     }
 
     for (int i : fixToOne) {
         fixedToOne[i] = true;
         instance.nFixedOne++;
-        // cout<<i<<endl;
+        // Rcout<<i<<"\n";
     }
 
     return nFixed;
@@ -524,7 +525,7 @@ double SolverCardinality::calculateCurrentSolution(bool save) {
             if (save && currentSolution[i])
                 sumSolution[i]++;
             if (solutionSize > instance.params.cardCons) {
-                cout << "strange" << endl;
+                Rcout << "strange" << "\n";
             }
             continue;
         } else if (fixedToZero[i]) {
@@ -538,10 +539,10 @@ double SolverCardinality::calculateCurrentSolution(bool save) {
         myNV.push_back(nv);
     }
 
-    // cout<<nFixed<<endl;
+    // Rcout<<nFixed<<"\n";
     sort(myNV.begin(), myNV.end(), std::greater<nodevaluepair>());
 
-    // cout<<"obj before"<<obj<<endl;
+    // Rcout<<"obj before"<<obj<<"\n";
 
     unsigned i = 0;
     for (; i < myNV.size(); ++i) {
@@ -551,8 +552,8 @@ double SolverCardinality::calculateCurrentSolution(bool save) {
         currentSolution[nv.id] = 1.0;
         obj += realPrizes[nv.id];
         solutionSize++;
-        // cout<<nv.id<<" "<<realPrizes[nv.id]<<" "<<solutionSize<<"
-        // "<<instance.myPrizes[nv.id]<<endl;
+        // Rcout<<nv.id<<" "<<realPrizes[nv.id]<<" "<<solutionSize<<"
+        // "<<instance.myPrizes[nv.id]<<"\n";
 
         if (save && currentSolution[nv.id])
             sumSolution[nv.id]++;
@@ -573,7 +574,7 @@ double SolverCardinality::calculateCurrentSolution(bool save) {
     if (weightOutside < 0)
         weightOutside = 0;
 
-    // cout<<"obj "<<obj<<endl;
+    // Rcout<<"obj "<<obj<<"\n";
 
     return obj;
 }

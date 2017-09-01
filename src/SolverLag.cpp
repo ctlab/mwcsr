@@ -13,7 +13,16 @@
 #include <stack>
 #include <boost/filesystem.hpp>
 #include <chrono>
-#include <iomanip> // std::setprecision
+#include <iomanip>
+
+using std::vector;
+using std::list;
+using std::queue;
+using std::max;
+
+using Rcpp::Rcout;
+
+namespace chrono = std::chrono;
 
 bool cutToRemove(SolverLag::cut x) { return x.toRemove; }
 
@@ -60,9 +69,9 @@ int SolverLag::writeCutsToInstance() {
         if (c.lambda > 0) {
             for (nodevaluepair i : c.lhs) {
                 myCut.lhs.push_back(i.id);
-                // cout<<i.id<<" ";
+                // Rcout<<i.id<<" ";
             }
-            // cout<<endl;
+            // Rcout<<"\n";
             for (nodevaluepair i : c.rhs) {
                 myCut.rhs.push_back(i.id);
             }
@@ -103,8 +112,8 @@ int SolverLag::solveSubgradient(int maxIterations) {
         chrono::system_clock::now();
     iterations = 0;
     // if(instance.params.outputlag)
-    //	cout<<"fixed "<<costBasedFixing()<<" variables to zero due to cost in
-    //component"<<endl;
+    //	Rcout<<"fixed "<<costBasedFixing()<<" variables to zero due to cost in
+    //component"<<"\n";
 
     double eps = 1e-10;
 
@@ -121,24 +130,24 @@ int SolverLag::solveSubgradient(int maxIterations) {
     for(int i:instance.myTrueTerminals)
     {
             fixedToOne[i]=true;
-            //cout<<i<<endl;
+            //Rcout<<i<<"\n";
     }*/
 
     while (iterations < maxIterations && sqrt(subgradientSquared) > epsOpt) {
         boundImprov = false;
-        // cout<<sqrt(subgradientSquared)<<endl;
+        // Rcout<<sqrt(subgradientSquared)<<"\n";
         subgradientSquared = 0.0;
         currentBound = calculateCurrentSolution(true);
-        // cout<<currentBound<<endl;
-        // cout<<"incumbentObj"<<incumbentObj<<endl;
-        // cout<<currentBound<<" "<<previousBound<<"
-        // "<<(currentBound>previousBound)<<endl;
+        // Rcout<<currentBound<<"\n";
+        // Rcout<<"incumbentObj"<<incumbentObj<<"\n";
+        // Rcout<<currentBound<<" "<<previousBound<<"
+        // "<<(currentBound>previousBound)<<"\n";
 
         // double boundPCSTP=0.0;
 
         if (currentBound < bestBound) {
-            // cout<<currentBound<<" "<<bestBound<<"
-            // "<<(currentBound>bestBound)<<endl;
+            // Rcout<<currentBound<<" "<<bestBound<<"
+            // "<<(currentBound>bestBound)<<"\n";
             bestBound = currentBound;
             boundImprov = true;
             if (instance.params.solver == 1) {
@@ -198,7 +207,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
             for (unsigned c = 0; c < instance.components.size(); ++c) {
                 if (instance.maxRevenueInComponent[c] < incumbentObj &&
                     !instance.componentFixed[c]) {
-                    // cout<<c<<" "<<instance.maxRevenueInComponent[c]<<endl;
+                    // Rcout<<c<<" "<<instance.maxRevenueInComponent[c]<<"\n";
                     instance.componentFixed[c] = true;
                     for (int j : instance.components[c]) {
                         if (!fixedToZero[j]) {
@@ -211,34 +220,34 @@ int SolverLag::solveSubgradient(int maxIterations) {
 
             nFixed = lagrangianPegging();
             if (nFixed) {
-                cout << "fixed " << nFixed << " variables" << endl;
+                Rcout << "fixed " << nFixed << " variables" << "\n";
             }
         }
 
-        // cout<<"bestBoundCheck "<<bestBoundCheck<<" "<<incumbentObj<<endl;
-        // cout<<bestBound<<" "<<currentBound<<" "<<incumbentObj<<"
-        // "<<bestBoundCheck<<endl;
+        // Rcout<<"bestBoundCheck "<<bestBoundCheck<<" "<<incumbentObj<<"\n";
+        // Rcout<<bestBound<<" "<<currentBound<<" "<<incumbentObj<<"
+        // "<<bestBoundCheck<<"\n";
 
-        // cout<<bestBoundCheck+eps<<" "<<incumbentObj<<endl;
+        // Rcout<<bestBoundCheck+eps<<" "<<incumbentObj<<"\n";
 
         if (bestBoundCheck <= incumbentObj + eps) {
-            cout << bestBound << endl;
-            cout << "Bound check optimality" << endl;
+            Rcout << bestBound << "\n";
+            Rcout << "Bound check optimality" << "\n";
             break;
         }
 
         if (instance.params.outputlag) {
             if (inRins) {
-                cout << "RINS ";
+                Rcout << "RINS ";
             }
-            cout << std::setprecision(9) << "iteration: \t" << iterations
+            Rcout << std::setprecision(9) << "iteration: \t" << iterations
                  << "\t lagrangian bound: \t"
                  << instance.transformInternalValue(bestBound)
                  << "\t current bound: \t "
                  << instance.transformInternalValue(currentBound)
                  << "\t incumbent: \t "
                  << instance.transformInternalValue(incumbentObj)
-                 << "\t number of active cuts: \t" << numberOfCuts << endl;
+                 << "\t number of active cuts: \t" << numberOfCuts << "\n";
         }
         if (nFixed)
             myCuts.erase(
@@ -250,16 +259,16 @@ int SolverLag::solveSubgradient(int maxIterations) {
         }
 
         iterations++;
-        // cout<<alpha<<" "<< sqrt(subgradientSquared)<<endl;
+        // Rcout<<alpha<<" "<< sqrt(subgradientSquared)<<"\n";
     }
 
     if (instance.params.outputlag) {
-        cout << "finished" << endl;
-        cout << std::setprecision(9) << "iteration: \t" << iterations
+        Rcout << "finished" << "\n";
+        Rcout << std::setprecision(9) << "iteration: \t" << iterations
              << "\t lagrangian bound: \t"
              << instance.transformInternalValue(bestBound)
              << "\t incumbent: \t "
-             << instance.transformInternalValue(incumbentObj) << endl;
+             << instance.transformInternalValue(incumbentObj) << "\n";
     }
 
     chrono::time_point<std::chrono::system_clock> endTime =
@@ -272,7 +281,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
     runtime = elapsedSeconds.count();
     writeStatistics();
 
-    // cout<<statf.c_str()<<endl;
+    // Rcout<<statf.c_str()<<"\n";
     return 1;
 }
 
@@ -281,7 +290,7 @@ double SolverLag::calculateReducedCosts() {
     for (int n = 0; n < instance.nNodes; ++n) {
         realPrizes[n] = instance.myPrizes[n];
         // if(realPrizes[n]>0 ||instance.myPrizes[n]>0)
-        // cout<<realPrizes[n]<<" "<<instance.myPrizes[n]<<endl;
+        // Rcout<<realPrizes[n]<<" "<<instance.myPrizes[n]<<"\n";
     }
 
     for (cut &c : myCuts) {
@@ -297,23 +306,23 @@ double SolverLag::calculateReducedCosts() {
             realPrizes[n.id] -= (n.value * c.lambda);
         }
         obj += c.rhsConst * c.lambda;
-        // cout<<c.rhsConst<<" "<<c.lambda<<" "<<obj<<endl;
+        // Rcout<<c.rhsConst<<" "<<c.lambda<<" "<<obj<<"\n";
     }
 
     /*
     for(int n=0;n<instance.nNodes;++n)
     {
             //if(realPrizes[n]!=instance.myPrizes[n])
-            //cout<<realPrizes[n]<<" "<<instance.myPrizes[n]<<endl;
+            //Rcout<<realPrizes[n]<<" "<<instance.myPrizes[n]<<"\n";
     }*/
 
     /*
     for(int n=0;n<instance.nNodes;++n)
     {
             //if(realPrizes[n]!=instance.myPrizes[n])
-            cout<<realPrizes[n]<<" y("<<n<<")+ ";
+            Rcout<<realPrizes[n]<<" y("<<n<<")+ ";
     }
-    cout<<endl;*/
+    Rcout<<"\n";*/
 
     return obj;
 }
@@ -356,10 +365,10 @@ int SolverLag::createCuts(int iter) {
 
     if (iter % sepIter == 0 && iter > 0)
         cnt += separateCuts();
-    // cout<<cnt<<endl;
+    // Rcout<<cnt<<"\n";
     // numberOfCuts+=cnt;
     if (iter % sepIterFreeze == 0) {
-        // cout<<"here"<<endl;
+        // Rcout<<"here"<<"\n";
         for (cut &c : myCuts) {
             c.frozen = false;
         }
@@ -377,8 +386,8 @@ void SolverLag::updateMultipliersSherali() {
         noImprov = 0;
         alpha /= 2;
         if (instance.params.outputlag)
-            cout << "no improvement for" << instance.params.betaIter
-                 << " iterations, new alpha is " << alpha << endl;
+            Rcout << "no improvement for" << instance.params.betaIter
+                 << " iterations, new alpha is " << alpha << "\n";
         currentBound = bestBound;
         for (int n = 0; n < instance.nNodes; ++n) {
             currentSolution[n] = dualIncumbent[n];
@@ -399,27 +408,27 @@ void SolverLag::updateMultipliersSherali() {
     }
 
     double sigma = 0;
-    // cout<<subgradientSquared<<endl;
-    // cout<<directionPrevSquared<<endl;
+    // Rcout<<subgradientSquared<<"\n";
+    // Rcout<<directionPrevSquared<<"\n";
 
     if (directionPrevSquared > epsOpt) {
         sigma = sqrt(subgradientSquared) / sqrt(directionPrevSquared);
     }
 
-    // cout<<"sigma "<<sigma<<endl;
+    // Rcout<<"sigma "<<sigma<<"\n";
     double directionSquared = 0.0;
-    // cout<<"sherali "<<myCuts.size()<<endl;
+    // Rcout<<"sherali "<<myCuts.size()<<"\n";
     for (cut &c : myCuts) {
         if (c.frozen)
             continue;
-        // cerr<<c.direction<<endl;
+        // cerr<<c.direction<<"\n";
         c.direction = c.subgradient + sigma * c.directionPrevious;
         c.directionPrevious = c.direction;
         directionSquared += (c.direction * c.direction);
     }
 
     if (directionSquared < epsOpt) {
-        // cout<<"directionSquared "<<directionSquared<<endl;
+        // Rcout<<"directionSquared "<<directionSquared<<"\n";
         directionSquared = subgradientSquared;
         for (cut &c : myCuts) {
             if (c.frozen)
@@ -429,23 +438,23 @@ void SolverLag::updateMultipliersSherali() {
     }
 
     double theta = alpha * (currentBound - incumbentObj) / (directionSquared);
-    // cout<<subgradientSquared<<" "<<directionSquared<<endl;
+    // Rcout<<subgradientSquared<<" "<<directionSquared<<"\n";
 
-    // cout<<theta<<" "<<alpha<<" "<<incumbentObj<<" "<<directionSquared<<"
-    // "<<subgradientSquared<<endl;
+    // Rcout<<theta<<" "<<alpha<<" "<<incumbentObj<<" "<<directionSquared<<"
+    // "<<subgradientSquared<<"\n";
 
     for (cut &c : myCuts) {
         if (c.frozen)
             continue;
         // cerr<<c.lambda<<" "<<c.lambda-theta*c.direction<<"
-        // "<<c.direction<<endl;
+        // "<<c.direction<<"\n";
         c.lambda = std::max(0.0, c.lambda - theta * c.direction);
         // c.directionPrevious=c.direction;
         // if(c.lambda<epsOpt)
         //	c.lambda=0;
-        // cout<<c.lambda<<endl;
+        // Rcout<<c.lambda<<"\n";
         // if(c.lambda>0)
-        //	cerr<<c.lambda<<" "<<c.subgradient<<endl;
+        //	cerr<<c.lambda<<" "<<c.subgradient<<"\n";
     }
 
     // directionPrevSquared=directionSquared;
@@ -456,28 +465,28 @@ void SolverLag::updateMultipliersLucena() {
         noImprov = 0;
         alpha /= 2;
         if (instance.params.outputlag)
-            cout << "no improvement for" << instance.params.betaIter
-                 << " iterations, new alpha is " << alpha << endl;
+            Rcout << "no improvement for" << instance.params.betaIter
+                 << " iterations, new alpha is " << alpha << "\n";
     }
 
     double theta = alpha * (currentBound - incumbentObj) / (subgradientSquared);
-    // cout<<subgradientSquared<<endl;
-    // cout<<theta<<" "<<incumbentObj<<" "<<alpha<<" "<<currentBound<<"
-    // "<<subgradientSquared<<endl;
+    // Rcout<<subgradientSquared<<"\n";
+    // Rcout<<theta<<" "<<incumbentObj<<" "<<alpha<<" "<<currentBound<<"
+    // "<<subgradientSquared<<"\n";
     // incumbentObj=7;
 
     for (cut &c : myCuts) {
         if (c.frozen)
             continue;
         // cerr<<"cut "<<c.lambda<<" "<<c.lambda-theta*c.subgradient<<"
-        // "<<c.subgradient<<endl;
+        // "<<c.subgradient<<"\n";
         c.lambda = std::max(0.0, c.lambda - theta * c.subgradient);
-        // cerr<<"cut "<<c.lambda<<endl;
+        // cerr<<"cut "<<c.lambda<<"\n";
     }
 }
 
 void SolverLag::updateMultipliersCFT() {
-    // cout<<noImprov<<endl;
+    // Rcout<<noImprov<<"\n";
     if (noImprov >= instance.params.betaIter) {
         noImprov = 0;
         alpha /= 2;
@@ -496,7 +505,7 @@ void SolverLag::updateMultipliersCFT() {
             cftBoundsBest.pop_front();
             double delta = bestBound - incumbentObj;
             if (oldBest - bestBound < 0.01 * delta) {
-                // cout<<oldBest<<" "<<bestBound<<endl;
+                // Rcout<<oldBest<<" "<<bestBound<<"\n";
                 double boundSum = 0.0;
 
                 for (double bound : cftBounds) {
@@ -504,14 +513,14 @@ void SolverLag::updateMultipliersCFT() {
                 }
 
                 double avgBound = boundSum / (double)cftBounds.size();
-                // cout<<avgBound<<" "<<bestBound<<" "<<delta<<"
-                // "<<0.001*delta<<endl;
-                // cout<<"alpha"<<alpha<<endl;
+                // Rcout<<avgBound<<" "<<bestBound<<" "<<delta<<"
+                // "<<0.001*delta<<"\n";
+                // Rcout<<"alpha"<<alpha<<"\n";
                 if (avgBound - bestBound < 0.001 * delta) {
-                    // cout<<"delta10"<<endl;
+                    // Rcout<<"delta10"<<"\n";
                     alpha *= 10;
                 } else if (avgBound - bestBound < 0.01 * delta) {
-                    // cout<<"delta2"<<endl;
+                    // Rcout<<"delta2"<<"\n";
                     alpha *= 2;
                 } else /*if(alpha/2>epsOpt)*/
                 {
@@ -527,20 +536,20 @@ void SolverLag::updateMultipliersCFT() {
                         }
                         alpha=instance.params.beta;
                 }*/
-                // cout<<"alpha"<<alpha<<endl;
+                // Rcout<<"alpha"<<alpha<<"\n";
             }
         }
     }
 #endif
 
     double theta = alpha * (currentBound - incumbentObj) / (subgradientSquared);
-    // cout<<theta<<endl;
+    // Rcout<<theta<<"\n";
 
     for (cut &c : myCuts) {
         if (c.frozen)
             continue;
         // cerr<<c.lambda<<" "<<c.lambda-theta*c.subgradient<<"
-        // "<<c.subgradient<<endl;
+        // "<<c.subgradient<<"\n";
         c.lambda = std::max(0.0, c.lambda - theta * c.subgradient);
     }
 }
@@ -566,14 +575,14 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
     int numberOfCuts = 0;
 
     // int notViolated=0;
-    // cout<<"myCuts.size() "<<myCuts.size()<<endl;
+    // Rcout<<"myCuts.size() "<<myCuts.size()<<"\n";
     for (cut &c : myCuts) {
         if (c.frozen)
             continue;
 
         c.violated = true;
         c.subgradient = calculateSubgradientCuts(c);
-        // cout<<c.subgradient<<endl;
+        // Rcout<<c.subgradient<<"\n";
 
         double lhs = 0.0;
         unsigned nFixedToZero = 0;
@@ -584,9 +593,9 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
         }
 
         if (nFixedToZero == c.lhs.size() && c.rhs.size() == 1 && addCuts) {
-            // cout<<"here"<<endl;
+            // Rcout<<"here"<<"\n";
             for (nodevaluepair n : c.rhs) {
-                // cout<<n.id<<" "<<fixedToZero.size()<<endl;
+                // Rcout<<n.id<<" "<<fixedToZero.size()<<"\n";
                 if (!fixedToZero[n.id]) {
                     fixedToZero[n.id] = true;
 
@@ -604,8 +613,8 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
                 }
 
                 // if(incumbent[n.id])
-                //	cout<<n.id<<" "<<incumbent[n.id]<<" "<<c.lhs.size()<<"
-                //"<<instance.adjList[n.id].size()<<endl;
+                //	Rcout<<n.id<<" "<<incumbent[n.id]<<" "<<c.lhs.size()<<"
+                //"<<instance.adjList[n.id].size()<<"\n";
             }
             c.toRemove = true;
             c.subgradient = 0;
@@ -623,12 +632,12 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
         }
 
         if (nFixedToZero == c.rhs.size() + c.rhsConst && addCuts) {
-            // cout<<c.rhsConst<<endl;
+            // Rcout<<c.rhsConst<<"\n";
             c.subgradient = 0;
             c.toRemove = true;
         }
 
-        // cout<<lhs<<" "<<rhs<<endl;
+        // Rcout<<lhs<<" "<<rhs<<"\n";
 
         if (lhs < rhs) {
             numberOfCuts++;
@@ -636,11 +645,11 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
 
             /*
             for(nodevaluepair l:c.lhs)
-                    cout<<l.id<<" ";
-            cout<<endl;
+                    Rcout<<l.id<<" ";
+            Rcout<<"\n";
             for(nodevaluepair r:c.rhs)
-                    cout<<r.id<<" ";
-            cout<<endl;*/
+                    Rcout<<r.id<<" ";
+            Rcout<<"\n";*/
 
             if (addCuts && false) {
                 for (cut c2 : myNewCuts) {
@@ -649,7 +658,7 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
                             c2.toRemove = true;
                             // c.subgradient=0;
                             // numberOfCuts--;
-                            // cout<<"remove"<<endl;
+                            // Rcout<<"remove"<<"\n";
                             break;
                         }
                         /*
@@ -663,21 +672,21 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
             }
             // numberOfCuts++;
 
-            // cerr<<c.subgradient<<endl;
+            // cerr<<c.subgradient<<"\n";
 
             /*
             for(nodevaluepair n: c.lhs)
             {
-                    cout<<n.id<<" ";
+                    Rcout<<n.id<<" ";
             }
-            cout<<endl;
+            Rcout<<"\n";
 
             for(nodevaluepair n: c.rhs)
             {
-                    cout<<n.id<<" ";
+                    Rcout<<n.id<<" ";
             }
-            cout<<endl;
-            cout<<c.lambda<<endl;*/
+            Rcout<<"\n";
+            Rcout<<c.lambda<<"\n";*/
 
         } else {
             c.violated = false;
@@ -695,8 +704,8 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
         }
         subgradientSquared += (c.subgradient * c.subgradient);
 
-        // cout<<"prev "<<c.subgradient<<" "<<c.violated<<" "<<lhs<<"
-        // "<<subgradientSquared<<" "<<c.age<<endl;
+        // Rcout<<"prev "<<c.subgradient<<" "<<c.violated<<" "<<lhs<<"
+        // "<<subgradientSquared<<" "<<c.age<<"\n";
     }
 
     // numberOfCuts+=myNewCuts.size();
@@ -711,22 +720,22 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
                 // directionPrevSquared+=(c.subgradient*c.subgradient);
                 subgradientSquared += (c.subgradient * c.subgradient);
             }
-            // cout<<"push"<<" "<<myNewCuts.size()<<endl;
-            // cout<<c.rhs.size()<<" "<<c.lhs.size()<<" "<<c.rhsConst<<endl;
+            // Rcout<<"push"<<" "<<myNewCuts.size()<<"\n";
+            // Rcout<<c.rhs.size()<<" "<<c.lhs.size()<<" "<<c.rhsConst<<"\n";
             myCuts.push_back(c);
         }
     }
 
-    // cout<<"subgradientSquared "<<subgradientSquared<<endl;
-    // cout<<myCuts.size()<<endl;
+    // Rcout<<"subgradientSquared "<<subgradientSquared<<"\n";
+    // Rcout<<myCuts.size()<<"\n";
 
-    // cout<<subgradientSquared<<" "<<numberOfCuts<<endl;
+    // Rcout<<subgradientSquared<<" "<<numberOfCuts<<"\n";
 
-    // cerr<<myCuts.size()<<endl;
+    // cerr<<myCuts.size()<<"\n";
     // myCuts.remove_if([&](const cut& c){ return (c.lambda==0.0 &&
     // c.subgradient==0 ); } );
-    // cerr<<myCuts.size()<<endl;
-    // cerr<<notViolated<<endl;
+    // cerr<<myCuts.size()<<"\n";
+    // cerr<<notViolated<<"\n";
 
     return numberOfCuts;
 }
@@ -734,17 +743,17 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
 double SolverLag::calculateSubgradientCuts(const cut &myCut) {
     double subg = myCut.rhsConst;
     for (nodevaluepair n : myCut.lhs) {
-        // cout<<n<<" "<<currentSolution[n]<<" "<<subg<<endl;
+        // Rcout<<n<<" "<<currentSolution[n]<<" "<<subg<<"\n";
         subg += (n.value * currentSolution[n.id]);
     }
 
     for (nodevaluepair n : myCut.rhs) {
-        // cout<<n<<" "<<currentSolution[n]<<" "<<subg<<endl;
+        // Rcout<<n<<" "<<currentSolution[n]<<" "<<subg<<"\n";
         subg -= (n.value * currentSolution[n.id]);
     }
-    // cout<<myCut.rhs1<<" "<<myCut.rhs2<<endl;
+    // Rcout<<myCut.rhs1<<" "<<myCut.rhs2<<"\n";
 
-    // cout<<"subg "<<subg<<endl;
+    // Rcout<<"subg "<<subg<<"\n";
 
     return subg;
 }
@@ -752,17 +761,17 @@ double SolverLag::calculateSubgradientCuts(const cut &myCut) {
 double SolverLag::calculateSubgradientCutsPrevious(const cut &myCut) {
     double subg = myCut.rhsConst;
     for (nodevaluepair n : myCut.lhs) {
-        // cout<<n<<" "<<currentSolution[n]<<" "<<subg<<endl;
+        // Rcout<<n<<" "<<currentSolution[n]<<" "<<subg<<"\n";
         subg += (n.value * previousSolution[n.id]);
     }
 
     for (nodevaluepair n : myCut.rhs) {
-        // cout<<n<<" "<<currentSolution[n]<<" "<<subg<<endl;
+        // Rcout<<n<<" "<<currentSolution[n]<<" "<<subg<<"\n";
         subg -= (n.value * previousSolution[n.id]);
     }
-    // cout<<myCut.rhs1<<" "<<myCut.rhs2<<endl;
+    // Rcout<<myCut.rhs1<<" "<<myCut.rhs2<<"\n";
 
-    // cout<<"subg "<<subg<<endl;
+    // Rcout<<"subg "<<subg<<"\n";
 
     return subg;
 }
@@ -772,16 +781,16 @@ int SolverLag::setVariableFixing(const vector<int> &toZero,
     int numberFixed = toZero.size() + toOne.size();
 
     for (unsigned i = 0; i < toZero.size(); ++i) {
-        // cout<<toZero[i]<<" ";
+        // Rcout<<toZero[i]<<" ";
         fixedToZero[toZero[i]] = true;
     }
-    // cout<<endl;
+    // Rcout<<"\n";
 
     for (unsigned i = 0; i < toOne.size(); ++i) {
-        // cout<<toOne[i]<<" ";
+        // Rcout<<toOne[i]<<" ";
         fixedToOne[toOne[i]] = true;
     }
-    // cout<<endl;
+    // Rcout<<"\n";
 
     return numberFixed;
 }
@@ -789,7 +798,7 @@ int SolverLag::setVariableFixing(const vector<int> &toZero,
 void SolverLag::initCuts(list<SolverLag::cut> &cuts) {
     myCuts = cuts;
     for (cut &c : myCuts) {
-        // cerr<<c.direction<<endl;
+        // cerr<<c.direction<<"\n";
         c.subgradient = 0;
         c.direction = 0;
         c.directionPrevious = 0;
@@ -808,7 +817,7 @@ int SolverLag::separateCuts() {
     myComponents.clear();
 
     for (int n = 0; n < instance.nNodes; ++n) {
-        // cerr<<n<<" "<<currentSolution[n]<<endl;
+        // cerr<<n<<" "<<currentSolution[n]<<"\n";
         if (currentSolution[n] == 1 && instance.realTerminals[n] &&
             labels[n] == 0) {
 
@@ -820,14 +829,14 @@ int SolverLag::separateCuts() {
             vector<int> myComponent;
             myComponent.push_back(n);
             inComponent[n] = true;
-            // cout<<endl;
+            // Rcout<<"\n";
             myComponentHelper.sumPrize += instance.myPrizes[n];
-            // cout<<instance.myPrizes[n]<<endl;
+            // Rcout<<instance.myPrizes[n]<<"\n";
             labels[n] = myCurrentLabel;
 
             queue<int> myQueue;
             myQueue.push(n);
-            // cerr<<"component "<<n<<" "<<myCurrentLabel<<endl;
+            // cerr<<"component "<<n<<" "<<myCurrentLabel<<"\n";
             while (!myQueue.empty()) {
                 // node k=myQueue.front();
                 int k = myQueue.front();
@@ -850,8 +859,8 @@ int SolverLag::separateCuts() {
                         inComponent[li] = true;
                         myQueue.push(li);
                         if (instance.myPrizes[li] > 0) {
-                            // cout<<li<<" "<<myComponentHelper.sumPrize<<"
-                            // "<<instance.myPrizes[li]<<endl;
+                            // Rcout<<li<<" "<<myComponentHelper.sumPrize<<"
+                            // "<<instance.myPrizes[li]<<"\n";
                             myComponentHelper.sumPrize += instance.myPrizes[li];
                         }
                     }
@@ -863,15 +872,15 @@ int SolverLag::separateCuts() {
             myComponents.push_back(myComponentHelper);
             // componentsNested.push_back(myComponent);
 
-            // cout<<"myComponent: "<<myComponent.size()<<" myCurrentLabel:
-            // "<<myCurrentLabel<<endl;
+            // Rcout<<"myComponent: "<<myComponent.size()<<" myCurrentLabel:
+            // "<<myCurrentLabel<<"\n";
 
             myCurrentLabel++;
         }
     }
 
     numberOfComponents = myCurrentLabel - 1;
-    cout << "numberOfComponents " << numberOfComponents << endl;
+    Rcout << "numberOfComponents " << numberOfComponents << "\n";
     if (numberOfComponents <= 1)
         return 0;
 
@@ -879,7 +888,7 @@ int SolverLag::separateCuts() {
               std::greater<CompStruct>());
 
     for (unsigned i = 0; i < myComponents.size() - 1; ++i) {
-        // cout<<myComponents[i].sumPrize<<endl;
+        // Rcout<<myComponents[i].sumPrize<<"\n";
         // if(myComponents[i].sumPrize<incumbentObj/10)
         //	break;
         unsigned other = i + 1;
@@ -887,10 +896,10 @@ int SolverLag::separateCuts() {
         //	continue;
         if (other >= myComponents.size())
             other = 0;
-        // cout<<myComponents[i].sumPrize<<"
-        // "<<myComponents[other].sumPrize<<endl;
+        // Rcout<<myComponents[i].sumPrize<<"
+        // "<<myComponents[other].sumPrize<<"\n";
 
-        // cout<<i<<" "<<other<<endl;
+        // Rcout<<i<<" "<<other<<"\n";
         // for(unsigned other=i+1;other<myComponents.size();++other)
         {
 
@@ -908,10 +917,10 @@ int SolverLag::separateCuts() {
             n.value = 1.0;
             n.id = myComponents[i].components[0];
 
-            // cout<<endl;
+            // Rcout<<"\n";
             for (unsigned j = 0; j < myComponents[i].components.size(); ++j) {
                 // if(myComponents[i].sumPrize<=incumbentObj)
-                //	cout<<myComponents[i].components[j]<<endl;
+                //	Rcout<<myComponents[i].components[j]<<"\n";
                 if (instance.trueTerminals[myComponents[i].components[j]]) {
                     n.id = myComponents[i].components[j];
                     break;
@@ -931,14 +940,14 @@ int SolverLag::separateCuts() {
                 }
             }
             myCut.rhs.push_back(n);
-            // cout<<myComponents[i].sumPrize<<" "<<incumbentObj<<endl;
+            // Rcout<<myComponents[i].sumPrize<<" "<<incumbentObj<<"\n";
             if (myComponents[i].sumPrize + epsInt >= incumbentObj ||
                 instance.params.separation == 0) {
                 nodevaluepair m;
                 m.value = 1.0;
                 m.id = myComponents[other].components[0];
 
-                // cout<<n<<" "<<instance.trueTerminals[n]<<endl;
+                // Rcout<<n<<" "<<instance.trueTerminals[n]<<"\n";
                 prizeMin = -99999999;
                 rhsPrize = -99999999;
 
@@ -953,7 +962,7 @@ int SolverLag::separateCuts() {
                     if (!instance
                              .realTerminals[myComponents[other].components[j]])
                         continue;
-                    // cout<<"j "<<j<<" "<<components[other][j]<<endl;
+                    // Rcout<<"j "<<j<<" "<<components[other][j]<<"\n";
                     // rhsPrize=instance.myPrizes[myComponents[other].components[j]];
                     rhsPrize = realPrizes[myComponents[other].components[j]] /
                                (max(instance.myBudgetCost[myComponents[other]
@@ -974,8 +983,8 @@ int SolverLag::separateCuts() {
                 }
             }
 
-            // cout<<n<<" "<<instance.trueTerminals[n]<<endl;
-            // cout<<endl;
+            // Rcout<<n<<" "<<instance.trueTerminals[n]<<"\n";
+            // Rcout<<"\n";
 
             vector<int> myBoundary;
 
@@ -1006,8 +1015,8 @@ int SolverLag::separateCuts() {
                         if (myComponents[other].boundary[n]) {
                             myBoundary.push_back(n);
                             otherBoundaryFound++;
-                            //	cout<<otherBoundaryFound<<"
-                            //"<<otherBoundarySize<<endl;
+                            //	Rcout<<otherBoundaryFound<<"
+                            //"<<otherBoundarySize<<"\n";
                             if (otherBoundaryFound == otherBoundarySize) {
                                 break;
                             }
@@ -1017,14 +1026,14 @@ int SolverLag::separateCuts() {
                     }
                 }
 
-                // cerr<<"component "<<n<<" "<<myCurrentLabel<<endl;
+                // cerr<<"component "<<n<<" "<<myCurrentLabel<<"\n";
 
                 while (!myQueue.empty() &&
                        otherBoundaryFound < otherBoundarySize) {
                     int m = myQueue.front();
                     // int m=myQueue.top();
 
-                    // cerr<<m<<endl;
+                    // cerr<<m<<"\n";
                     myQueue.pop();
 
                     // forall_adj_edges(e,m)
@@ -1036,14 +1045,14 @@ int SolverLag::separateCuts() {
 
                         if (!inComponent[k]) {
                             inComponent[k] = true;
-                            // cout<<k<<" "<<instance.nNodes<<endl;
+                            // Rcout<<k<<" "<<instance.nNodes<<"\n";
 
                             if (myComponents[other].boundary[k]) {
 
                                 myBoundary.push_back(k);
                                 otherBoundaryFound++;
-                                // cout<<otherBoundaryFound<<"
-                                // "<<otherBoundarySize<<endl;
+                                // Rcout<<otherBoundaryFound<<"
+                                // "<<otherBoundarySize<<"\n";
                                 if (otherBoundaryFound == otherBoundarySize)
                                     break;
                             } else {
@@ -1053,7 +1062,7 @@ int SolverLag::separateCuts() {
                     }
                 }
 
-                // cout<<otherBoundaryFound<<" "<<otherBoundarySize<<endl;
+                // Rcout<<otherBoundaryFound<<" "<<otherBoundarySize<<"\n";
             } else {
                 for (unsigned j = 0; j < myComponents[i].boundaryIndexed.size();
                      ++j) {
@@ -1070,7 +1079,7 @@ int SolverLag::separateCuts() {
 
             for (int m : myBoundary) {
                 nodevaluepair nv;
-                // cout<<m<<" ";
+                // Rcout<<m<<" ";
                 nv.id = m;
                 nv.value = 1.0;
                 myCut.lhs.push_back(nv);
@@ -1080,10 +1089,10 @@ int SolverLag::separateCuts() {
             myCut.myHash =
                 myCut.myHasher(myCut.lhs, myCut.rhs, instance.nNodes);
 
-            // cout<<"cut"<<endl;
+            // Rcout<<"cut"<<"\n";
             if (myCutHash.find(myCut.myHash) != myCutHash.end())
                 continue;
-            // cout<<"cut1"<<endl;
+            // Rcout<<"cut1"<<"\n";
 
             if (myCut.rhs.size() == 2) {
                 vector<nodevaluepair> dummy;
@@ -1094,7 +1103,7 @@ int SolverLag::separateCuts() {
                     myCut.myHasher(myCut.lhs, dummy, instance.nNodes);
                 if (myCutHash.find(helper1) != myCutHash.end())
                     continue;
-                // cout<<"cut2"<<endl;
+                // Rcout<<"cut2"<<"\n";
 
                 vector<nodevaluepair> dummy2;
                 nodevaluepair n2;
@@ -1104,22 +1113,22 @@ int SolverLag::separateCuts() {
                     myCut.myHasher(myCut.lhs, dummy2, instance.nNodes);
                 if (myCutHash.find(helper2) != myCutHash.end())
                     continue;
-                // cout<<"cut3"<<endl;
+                // Rcout<<"cut3"<<"\n";
             }
 
-            // cout<<"cut4"<<endl;
+            // Rcout<<"cut4"<<"\n";
 
             myCutHash.insert(myCut.myHash);
-            /*cout<<"insert"<<endl;
+            /*Rcout<<"insert"<<"\n";
             for(nodevaluepair l:myCut.lhs)
-                    cout<<l.id<<" ";
-            cout<<endl;
+                    Rcout<<l.id<<" ";
+            Rcout<<"\n";
             for(nodevaluepair r:myCut.rhs)
-                    cout<<r.id<<" ";
-            cout<<endl;
-            cout<<"insertend"<<endl;*/
+                    Rcout<<r.id<<" ";
+            Rcout<<"\n";
+            Rcout<<"insertend"<<"\n";*/
 
-            // cout<<myCut.myHash<<endl;
+            // Rcout<<myCut.myHash<<"\n";
             myCut.violated = true;
             myCut.direction = 0;
             myCut.directionPrevious = 0;
@@ -1131,15 +1140,15 @@ int SolverLag::separateCuts() {
                 //	subgradientSquared+=(myCut.subgradient*myCut.subgradient);
             }
             // myCuts.push_back(myCut);
-            // cout<<myCut.rhs.size()<<" "<<myCut.lhs.size()<<"
-            // "<<myCut.rhsConst<<endl;
+            // Rcout<<myCut.rhs.size()<<" "<<myCut.lhs.size()<<"
+            // "<<myCut.rhsConst<<"\n";
             myNewCuts.push_back(myCut);
 
             numberOfCuts++;
         }
     }
 
-    // cout<<myNewCuts.size()<<endl;
+    // Rcout<<myNewCuts.size()<<"\n";
 
     return numberOfCuts;
 }

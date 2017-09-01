@@ -16,7 +16,7 @@
 
 class SolverBudget : public SolverLag {
 
-    vector<vector<double>> M;
+    std::vector<std::vector<double>> M;
 
     double myBound = 0.0;
     double calculateCurrentSolution(bool save);

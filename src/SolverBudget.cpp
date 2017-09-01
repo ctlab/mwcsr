@@ -12,13 +12,20 @@
 #include <solverLag/SolverBudget.h>
 #include <stack>
 
+using std::vector;
+using std::greater;
+using std::priority_queue;
+using std::queue;
+
+using Rcpp::Rcout;
+
 SolverBudget::SolverBudget(Instance &_instance, int _maxIterations)
     : SolverLag(_instance, _maxIterations), M{vector<vector<double>>(
                                                 instance.nNodes)} {
 
     for (int j = 0; j < instance.nNodes; j++) {
         if (instance.trueTerminals[j]) {
-            //	cout<<j<<endl;
+            //	Rcout<<j<<"\n";
             fixedToOne[j] = true;
         }
 
@@ -56,9 +63,9 @@ int SolverBudget::addInitCuts() {
             n.id = j;
             n.value = 1.0;
             myCut.lhs.push_back(n);
-            // cout<<j<<" ";
+            // Rcout<<j<<" ";
         }
-        // cout<<endl;
+        // Rcout<<"\n";
         sort(myCut.lhs.begin(), myCut.lhs.end());
         // myCut.lambda=1e-5;
         // myCut.frozen=false;
@@ -74,14 +81,14 @@ int SolverBudget::addInitCuts() {
 
 double SolverBudget::calculateCurrentSolution(bool saveSol) {
     myBound = calculateReducedCosts();
-    // cout<<myBound<<endl;
+    // Rcout<<myBound<<"\n";
     // incumbentObj=180;
-    // cout<<"myBound"<<myBound<<endl;
+    // Rcout<<"myBound"<<myBound<<"\n";
 
     /*
     for(int n=0;n<instance.nNodes;++n)
     {
-            cout<<n<<" "<<realPrizes[n]<<" "<<instance.myPrizes[n]<<endl;
+            Rcout<<n<<" "<<realPrizes[n]<<" "<<instance.myPrizes[n]<<"\n";
     }*/
 
     long C = instance.budget;
@@ -95,7 +102,7 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
     long myCobj=combo(&myItems[0],&myItems[instance.nNodes], C, 0, 99999999, 1,
     0);
 
-    cout<<myCobj<<endl;*/
+    Rcout<<myCobj<<"\n";*/
     vector<int> jf = vector<int>(instance.nNodes, -1);
 
     int jc = 0;
@@ -108,7 +115,7 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
             currentSolution[j] = 1;
             C -= instance.myBudgetCost[j];
             myBound += realPrizes[j];
-            // cout<<j<<endl;
+            // Rcout<<j<<"\n";
             continue;
         } else if (realPrizes[j] <= 0.0 || fixedToZero[j]) {
             continue;
@@ -123,23 +130,23 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
         ++jc;
     }
 
-    // cout<<"myBound"<<myBound<<" budget left "<<C<<" "<<jc<<endl;
+    // Rcout<<"myBound"<<myBound<<" budget left "<<C<<" "<<jc<<"\n";
 
     int trueNodes = jc;
 
     /*
     for(int j = 0; j <trueNodes; j++)
     {
-            cout<<realPrizes[jf[j]]<<"y("<<jf[j]<<")+ ";
+            Rcout<<realPrizes[jf[j]]<<"y("<<jf[j]<<")+ ";
     }
-    cout<<endl;
+    Rcout<<"\n";
 
     for(int j = 0; j <trueNodes; j++)
     {
-            cout<<instance.myBudgetCost[jf[j]]<<"y("<<jf[j]<<")+ ";
+            Rcout<<instance.myBudgetCost[jf[j]]<<"y("<<jf[j]<<")+ ";
     }
-    cout<<endl;*/
-    // cout<<C<<endl;
+    Rcout<<"\n";*/
+    // Rcout<<C<<"\n";
     vector<double> myEntries = vector<double>((C + 1) * trueNodes, 0);
     for (int j = 0; j < trueNodes; j++) {
         for (int i = 1; i <= C; i++) {
@@ -171,7 +178,7 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
             (j2 > 0 &&
              myEntries[j2 + weight2 * trueNodes] !=
                  myEntries[j2 - 1 + weight2 * trueNodes])) {
-            // cout<<j<<endl;
+            // Rcout<<j<<"\n";
             currentSolution[jf[j2]] = 1;
 
             if (saveSol) {
@@ -180,20 +187,20 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
             test += realPrizes[jf[j2]];
 
             // test+=realPrizes[jf[j2]];
-            // cout<<j<<" "<<jf[j]<<" "<<realPrizes[jf[j]]<<"
-            // "<<instance.myBudgetCost[jf[j]]<<" "<<weight<<endl;
+            // Rcout<<j<<" "<<jf[j]<<" "<<realPrizes[jf[j]]<<"
+            // "<<instance.myBudgetCost[jf[j]]<<" "<<weight<<"\n";
             weight2 = weight2 - instance.myBudgetCost[jf[j2]];
         }
         --j2;
     }
 
-    // cout<<myBound<<" "<<myEntries[myEntries.size()-1]<<" "<<test<<" "<<C<<"
-    // "<<weight2<<endl;
+    // Rcout<<myBound<<" "<<myEntries[myEntries.size()-1]<<" "<<test<<" "<<C<<"
+    // "<<weight2<<"\n";
 
     /*
 
             for(int i = 1; i <= C; i++){
-                    //cout<<i<<endl;
+                    //Rcout<<i<<"\n";
                     for(int j = 0; j <trueNodes; j++){
                             if(j > 0){
                                     M[j][i] = M[j-1][i];
@@ -219,7 +226,7 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
                     if ((j==0 && M[j][weight]>0) || (j>0 && M[j][weight] !=
        M[j-1][weight]))
                     {
-                            //cout<<j<<endl;
+                            //Rcout<<j<<"\n";
                             currentSolution[jf[j]]=1;
 
                             if(saveSol)
@@ -227,13 +234,13 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
                                     sumSolution[jf[j]]++;
                             }
                             test+=realPrizes[jf[j]];
-                            //cout<<j<<" "<<jf[j]<<" "<<realPrizes[jf[j]]<<"
-       "<<instance.myBudgetCost[jf[j]]<<" "<<weight<<endl;
+                            //Rcout<<j<<" "<<jf[j]<<" "<<realPrizes[jf[j]]<<"
+       "<<instance.myBudgetCost[jf[j]]<<" "<<weight<<"\n";
                             weight = weight-instance.myBudgetCost[jf[j]];
                     }
                     --j;
             }
-            cout<<myEntries[myEntries.size()-1]<<" "<<M[trueNodes-1][C]<<endl;*/
+            Rcout<<myEntries[myEntries.size()-1]<<" "<<M[trueNodes-1][C]<<"\n";*/
 
     /*
     double largest=0;
@@ -242,11 +249,11 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
             if(e>largest)
                     largest=e;
     }
-    cout<<largest<<endl;*/
+    Rcout<<largest<<"\n";*/
 
-    // cout<<myEntries[myEntries.size()-1]<<endl;
+    // Rcout<<myEntries[myEntries.size()-1]<<"\n";
     myBound += myEntries[myEntries.size() - 1];
-    // cout<<"test "<<M[trueNodes-1][C]<<" "<<test<<endl;
+    // Rcout<<"test "<<M[trueNodes-1][C]<<" "<<test<<"\n";
     return myBound;
 }
 
@@ -259,7 +266,7 @@ int SolverBudget::lagrangianPegging() {
     for (int i = 0; i < instance.nNodes; ++i) {
         // fill(M[j].begin(),M[j].end(),0.0);
         // if(saveSol)
-        // cout<<lagrangePrizes.cost[n] <<endl;
+        // Rcout<<lagrangePrizes.cost[n] <<"\n";
 
         if (instance.myBudgetCost[i] == 0 && realPrizes[i] >= 0.0) {
             objHeur += realPrizes[i];
@@ -283,30 +290,30 @@ int SolverBudget::lagrangianPegging() {
     vector<int> order;
 
     for (nodevaluepair nv : myItems) {
-        // cout<<budgetIn<<" "<<objHeur<<" "<<nv.value<<endl;
+        // Rcout<<budgetIn<<" "<<objHeur<<" "<<nv.value<<"\n";
         int n = nv.id;
         if (budgetIn + instance.myBudgetCost[n] <= instance.budget) {
             budgetIn += instance.myBudgetCost[n];
             objHeur += realPrizes[n];
             inItems[n] = 1;
-            //	cout<<instance.myBudgetCost[n]<<" "<<n<<endl;
+            //	Rcout<<instance.myBudgetCost[n]<<" "<<n<<"\n";
             order.push_back(n);
         } else {
             double remainder = instance.budget - budgetIn;
             double fraction = remainder / instance.myBudgetCost[n];
             budgetIn += remainder;
-            //	cout<<remainder<<" "<<fraction<<" "<<instance.myCost[n]<<endl;
+            //	Rcout<<remainder<<" "<<fraction<<" "<<instance.myCost[n]<<"\n";
             objHeur += realPrizes[n] * fraction;
-            // cout<<instance.myBudgetCost[n]<<" "<<n<<" "<<fraction<<endl;
+            // Rcout<<instance.myBudgetCost[n]<<" "<<n<<" "<<fraction<<"\n";
             inItems[n] = fraction;
             order.push_back(n);
             break;
         }
     }
 
-    //	cout<<budgetIn<<endl;
-    // cout<<objHeur<<" "<<objKnapsack<<" "<<objSpanning<<"
-    // "<<currentBound<<endl;
+    //	Rcout<<budgetIn<<"\n";
+    // Rcout<<objHeur<<" "<<objKnapsack<<" "<<objSpanning<<"
+    // "<<currentBound<<"\n";
     for (int n = 0; n < instance.nNodes; ++n) {
         if (inItems[n] > 0)
             continue;
@@ -317,17 +324,17 @@ int SolverBudget::lagrangianPegging() {
         if (instance.myBudgetCost[n] == 0)
             continue;
 
-        // cout<<" "<<objHeur<<" "<<realPrizes[n]<<endl;
+        // Rcout<<" "<<objHeur<<" "<<realPrizes[n]<<"\n";
         double addedObj = objHeur + realPrizes[n];
-        // cout<<addedObj<<endl;
+        // Rcout<<addedObj<<"\n";
         double additionalCost = instance.myBudgetCost[n];
         int myIndex = 1;
         int last = order[order.size() - myIndex];
 
         while (additionalCost > 0) {
-            // cout<<last<<" "<<myIndex<<" "<<order.size()<<"
+            // Rcout<<last<<" "<<myIndex<<" "<<order.size()<<"
             // "<<additionalCost<<" "<<instance.myBudgetCost[last]<<"
-            // "<<inItems[last]<<" "<<addedObj<<" "<<realPrizes[last]<<endl;
+            // "<<inItems[last]<<" "<<addedObj<<" "<<realPrizes[last]<<"\n";
 
             if (additionalCost - instance.myBudgetCost[last] * inItems[last] >=
                 0) {
@@ -341,20 +348,20 @@ int SolverBudget::lagrangianPegging() {
             }
             myIndex++;
             last = order[order.size() - myIndex];
-            //			cout<<instance.myBudgetCost[last]<<endl;
-            //			cout<<inItems[last]<<endl;
+            //			Rcout<<instance.myBudgetCost[last]<<"\n";
+            //			Rcout<<inItems[last]<<"\n";
         }
         if (addedObj > objHeur + 0.0001) {
-            cout << "bug " << addedObj << " " << objHeur << " "
-                 << additionalCost << endl;
+            Rcout << "bug " << addedObj << " " << objHeur << " "
+                 << additionalCost << "\n";
             exit(1);
         }
 
-        // cout<<addedObj<<" "<<incumbentObj<<endl;
+        // Rcout<<addedObj<<" "<<incumbentObj<<"\n";
 
         if (myBound + addedObj < incumbentObj) {
-            cout << "fixing " << realPrizes[n] << " " << myBound + addedObj
-                 << " " << incumbentObj << " " << myBound + objHeur << endl;
+            Rcout << "fixing " << realPrizes[n] << " " << myBound + addedObj
+                 << " " << incumbentObj << " " << myBound + objHeur << "\n";
             fixedToZero[n] = true;
             instance.nFixedZero++;
             nFixed++;
@@ -454,8 +461,8 @@ bool SolverBudget::primalHeuristic() {
             myPQueue.pop();
 
             int k = nv.id;
-            // cout<<k<<" "<<distance[k]<<budget<<" "<<extracted[k]<<"
-            // "<<pred[k]<<endl;
+            // Rcout<<k<<" "<<distance[k]<<budget<<" "<<extracted[k]<<"
+            // "<<pred[k]<<"\n";
 
             if (extracted[k])
                 continue;
@@ -465,22 +472,22 @@ bool SolverBudget::primalHeuristic() {
                 double toAdd = -instance.myPrizes[k] * (1 - lpSolution[k]);
                 if (toAdd <= 0)
                     toAdd = epsOpt;
-                // cout<<toAdd<<endl;
+                // Rcout<<toAdd<<"\n";
 
                 for (int l : instance.adjList[k]) {
                     if (fixedToZero[l])
                         continue;
 
                     if (pred[l] == k) {
-                        // cout<<l<<" "<<pred[l]<<" "<<k<<endl;
+                        // Rcout<<l<<" "<<pred[l]<<" "<<k<<"\n";
                         continue;
                     }
 
                     if (budget + instance.myBudgetCost[l] > instance.budget)
                         continue;
-                    // cout<<distance[l]<<" "<< distance[k]<<"
+                    // Rcout<<distance[l]<<" "<< distance[k]<<"
                     // "<<instance.myBudgetCost[l]<<" "<<lpSolution[l]<<"
-                    // "<<l<<" "<<k<<endl;
+                    // "<<l<<" "<<k<<"\n";
                     if (distance[l] >
                         distance[k] +
                             instance.myBudgetCost[l] * (1 - lpSolution[l]) +
@@ -490,7 +497,7 @@ bool SolverBudget::primalHeuristic() {
                     {
                         // cerr<<distance[l]<<" "<<distance[k]+
                         // instance.myBudgetCost[l]*(1-lpSolution[l])+epsOpt<<"
-                        // "<<l<<" "<<k<<endl;
+                        // "<<l<<" "<<k<<"\n";
 
                         distance[l] =
                             distance[k] +
@@ -508,15 +515,15 @@ bool SolverBudget::primalHeuristic() {
                     }
                 }
             } else {
-                // cout<<"k "<<k<<endl;
+                // Rcout<<"k "<<k<<"\n";
                 int currentNode = k;
 
                 bool fit = true;
                 double add = 0;
                 while (!inComponentBool[currentNode]) {
-                    // cout<<currentNode<<"
+                    // Rcout<<currentNode<<"
                     // "<<instance.myBudgetCost[currentNode]<<"
-                    // "<<pred[currentNode]<<endl;
+                    // "<<pred[currentNode]<<"\n";
 
                     add += instance.myBudgetCost[currentNode];
                     if (budget + add > instance.budget) {
@@ -527,21 +534,21 @@ bool SolverBudget::primalHeuristic() {
                 }
 
                 currentNode = k;
-                // cout<<fit<<" "<<k<<" "<<budget<<" "<<add<<endl;
+                // Rcout<<fit<<" "<<k<<" "<<budget<<" "<<add<<"\n";
 
                 if (fit) {
                     while (!inComponentBool[currentNode]) {
-                        // cout<<currentNode<<endl;
+                        // Rcout<<currentNode<<"\n";
                         inComponentBool[currentNode] = true;
                         incObj += instance.myPrizes[currentNode];
                         budget += instance.myBudgetCost[currentNode];
-                        //	cout<<"incObj "<<incObj<<endl;
+                        //	Rcout<<"incObj "<<incObj<<"\n";
                         myBestSol[currentNode] = numTerms;
                         distance[currentNode] = 0;
                         extracted[currentNode] = false;
                         nodevaluepair nv;
                         nv.id = currentNode;
-                        // cout<<"dist2 "<<distance[currentNode]<<endl;
+                        // Rcout<<"dist2 "<<distance[currentNode]<<"\n";
                         nv.value = distance[currentNode];
                         myPQueue.push(nv);
                         currentNode = pred[currentNode];
@@ -552,21 +559,21 @@ bool SolverBudget::primalHeuristic() {
                         best = incObj;
                         numBest = numTerms;
                         bestBudget = budget;
-                        // cout<<"best"<<obj<<" "<<currentSize<<endl;
+                        // Rcout<<"best"<<obj<<" "<<currentSize<<"\n";
                     }
 
-                    // cout<<incObj<<" "<<budget<<" "<<instance.budget<<endl;
+                    // Rcout<<incObj<<" "<<budget<<" "<<instance.budget<<"\n";
                 }
             }
         }
 
-        // cout<<best<<" "<<incObj<<" "<<numBest<<" "<<bestBudget<<endl;
+        // Rcout<<best<<" "<<incObj<<" "<<numBest<<" "<<bestBudget<<"\n";
 
         for (int i = 0; i < instance.nNodes; ++i) {
             inComponentBool[i] = 0;
             if (myBestSol[i] < numBest)
                 inComponentBool[i] = 1;
-            // cout<<myBestSol[i]<<" "<<numBest<<endl;
+            // Rcout<<myBestSol[i]<<" "<<numBest<<"\n";
         }
         budget = bestBudget;
 
@@ -577,7 +584,7 @@ bool SolverBudget::primalHeuristic() {
         do {
             toAdd.clear();
 
-            // cout<<"before postprocessing "<<obj<<" "<<currentSize<<endl;
+            // Rcout<<"before postprocessing "<<obj<<" "<<currentSize<<"\n";
 
             for (int n = 0; n < instance.nNodes; ++n) {
                 if (budget >= instance.budget)
@@ -599,11 +606,11 @@ bool SolverBudget::primalHeuristic() {
 
             sort(toAdd.begin(), toAdd.end(), std::greater<nodevaluepair>());
 
-            // cout<<"before"<<obj<<" "<<currentSize<<endl;
-            // cout<<"before"<<obj<<endl;
+            // Rcout<<"before"<<obj<<" "<<currentSize<<"\n";
+            // Rcout<<"before"<<obj<<"\n";
 
             for (unsigned i = 0; i < toAdd.size(); ++i) {
-                // cout<<"here"<<endl;
+                // Rcout<<"here"<<"\n";
                 int node = toAdd[i].id;
 
                 if (budget + instance.myBudgetCost[node] > instance.budget) {
@@ -632,7 +639,7 @@ bool SolverBudget::primalHeuristic() {
             for (int i = 0; i < instance.nNodes; ++i) {
                 incumbent[i] = inComponentBool[i];
                 if (incumbent[i])
-                    cout << i << endl;
+                    Rcout << i << "\n";
                 // test+=instance.myPrizes[i]*incumbent[i];
             }
 
@@ -689,8 +696,8 @@ bool SolverBudget::primalHeuristic() {
             myPQueue.pop();
 
             int k = nv.id;
-            // cout<<k<<" "<<distance[k]<<budget<<" "<<extracted[k]<<"
-            // "<<pred[k]<<endl;
+            // Rcout<<k<<" "<<distance[k]<<budget<<" "<<extracted[k]<<"
+            // "<<pred[k]<<"\n";
 
             if (extracted[k])
                 continue;
@@ -702,22 +709,22 @@ bool SolverBudget::primalHeuristic() {
                         continue;
 
                     if (pred[l] == k) {
-                        // cout<<l<<" "<<pred[l]<<" "<<k<<endl;
+                        // Rcout<<l<<" "<<pred[l]<<" "<<k<<"\n";
                         continue;
                     }
 
                     if (budget + instance.myBudgetCost[l] > instance.budget)
                         continue;
-                    // cout<<distance[l]<<" "<< distance[k]<<"
+                    // Rcout<<distance[l]<<" "<< distance[k]<<"
                     // "<<instance.myBudgetCost[l]<<" "<<lpSolution[l]<<"
-                    // "<<l<<" "<<k<<endl;
+                    // "<<l<<" "<<k<<"\n";
                     if (distance[l] >
                         distance[k] +
                             instance.myBudgetCost[l] * (1 - lpSolution[l]) +
                             epsOpt) {
                         // cerr<<distance[l]<<" "<<distance[k]+
                         // instance.myBudgetCost[l]*(1-lpSolution[l])+epsOpt<<"
-                        // "<<l<<" "<<k<<endl;
+                        // "<<l<<" "<<k<<"\n";
 
                         distance[l] =
                             distance[k] +
@@ -733,15 +740,15 @@ bool SolverBudget::primalHeuristic() {
                     }
                 }
             } else if (instance.trueTerminals[k]) {
-                // cout<<"k "<<k<<endl;
+                // Rcout<<"k "<<k<<"\n";
                 int currentNode = k;
 
                 bool fit = true;
                 double add = 0;
                 while (!inComponent[currentNode]) {
-                    // cout<<currentNode<<"
+                    // Rcout<<currentNode<<"
                     // "<<instance.myBudgetCost[currentNode]<<"
-                    // "<<pred[currentNode]<<endl;
+                    // "<<pred[currentNode]<<"\n";
 
                     add += instance.myBudgetCost[currentNode];
                     if (budget + add > instance.budget) {
@@ -752,28 +759,28 @@ bool SolverBudget::primalHeuristic() {
                 }
 
                 currentNode = k;
-                // cout<<fit<<" "<<k<<" "<<budget<<" "<<add<<endl;
+                // Rcout<<fit<<" "<<k<<" "<<budget<<" "<<add<<"\n";
 
                 if (fit) {
                     toFind--;
                     while (!inComponent[currentNode]) {
-                        // cout<<currentNode<<endl;
+                        // Rcout<<currentNode<<"\n";
                         inComponent[currentNode] = true;
                         incObj += instance.myPrizes[currentNode];
                         budget += instance.myBudgetCost[currentNode];
-                        //	cout<<"incObj "<<incObj<<endl;
+                        //	Rcout<<"incObj "<<incObj<<"\n";
 
                         distance[currentNode] = 0;
                         extracted[currentNode] = false;
                         nodevaluepair nv;
                         nv.id = currentNode;
-                        // cout<<"dist2 "<<distance[currentNode]<<endl;
+                        // Rcout<<"dist2 "<<distance[currentNode]<<"\n";
                         nv.value = distance[currentNode];
                         myPQueue.push(nv);
                         myQueue.push(currentNode);
                         currentNode = pred[currentNode];
-                        // cout<<currentNode<<endl;
-                        // cout<<"pushed"<<endl;
+                        // Rcout<<currentNode<<"\n";
+                        // Rcout<<"pushed"<<"\n";
                     }
                 }
                 /*else
@@ -789,8 +796,8 @@ bool SolverBudget::primalHeuristic() {
                                 add+=instance.myBudgetCost[currentNode];
                                 distance[currentNode]=std::numeric_limits<double>::max();
                                 extracted[currentNode]=true;
-                                //cout<<currentNode<<"
-                "<<extracted[currentNode]<<endl;
+                                //Rcout<<currentNode<<"
+                "<<extracted[currentNode]<<"\n";
 
 
                                 extracted[currentNode]=false;
@@ -812,7 +819,7 @@ bool SolverBudget::primalHeuristic() {
 
     // exit(1);
 
-    // cout<<toFind<<" "<<budget<<" "<<incObj<<endl;
+    // Rcout<<toFind<<" "<<budget<<" "<<incObj<<"\n";
     if (toFind > 0) {
         return false;
     }
@@ -830,10 +837,10 @@ bool SolverBudget::primalHeuristic() {
             if (fixedToZero[li])
                 continue;
 
-            // cout<<k<<" "<<instance.myBudgetCost[li]<<endl;
+            // Rcout<<k<<" "<<instance.myBudgetCost[li]<<"\n";
 
             if (!inComponent[li]) {
-                // cout<<li<<" "<<instance.myBudgetCost[li]<<endl;
+                // Rcout<<li<<" "<<instance.myBudgetCost[li]<<"\n";
                 nodevaluepair nv;
                 nv.id = li;
                 nv.value = realPrizes[li] / instance.myBudgetCost[li];
@@ -847,7 +854,7 @@ bool SolverBudget::primalHeuristic() {
         myPQueue2.pop();
 
         int k = nv.id;
-        // cout<<k<<" "<<distance[k]<<budget<<endl;
+        // Rcout<<k<<" "<<distance[k]<<budget<<"\n";
 
         if (inComponent[k])
             continue;
@@ -874,7 +881,7 @@ bool SolverBudget::primalHeuristic() {
         }
     }
 
-    // cout<<incObj<<" "<<toFind<<" "<<budget<<endl;
+    // Rcout<<incObj<<" "<<toFind<<" "<<budget<<"\n";
 
     if (toFind == 0 && incObj > incumbentObj) {
         incumbentObj = incObj;
@@ -891,7 +898,7 @@ bool SolverBudget::primalHeuristic() {
         }
     }
 
-    // cout<<testCost<<" "<<testBudget<<endl;
+    // Rcout<<testCost<<" "<<testBudget<<"\n";
 
     return improvement;
 }

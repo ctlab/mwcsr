@@ -13,7 +13,10 @@
 #include <queue>
 #include <stack>
 
-// using namespace std;
+using std::vector;
+using std::priority_queue;
+
+using Rcpp::Rcout;
 
 SolverClassic::SolverClassic(Instance &_instance, int _maxIterations)
     : SolverLag(_instance, _maxIterations) {
@@ -59,7 +62,7 @@ int SolverClassic::addInitCuts() {
         // if(minRhs<0 && !instance.realTerminals[i])
         //	myCut.lambda=-2*minRhs;
         // myCut.myHash=myCut.myHasher(myCut.lhs);
-        // cout<<myCut.myHash<<endl;
+        // Rcout<<myCut.myHash<<"\n";
 
         if (!allpositive) {
             sort(myCut.lhs.begin(), myCut.lhs.end());
@@ -83,7 +86,7 @@ bool SolverClassic::primalHeuristic() {
     unsigned iter = 1;
 
     // if(myComponents.size()==1)
-    //	cout<<"component size 1!!!"<<endl;
+    //	Rcout<<"component size 1!!!"<<"\n";
 
     vector<int> myHeurTerminals;
     vector<bool> myHeurTerminalsBool = vector<bool>(instance.nNodes, false);
@@ -154,7 +157,7 @@ bool SolverClassic::primalHeuristic() {
         obj += instance.myPrizes[startID];
         myPQueue.push(n);
 
-        // cout<<obj<<endl;
+        // Rcout<<obj<<"\n";
 
         double best = obj;
         int numTerms = 0;
@@ -174,19 +177,19 @@ bool SolverClassic::primalHeuristic() {
 
             extracted[k] = true;
 
-            // cout<<"k "<<k<<" "<<distance[k]<<"
-            // "<<myHeurTerminalsBool[k]<<endl;
+            // Rcout<<"k "<<k<<" "<<distance[k]<<"
+            // "<<myHeurTerminalsBool[k]<<"\n";
 
             if (!myHeurTerminalsBool[k] || inComponentBool[k]) {
                 double toAdd = -instance.myPrizes[k] * (1 - lpValue[k]);
                 if (toAdd <= 0)
                     toAdd = epsOpt;
-                // cout<<toAdd<<endl;
+                // Rcout<<toAdd<<"\n";
 
                 for (int l : instance.adjList[k]) {
                     if (distance[l] > distance[k] + toAdd + epsOpt) {
                         // cerr<<distance[l]<<" "<<distance[k] +
-                        // (realPrizes[l]>0?realPrizes[l]:0)<<endl;
+                        // (realPrizes[l]>0?realPrizes[l]:0)<<"\n";
 
                         distance[l] = distance[k] + toAdd;
                         pred[l] = k;
@@ -196,26 +199,26 @@ bool SolverClassic::primalHeuristic() {
                         lNv.id = l;
                         lNv.value = distance[l];
                         myPQueue.push(lNv);
-                        // cout<<l<<" "<<k<<" "<<distance[l]<<"
+                        // Rcout<<l<<" "<<k<<" "<<distance[l]<<"
                         // "<<distance[k]<<" "<<currentSolution[l]<<"
-                        // "<<lNv.value<<endl;
+                        // "<<lNv.value<<"\n";
                     }
 
                     if (distance[l] < 0) {
-                        cout << l << " " << distance[l] << " " << distance[k]
+                        Rcout << l << " " << distance[l] << " " << distance[k]
                              << " " << toAdd << " " << inComponentBool[k]
-                             << endl;
+                             << "\n";
                         exit(1);
                     }
                 }
             } else {
                 int currentNode = k;
-                // cout<<k<<" "<<myHeurTerminalsBool[k]<<"
-                // "<<instance.myPrizes[k]<<" "<<distance[k]<<endl;
+                // Rcout<<k<<" "<<myHeurTerminalsBool[k]<<"
+                // "<<instance.myPrizes[k]<<" "<<distance[k]<<"\n";
                 revInHeurTerms -= instance.myPrizes[k];
 
                 while (!inComponentBool[currentNode]) {
-                    // cerr<<currentNode<<endl;
+                    // cerr<<currentNode<<"\n";
                     inComponentBool[currentNode] = true;
                     myBestSol[currentNode] = numTerms;
                     distance[currentNode] = 0;
@@ -226,14 +229,14 @@ bool SolverClassic::primalHeuristic() {
                     myPQueue.push(nv);
                     obj += instance.myPrizes[currentNode];
                     currentNode = pred[currentNode];
-                    // cout<<"pushed"<<endl;
+                    // Rcout<<"pushed"<<"\n";
                 }
                 numTerms++;
                 if (obj > best) {
                     best = obj;
                     numBest = numTerms;
                     // myBestSol=inComponentBool;
-                    // cout<<"inbetween"<<instance.transformInternalValue(obj)<<endl;
+                    // Rcout<<"inbetween"<<instance.transformInternalValue(obj)<<"\n";
                 }
             }
         }
@@ -243,7 +246,7 @@ bool SolverClassic::primalHeuristic() {
             inComponentBool[i] = 0;
             if (myBestSol[i] < numBest)
                 inComponentBool[i] = 1;
-            // cout<<myBestSol[i]<<" "<<numBest<<endl;
+            // Rcout<<myBestSol[i]<<" "<<numBest<<"\n";
         }
         // inComponentBool=myBestSol;
         obj = best;
@@ -256,10 +259,10 @@ bool SolverClassic::primalHeuristic() {
                 if (!inComponentBool[n])
                     continue;
                 for (int j : instance.adjList[n]) {
-                    // cout<<j<<" ";
+                    // Rcout<<j<<" ";
                     if (!inComponentBool[j] && instance.myPrizes[j] > 0) {
                         toAdd.push_back(j);
-                        // cout<<instance.myPrizes[j]<<endl;
+                        // Rcout<<instance.myPrizes[j]<<"\n";
                     }
                 }
             }
@@ -279,12 +282,12 @@ bool SolverClassic::primalHeuristic() {
             // double test=0.0;
             for (int i = 0; i < instance.nNodes; ++i) {
                 incumbent[i] = inComponentBool[i];
-                // if(incumbent[i])cout<<i<<endl;
+                // if(incumbent[i])Rcout<<i<<"\n";
                 // test+=instance.myPrizes[i]*incumbent[i];
             }
-            // cout<<test<<endl;
+            // Rcout<<test<<"\n";
 
-            // cout<<"improved "<<obj<<endl;
+            // Rcout<<"improved "<<obj<<"\n";
         }
     }
     return improved;
@@ -293,7 +296,7 @@ bool SolverClassic::primalHeuristic() {
 int SolverClassic::lagrangianPegging() {
     int nFixed = 0;
     double boundPegging = 0;
-    // cout<<"pegging"<<endl;
+    // Rcout<<"pegging"<<"\n";
 
     vector<int> fixToZero;
     vector<int> fixToOne;
@@ -302,24 +305,24 @@ int SolverClassic::lagrangianPegging() {
         if (fixedToZero[i] || fixedToOne[i])
             continue;
 
-        //	cout<<i<<" "<<fixedToZero[i]<<" "<<fixedToOne[i]<<endl;
+        //	Rcout<<i<<" "<<fixedToZero[i]<<" "<<fixedToOne[i]<<"\n";
 
         if (!currentSolution[i]) {
             boundPegging = currentBound + realPrizes[i];
-            // cout<<"boundPegging"<<boundPegging<<" "<<incumbentObj<<"
-            // "<<realPrizes[i]<<" "<<currentSolution[i]<<" "<<i<<endl;
+            // Rcout<<"boundPegging"<<boundPegging<<" "<<incumbentObj<<"
+            // "<<realPrizes[i]<<" "<<currentSolution[i]<<" "<<i<<"\n";
 
             if (boundPegging + epsInt < incumbentObj) {
-                // cout<<"ZERO"<<i<<" "<<boundPegging<<" "<<incumbentObj<<"
-                // "<<realPrizes[i] <<" "<<currentBound<<endl;
+                // Rcout<<"ZERO"<<i<<" "<<boundPegging<<" "<<incumbentObj<<"
+                // "<<realPrizes[i] <<" "<<currentBound<<"\n";
                 fixToZero.push_back(i);
                 nFixed++;
             }
         } else if (currentSolution[i]) {
             boundPegging = currentBound - realPrizes[i];
             if (boundPegging + epsInt < incumbentObj) {
-                // cout<<"ONE"<<i<<" "<<boundPegging<<" "<<incumbentObj<<"
-                // "<<realPrizes[i] <<" "<<currentBound<<endl;
+                // Rcout<<"ONE"<<i<<" "<<boundPegging<<" "<<incumbentObj<<"
+                // "<<realPrizes[i] <<" "<<currentBound<<"\n";
 
                 fixToOne.push_back(i);
                 nFixed++;
@@ -338,13 +341,13 @@ int SolverClassic::lagrangianPegging() {
             instance.adjList[j].erase(instance.adjList[j].begin() + k);
         }
         instance.adjList[i].clear();
-        // cout<<i<<endl;
+        // Rcout<<i<<"\n";
     }
 
     for (int i : fixToOne) {
         fixedToOne[i] = true;
         instance.nFixedOne++;
-        // cout<<i<<endl;
+        // Rcout<<i<<"\n";
     }
 
     return nFixed;
