@@ -485,6 +485,8 @@ void Instance::readInstance(List instance) {
     myTerminals = vector<int>(nNodes, -1);
     adjList = vector<vector<int>>(nNodes);
     nodesToRemove = vector<bool>(nNodes, false);
+    myPrizes = vector<double>(nNodes);
+    myBudgetCost = vector<double>(nNodes, 1);
 
     for (unsigned i = 0; i < nNodes; i++){
         adjList.emplace_back();

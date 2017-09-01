@@ -27,8 +27,8 @@ rmwcs <- function(timelimit = 1800L,
 
     match.arg(arg = separation, choices = sep_methods)
     match.arg(arg = subgradient, choices = subgradients)
-    args$sep_methods <- pmatch(args$separation, sep_methods)
-    args$subgradinent <- pmatch(args$subgradient, subgradients)
+    args$separation <- pmatch(args$separation, sep_methods)
+    args$subgradient <- pmatch(args$subgradient, subgradients)
 
     function(g, max_cardinallity, budget) {
         scores <- V(g)$scores

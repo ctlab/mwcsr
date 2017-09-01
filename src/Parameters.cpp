@@ -25,7 +25,7 @@ Parameters::Parameters(List params) {
     pegging = getBool(params, "pegging");
     sepIter = getInt(params, "sep_iterations");
     sepIterFreeze = getInt(params, "sep_iter_freeze");
-    heurIter = getInt(params, "heurIterarions");
+    heurIter = getInt(params, "heur_iterations");
     subgradient = getInt(params, "subgradient");
     beta = as<NumericVector>(params["beta"])[0];
 }

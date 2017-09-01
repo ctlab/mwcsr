@@ -17,7 +17,7 @@ using Rcpp::List;
 
 struct Parameters {
     /// Input file (instance)
-    int problem = 0;
+    int problem = 1;
     int budget = 0;
     int solver = 0;
     int maxIter = 1000;
