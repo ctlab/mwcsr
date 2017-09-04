@@ -13,9 +13,29 @@ rmwcs(timelimit = 1800L, max_iterations = 1000L, beta_iterations = 5L,
 \arguments{
 \item{timelimit}{Timelimit in seconds}
 
-\item{max_iterations}{Maximum number of iterations for Lagrangian solver}
+\item{max_iterations}{Maximum number of subgradient iterations}
+
+\item{separation}{Separation: "strong" of "fast"}
+
+\item{max_age}{Extending the life of non-violated inequalities}
+
+\item{startcons}{Whether to add flow-conservation/degree cons at start}
+
+\item{pegging}{Pegging (variable fixing)}
+
+\item{sep_iterations}{After how many iterations we are separating}
+
+\item{sep_iter_freeze}{After how many iterations we are checking added ineqs}
+
+\item{heur_iterations}{After how many iterations we are doing heuristics}
+
+\item{subgradient}{Subgradient: "classic", "average", "cft"}
+
+\item{beta}{Beta for subgradient}
 
 \item{verbose}{Whether to print solving progress}
+
+\item{beta_iteration}{Number of nonimproving iterations until beta is halfed}
 }
 \description{
 Generates a rmwcs solver with corresponding parameters

@@ -1,16 +1,16 @@
 #' Generates a rmwcs solver with corresponding parameters
 #' @param timelimit Timelimit in seconds
-#' @param max_iterations Maximum number of iterations for Lagrangian solver
-#' @param beta_iteration
-#' @param separation
-#' @param max_age
-#' @param startcons
-#' @param pegging
-#' @param sep_iterations
-#' @param sep_iter_freeze
-#' @param heur_iterations
-#' @param subgradient
-#' @param beta
+#' @param max_iterations Maximum number of subgradient iterations
+#' @param beta_iteration Number of nonimproving iterations until beta is halfed
+#' @param separation Separation: "strong" of "fast"
+#' @param max_age Extending the life of non-violated inequalities
+#' @param startcons Whether to add flow-conservation/degree cons at start
+#' @param pegging Pegging (variable fixing)
+#' @param sep_iterations After how many iterations we are separating
+#' @param sep_iter_freeze After how many iterations we are checking added ineqs
+#' @param heur_iterations After how many iterations we are doing heuristics
+#' @param subgradient Subgradient: "classic", "average", "cft"
+#' @param beta Beta for subgradient
 #' @param verbose Whether to print solving progress
 #' @export
 #' @import igraph
