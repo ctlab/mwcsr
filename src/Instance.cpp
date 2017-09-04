@@ -7,7 +7,6 @@
 
 #include "instance/Instance.h"
 
-#include <fstream>
 #include <queue>
 
 using Rcpp::NumericVector;

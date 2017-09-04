@@ -1,6 +1,3 @@
 CXX_STD = CXX11
-BOOST_LDFLAGS= -lboost_program_options -lboost_filesystem -lboost_system
-CCLNFLAGS = -lm -lrt -pthread
 
-PKG_CPPFLAGS = -Iinclude -pthread
-PKG_LIBS = $(BOOST_LDFLAGS) $(CCLNFLAGS)
+PKG_CPPFLAGS = -Iinclude

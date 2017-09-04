@@ -6,8 +6,6 @@
  */
 
 #include "utility/Parameters.h"
-#include <algorithm>
-#include <cmath>
 #include <queue>
 #include <solverLag/SolverBudget.h>
 #include <stack>
