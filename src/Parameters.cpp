@@ -28,4 +28,5 @@ Parameters::Parameters(List params) {
     heurIter = getInt(params, "heur_iterations");
     subgradient = getInt(params, "subgradient");
     beta = as<NumericVector>(params["beta"])[0];
+    outputlag = getInt(params, "verbose");
 }

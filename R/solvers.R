@@ -1,4 +1,19 @@
+#' Generates a rmwcs solver with corresponding parameters
+#' @param timelimit Timelimit in seconds
+#' @param max_iterations Maximum number of iterations for Lagrangian solver
+#' @param beta_iteration
+#' @param separation
+#' @param max_age
+#' @param startcons
+#' @param pegging
+#' @param sep_iterations
+#' @param sep_iter_freeze
+#' @param heur_iterations
+#' @param subgradient
+#' @param beta
+#' @param verbose Whether to print solving progress
 #' @export
+#' @import igraph
 rmwcs <- function(timelimit = 1800L,
                   max_iterations = 1000L,
                   beta_iterations = 5L,
@@ -10,7 +25,8 @@ rmwcs <- function(timelimit = 1800L,
                   sep_iter_freeze = 50L,
                   heur_iterations = 10L,
                   subgradient = "classic",
-                  beta = 2.0) {
+                  beta = 2.0,
+                  verbose = FALSE) {
 
     args <- mget(names(formals()), sys.frame(sys.nframe()))
     fs <- formals()
@@ -18,7 +34,7 @@ rmwcs <- function(timelimit = 1800L,
         if(is.null(args[[arg]]) || is.na(args[[arg]])){
             stop(paste0("Argument '", arg, "' mustn't be null or NA"))
         }
-        args[[arg]] <- as(args[[arg]], class(fs[[arg]]))
+        args[[arg]] <- methods::as(args[[arg]], class(fs[[arg]]))
     }
 
     sep_methods <- c("strong", "fast")

@@ -14,7 +14,8 @@ Depends: R (>= 3.4)
 Imports:
     igraph,
     Rcpp, 
-    BH
+    BH,
+    methods
 Suggests:
     testthat
 License: MIT + file LICENSE

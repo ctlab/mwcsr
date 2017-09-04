@@ -14,7 +14,6 @@ using Rcpp::NumericVector;
 using Rcpp::List;
 using Rcpp::NumericMatrix;
 using Rcpp::as;
-using Rcpp::Rcout;
 
 using std::vector;
 using std::queue;
@@ -31,19 +30,9 @@ Instance::Instance(List& parameters, List& network)
     nTrueEdges = nEdges;
 
     nComponents = calculateComponents();
-    Rcout << "Components:  \t \t " << nComponents << "\n";
-    if (params.problem == 1)
-        Rcout << "Budget:  \t \t " << budget << "\n";
-    if (params.problem == 2)
-        Rcout << "Cardinality:  \t \t " << params.cardCons << "\n";
     if (preprocessing() > 0) {
         rebuildDatastructures();
-        Rcout << "Size after preprocessing" << "\n";
-        Rcout << "Nodes: \t \t \t" << nNodes << "\n";
-        Rcout << "Edges: \t \t \t" << nEdges << "\n";
-        Rcout << "Terminals:  \t \t" << nTerminals << "\n";
         nComponents = calculateComponents();
-        Rcout << "Components:  \t \t " << nComponents << "\n";
     }
 
     fixedToOne = vector<int>(nNodes, 0);

@@ -219,9 +219,6 @@ int SolverLag::solveSubgradient(int maxIterations) {
             }
 
             nFixed = lagrangianPegging();
-            if (nFixed) {
-                Rcout << "fixed " << nFixed << " variables" << "\n";
-            }
         }
 
         // Rcout<<"bestBoundCheck "<<bestBoundCheck<<" "<<incumbentObj<<"\n";
@@ -231,8 +228,6 @@ int SolverLag::solveSubgradient(int maxIterations) {
         // Rcout<<bestBoundCheck+eps<<" "<<incumbentObj<<"\n";
 
         if (bestBoundCheck <= incumbentObj + eps) {
-            Rcout << bestBound << "\n";
-            Rcout << "Bound check optimality" << "\n";
             break;
         }
 
@@ -263,7 +258,6 @@ int SolverLag::solveSubgradient(int maxIterations) {
     }
 
     if (instance.params.outputlag) {
-        Rcout << "finished" << "\n";
         Rcout << std::setprecision(9) << "iteration: \t" << iterations
              << "\t lagrangian bound: \t"
              << instance.transformInternalValue(bestBound)
@@ -386,8 +380,6 @@ void SolverLag::updateMultipliersSherali() {
         noImprov = 0;
         alpha /= 2;
         if (instance.params.outputlag)
-            Rcout << "no improvement for" << instance.params.betaIter
-                 << " iterations, new alpha is " << alpha << "\n";
         currentBound = bestBound;
         for (int n = 0; n < instance.nNodes; ++n) {
             currentSolution[n] = dualIncumbent[n];
@@ -464,9 +456,6 @@ void SolverLag::updateMultipliersLucena() {
     if (noImprov > instance.params.betaIter) {
         noImprov = 0;
         alpha /= 2;
-        if (instance.params.outputlag)
-            Rcout << "no improvement for" << instance.params.betaIter
-                 << " iterations, new alpha is " << alpha << "\n";
     }
 
     double theta = alpha * (currentBound - incumbentObj) / (subgradientSquared);
@@ -880,7 +869,6 @@ int SolverLag::separateCuts() {
     }
 
     numberOfComponents = myCurrentLabel - 1;
-    Rcout << "numberOfComponents " << numberOfComponents << "\n";
     if (numberOfComponents <= 1)
         return 0;
 
