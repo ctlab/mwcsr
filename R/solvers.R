@@ -46,11 +46,20 @@ rmwcs <- function(timelimit = 1800L,
     args$subgradient <- pmatch(args$subgradient, subgradients)
 
     function(g, max_cardinallity, budget) {
-        scores <- V(g)$scores
-        stopifnot(length(scores) == length(V(g)))
+        if(!is_igraph(g)){
+            stop("Not a graph object")
+        }
+        if(!("score" %in% list.vertex.attributes(g))){
+            stop("Please provide vertex attribute 'score'")
+        }
+        scores <- V(g)$score
         scores <- as.numeric(scores)
-        instance <- list(edgelist = as_edgelist(g), scores = scores)
+        if(any(is.na(scores))){
+            stop("Scores shouldn't be a NA")
+        }
+
+        instance <- list(edgelist = as_edgelist(g), scores = score)
         vs <- rmwcs_solve(instance, args)
-        induced.subgraph(g, vs)
+        induced.subgraph(g, vids = vs)
     }
 }
