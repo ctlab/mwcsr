@@ -1,7 +1,7 @@
 #' Generates a rmwcs solver with corresponding parameters
 #' @param timelimit Timelimit in seconds
 #' @param max_iterations Maximum number of subgradient iterations
-#' @param beta_iteration Number of nonimproving iterations until beta is halfed
+#' @param beta_iterations Number of nonimproving iterations until beta is halfed
 #' @param separation Separation: "strong" of "fast"
 #' @param max_age Extending the life of non-violated inequalities
 #' @param startcons Whether to add flow-conservation/degree cons at start

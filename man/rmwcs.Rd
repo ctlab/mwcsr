@@ -15,6 +15,8 @@ rmwcs(timelimit = 1800L, max_iterations = 1000L, beta_iterations = 5L,
 
 \item{max_iterations}{Maximum number of subgradient iterations}
 
+\item{beta_iterations}{Number of nonimproving iterations until beta is halfed}
+
 \item{separation}{Separation: "strong" of "fast"}
 
 \item{max_age}{Extending the life of non-violated inequalities}
@@ -34,8 +36,6 @@ rmwcs(timelimit = 1800L, max_iterations = 1000L, beta_iterations = 5L,
 \item{beta}{Beta for subgradient}
 
 \item{verbose}{Whether to print solving progress}
-
-\item{beta_iteration}{Number of nonimproving iterations until beta is halfed}
 }
 \description{
 Generates a rmwcs solver with corresponding parameters
