@@ -6,10 +6,6 @@
  */
 
 #include "solverLag/SolverClassic.h"
-#include "utility/Parameters.h"
-#include <algorithm>
-#include <iostream>
-#include <limits>
 #include <queue>
 #include <stack>
 

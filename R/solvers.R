@@ -50,6 +50,7 @@ rmwcs <- function(timelimit = 1800L,
         stopifnot(length(scores) == length(V(g)))
         scores <- as.numeric(scores)
         instance <- list(edgelist = as_edgelist(g), scores = scores)
-        rmwcs_solve(instance, args)
+        vs <- rmwcs_solve(instance, args)
+        induced.subgraph(g, vs)
     }
 }

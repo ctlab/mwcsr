@@ -14,7 +14,6 @@ Depends: R (>= 3.4)
 Imports:
     igraph,
     Rcpp, 
-    BH,
     methods
 Suggests:
     testthat

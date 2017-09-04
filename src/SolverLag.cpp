@@ -6,14 +6,10 @@
  */
 
 #include "utility/Parameters.h"
-#include <algorithm>
-#include <cmath>
 #include <queue>
 #include <solverLag/SolverLag.h>
 #include <stack>
-#include <boost/filesystem.hpp>
 #include <chrono>
-#include <iomanip>
 
 using std::vector;
 using std::list;
