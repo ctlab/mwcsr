@@ -1,7 +1,2 @@
 language:   r
 sudo:   false
-
-addons:
-    apt:
-        packages:
-            libboost-all-dev
