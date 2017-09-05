@@ -55,10 +55,10 @@ rmwcs <- function(timelimit = 1800L,
         scores <- V(g)$score
         scores <- as.numeric(scores)
         if(any(is.na(scores))){
-            stop("Scores shouldn't be a NA")
+            stop("Invalid scores")
         }
 
-        instance <- list(edgelist = as_edgelist(g), scores = score)
+        instance <- list(edgelist = as_edgelist(g), scores = scores)
         vs <- rmwcs_solve(instance, args)
         induced.subgraph(g, vids = vs)
     }
