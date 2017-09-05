@@ -11,6 +11,7 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
         scores <- runif(size) - 0.5;
         solve(make(size) %>% set.vertex.attribute("score", value = scores))
     }
+
     test_graph(make_ring)
     test_graph(make_star)
     test_graph(make_full_graph)
