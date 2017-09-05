@@ -375,7 +375,6 @@ void SolverLag::updateMultipliersSherali() {
     if (noImprov > instance.params.betaIter) {
         noImprov = 0;
         alpha /= 2;
-        if (instance.params.outputlag)
         currentBound = bestBound;
         for (int n = 0; n < instance.nNodes; ++n) {
             currentSolution[n] = dualIncumbent[n];

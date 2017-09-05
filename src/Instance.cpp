@@ -29,10 +29,8 @@ Instance::Instance(List& parameters, List& network)
     nTrueEdges = nEdges;
 
     nComponents = calculateComponents();
-    if (preprocessing() > 0) {
-        rebuildDatastructures();
-        nComponents = calculateComponents();
-    }
+    rebuildDatastructures();
+    nComponents = calculateComponents();
 
     fixedToOne = vector<int>(nNodes, 0);
     fixedToZero = vector<int>(nNodes, 0);
@@ -279,8 +277,8 @@ void Instance::readInstance(List instance) {
     }
 
     for(unsigned i = 0; i < nEdges; i++){
-        int from = edges(i, 0);
-        int to = edges(i, 1);
+        int from = edges(i, 0) - 1;
+        int to = edges(i, 1) - 1;
         adjList[from].push_back(to);
         adjList[to].push_back(from);
     }
