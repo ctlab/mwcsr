@@ -20,8 +20,8 @@ readSTP <- function(filename){
 
 dir <- "inst/extdata/"
 
-download.file("http://dimacs11.zib.de/instances/MWCS-GAM.zip", "mwcs.zip")
-unzip("mwcs.zip", junkpaths = T, exdir = dir)
+download.file("http://dimacs11.zib.de/instances/MWCS-GAM.zip", "gam.zip")
+unzip("gam.zip", junkpaths = T, exdir = dir)
 
 names <- list.files(dir)
 
@@ -29,8 +29,7 @@ names <- list.files(dir)
 names <- names[seq(1, length(names), 5)]
 
 suppressWarnings(
-    instances <- sapply(names, function (x) readSTP(paste0(dir, x)), simplify = F)
+    GAM <- sapply(names, function (x) readSTP(paste0(dir, x)), simplify = F)
 )
 
-use_data(instances, overwrite = T)
-
+use_data(GAM, overwrite = T)
