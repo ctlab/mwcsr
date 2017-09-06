@@ -29,6 +29,8 @@ Instance::Instance(List& parameters, List& network)
     nTrueEdges = nEdges;
 
     nComponents = calculateComponents();
+
+    preprocessing();
     rebuildDatastructures();
     nComponents = calculateComponents();
 
