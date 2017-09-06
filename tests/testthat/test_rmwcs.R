@@ -17,7 +17,7 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
     test_graph(make_full_graph)
 })
 
-test_that("rmwcs solver works fine on GAM instances", {
+test_that("rmwcs solver builds connected solutions on GAM instances", {
     solve <- rmwcs()
     for (instance in GAM) {
         sol <- solve(instance)

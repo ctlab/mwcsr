@@ -6,3 +6,4 @@
 
 # vim temp files
 *~
+*.o

@@ -3,4 +3,4 @@
 export(rmwcs)
 import(igraph)
 importFrom(Rcpp,sourceCpp)
-useDynLib(mwcsr)
+useDynLib(mwcsr, .registration = TRUE)

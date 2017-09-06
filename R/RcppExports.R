@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rmwcs_solve <- function(graph, params) {
-    .Call('_mwcsr_rmwcs_solve', PACKAGE = 'mwcsr', graph, params)
+    .Call(`_mwcsr_rmwcs_solve`, graph, params)
 }
 
