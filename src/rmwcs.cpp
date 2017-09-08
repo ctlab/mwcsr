@@ -3,10 +3,12 @@
 #include <solverLag/SolverClassic.h>
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector rmwcs_solve(Rcpp::List& graph, Rcpp::List& params){
+Rcpp::IntegerVector rmwcs_solve(Rcpp::List& graph, Rcpp::List& params) {
     Instance instance(params, graph);
     SolverClassic solver(instance, instance.params.maxIter);
-    solver.solve();
+    if (instance.nNodes > 0) {
+        solver.solve();
+    }
 
     int n = instance.nTrueNodes;
     auto solution = instance.incumbent;

@@ -49,16 +49,29 @@ rmwcs <- function(timelimit = 1800L,
         if(!is_igraph(g)){
             stop("Not a graph object")
         }
+        if(is_directed(g)){
+            stop("Not an undirected graph")
+        }
         if(!("score" %in% list.vertex.attributes(g))){
             stop("Please provide vertex attribute 'score'")
         }
+        if(!missing(max_cardinallity) && !missing(budget)){
+            stop("You cannot set both cardinallity and budget restrictions")
+        }
+        if(!missing(budget)){
+            if(!("budget" %in% list.vertex.attributes(g))){
+                warning("No budgets provided. Setting to zeros")
+                set.vertex.attribute(g, "budget", 0)
+            }
+        }
         scores <- V(g)$score
         scores <- as.numeric(scores)
-        if(any(is.na(scores))){
-            stop("Invalid scores")
+        if(any(is.na(scores)) || (!missing(budget) && any(is.na(budget)))){
+            stop("Invalid score or budget")
         }
 
         instance <- list(edgelist = as_edgelist(g), scores = scores)
+                         #card = max_cardinallity, budget = budget)
         vs <- rmwcs_solve(instance, args)
         induced.subgraph(g, vids = vs)
     }
