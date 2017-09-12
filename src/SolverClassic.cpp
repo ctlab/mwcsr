@@ -8,6 +8,7 @@
 #include "solverLag/SolverClassic.h"
 #include <queue>
 #include <stack>
+#include <assert.h>
 
 using std::vector;
 using std::priority_queue;
@@ -136,15 +137,13 @@ bool SolverClassic::primalHeuristic() {
                        std::greater<nodevaluepair>>
             myPQueue;
         vector<int> inComponentBool = vector<int>(instance.nNodes, 0);
-        vector<int> myBestSol =
-            vector<int>(instance.nNodes, instance.nNodes + 1);
+        vector<int> myBestSol = vector<int>(instance.nNodes, instance.nNodes + 1);
         vector<int> pred = vector<int>(instance.nNodes, -1);
         vector<int> extracted = vector<int>(instance.nNodes, 0);
-        vector<double> distance =
-            vector<double>(instance.nNodes, std::numeric_limits<double>::max());
+        vector<double> distance = vector<double>(instance.nNodes, std::numeric_limits<double>::max());
 
         inComponentBool[startID] = true;
-        myBestSol[startID] = 0;
+        myBestSol[startID] = -1;
         distance[startID] = 0;
         pred[startID] = startID;
         nodevaluepair n;
@@ -275,13 +274,16 @@ bool SolverClassic::primalHeuristic() {
         if (obj > incumbentObj) {
             incumbentObj = obj;
             improved = true;
-            // double test=0.0;
+            double test=0.0;
             for (int i = 0; i < instance.nNodes; ++i) {
                 incumbent[i] = inComponentBool[i];
                 // if(incumbent[i])Rcout<<i<<"\n";
-                // test+=instance.myPrizes[i]*incumbent[i];
+                test+=instance.myPrizes[i]*incumbent[i];
             }
             // Rcout<<test<<"\n";
+            if (fabs(obj - test) > 1e-6) {
+                Rf_error("Assertion failed on test incumbent solution");
+            }
 
             // Rcout<<"improved "<<obj<<"\n";
         }

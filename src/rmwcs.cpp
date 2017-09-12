@@ -13,6 +13,7 @@ Rcpp::IntegerVector rmwcs_solve(Rcpp::List& graph, Rcpp::List& params) {
     int n = instance.nTrueNodes;
     auto solution = instance.incumbent;
     std::vector<unsigned> vertices;
+
     for(unsigned i = 0; i < n; i++){
         if(solution[i]){
             vertices.push_back(i + 1);

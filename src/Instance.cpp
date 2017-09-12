@@ -127,7 +127,7 @@ int Instance::uselessComponentsTest() {
 
     for (int i = 0; i < nComponents; ++i) {
         // cerr<<maxRevenueInComponent[i]<<" "<<maxPrize<<"\n";
-        if (maxRevenueInComponent[i] <= maxPrize) {
+        if (maxRevenueInComponent[i] < maxPrize) {
             numberRemoved += components[i].size();
             for (unsigned j = 0; j < components[i].size(); ++j) {
                 nodesToRemove[components[i][j]] = true;

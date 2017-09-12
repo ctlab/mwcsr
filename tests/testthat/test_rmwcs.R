@@ -1,10 +1,10 @@
 context("rmwcs solver")
 
 data("GAM")
-set.seed(20170905L)
+set.seed(42L)
 
 test_that("rmwcs solver works on specific test", {
-    solve <- rmwcs(verbose = TRUE)
+    solve <- rmwcs()
     g <- make_ring(5) %>% set.vertex.attribute("score", value = 1:-3)
     gp <- solve(g)
     expect_equal(sum(V(gp)$score), 1)
