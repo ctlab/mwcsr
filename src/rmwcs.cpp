@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <memory>
 #include <instance/Instance.h>
 #include <solverLag/SolverClassic.h>
 #include <solverLag/SolverCardinality.h>
