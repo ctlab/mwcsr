@@ -6,14 +6,14 @@
 using namespace Rcpp;
 
 // rmwcs_solve
-Rcpp::IntegerVector rmwcs_solve(Rcpp::List& graph, Rcpp::List& params);
-RcppExport SEXP _mwcsr_rmwcs_solve(SEXP graphSEXP, SEXP paramsSEXP) {
+Rcpp::IntegerVector rmwcs_solve(Rcpp::List& data, Rcpp::List& params);
+RcppExport SEXP _mwcsr_rmwcs_solve(SEXP dataSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List& >::type graph(graphSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List& >::type data(dataSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type params(paramsSEXP);
-    rcpp_result_gen = Rcpp::wrap(rmwcs_solve(graph, params));
+    rcpp_result_gen = Rcpp::wrap(rmwcs_solve(data, params));
     return rcpp_result_gen;
 END_RCPP
 }

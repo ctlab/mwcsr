@@ -358,8 +358,8 @@ int SolverBudget::lagrangianPegging() {
         // Rcout<<addedObj<<" "<<incumbentObj<<"\n";
 
         if (myBound + addedObj < incumbentObj) {
-            Rcout << "fixing " << realPrizes[n] << " " << myBound + addedObj
-                 << " " << incumbentObj << " " << myBound + objHeur << "\n";
+            //Rcout << "fixing " << realPrizes[n] << " " << myBound + addedObj
+            //     << " " << incumbentObj << " " << myBound + objHeur << "\n";
             fixedToZero[n] = true;
             instance.nFixedZero++;
             nFixed++;
@@ -636,8 +636,8 @@ bool SolverBudget::primalHeuristic() {
             incumbentObj = incObj;
             for (int i = 0; i < instance.nNodes; ++i) {
                 incumbent[i] = inComponentBool[i];
-                if (incumbent[i])
-                    Rcout << i << "\n";
+                //if (incumbent[i])
+                //   Rcout << i << "\n";
                 // test+=instance.myPrizes[i]*incumbent[i];
             }
 

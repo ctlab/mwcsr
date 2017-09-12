@@ -14,7 +14,7 @@
 
 struct Parameters {
     /// Input file (instance)
-    int problem = 1;
+    int problem = 0;
     int budget = 0;
     int solver = 0;
     int maxIter = 1000;

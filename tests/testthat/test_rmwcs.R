@@ -13,10 +13,15 @@ test_that("rmwcs solver works on specific test", {
 test_that("rmwcs solver doesn't crash on simple graphs", {
     solve <- rmwcs()
     size <- 10
+    cardinality <- 3
 
     test_graph <- function(make) {
         scores <- runif(size) - 0.5;
-        solve(make(size) %>% set.vertex.attribute("score", value = scores))
+        g <- make(size) %>% set.vertex.attribute("score", value = scores)
+        solve(g)
+        solve(g, max_cardinality = cardinality)
+        g <- set.vertex.attribute(g, name = "cost", value = runif(size))
+        solve(g, budget = cardinality)
     }
 
     test_graph(make_ring)

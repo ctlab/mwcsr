@@ -256,6 +256,7 @@ double Instance::transformInternalValue(double value) const {
 void Instance::readInstance(List instance) {
     auto edges = as<NumericMatrix>(instance["edgelist"]);
     auto scores = as<NumericVector>(instance["scores"]);
+
     nNodes = static_cast<unsigned>(scores.size());
     nEdges = static_cast<unsigned>(edges.nrow());
     realTerminals = vector<bool>(nNodes, false);
@@ -266,10 +267,22 @@ void Instance::readInstance(List instance) {
     myPrizes = vector<double>(nNodes);
     myBudgetCost = vector<double>(nNodes, 1);
 
+    NumericVector costs(myBudgetCost.begin(), myBudgetCost.end());
+    if (instance.containsElementNamed("costs")) {
+        costs = as<NumericVector>(instance["costs"]);
+    }
+    if(instance.containsElementNamed("budget")){
+        budget = instance["budget"];
+    }
+    if(instance.containsElementNamed("card")){
+        params.cardCons = instance["card"];
+    }
+
     for (unsigned i = 0; i < nNodes; i++){
         adjList.emplace_back();
         myPrizes[i] = scores[i];
         myTerminals[i] = i;
+        myBudgetCost[i] = costs[i];
         if(scores[i] > 0){
             realTerminals[i] = true;
         }

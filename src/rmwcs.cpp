@@ -1,13 +1,24 @@
 #include <Rcpp.h>
 #include <instance/Instance.h>
 #include <solverLag/SolverClassic.h>
+#include <solverLag/SolverCardinality.h>
+#include <solverLag/SolverBudget.h>
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector rmwcs_solve(Rcpp::List& graph, Rcpp::List& params) {
-    Instance instance(params, graph);
-    SolverClassic solver(instance, instance.params.maxIter);
+Rcpp::IntegerVector rmwcs_solve(Rcpp::List& data, Rcpp::List& params) {
+    Instance instance(params, data);
+
+    std::unique_ptr<SolverLag> solver;
+    if (data.containsElementNamed("budget")){
+        solver.reset(new SolverBudget(instance, instance.params.maxIter));
+    } else if (data.containsElementNamed("card")) {
+        solver.reset(new SolverCardinality(instance, instance.params.maxIter));
+    } else {
+        solver.reset(new SolverClassic(instance, instance.params.maxIter));
+    }
+
     if (instance.nNodes > 0) {
-        solver.solve();
+        solver->solve();
     }
 
     int n = instance.nTrueNodes;
