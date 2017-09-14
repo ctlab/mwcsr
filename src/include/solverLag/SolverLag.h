@@ -16,20 +16,21 @@
 #include <vector>
 
 class SolverLag {
-  protected:
-    Instance &instance;
+protected:
+    Instance& instance;
+    Parameters& params;
 
-  public:
+public:
     struct nodevaluepair {
         int id = -1;
         double value = 1.0;
 
-        bool operator<(const nodevaluepair &other) const {
+        bool operator<(const nodevaluepair& other) const {
             // cout<<"sdsfdsf"<<endl;
             return value < other.value;
         }
 
-        bool operator>(const nodevaluepair &other) const {
+        bool operator>(const nodevaluepair& other) const {
             return (value > other.value);
         }
     };
@@ -43,12 +44,12 @@ class SolverLag {
         // std::vector<vector<int>> componentsNested;
         std::vector<int> boundaryIndexedNested;
 
-        bool operator<(const CompStruct &other) const {
+        bool operator<(const CompStruct& other) const {
             // cout<<"sdsfdsf"<<endl;
             return sumPrize < other.sumPrize;
         }
 
-        bool operator>(const CompStruct &other) const {
+        bool operator>(const CompStruct& other) const {
             return (sumPrize > other.sumPrize);
         }
     };
@@ -70,23 +71,23 @@ class SolverLag {
 
         std::size_t myHash = -1;
 
-        std::size_t myHasher(std::vector<nodevaluepair> const &vec,
-                             std::vector<nodevaluepair> const &vec2,
+        std::size_t myHasher(std::vector<nodevaluepair> const& vec,
+                             std::vector<nodevaluepair> const& vec2,
                              int offset) const {
             std::size_t seed = 0;
-            for (auto &i : vec) {
-                seed ^= ((std::size_t)i.id) + 0x9e3779b9 + (seed << 6) +
+            for (auto& i : vec) {
+                seed ^= ((std::size_t) i.id) + 0x9e3779b9 + (seed << 6) +
                         (seed >> 2);
             }
-            for (auto &i : vec2) {
-                seed ^= ((std::size_t)i.id + offset) + 0x9e3779b9 +
+            for (auto& i : vec2) {
+                seed ^= ((std::size_t) i.id + offset) + 0x9e3779b9 +
                         (seed << 6) + (seed >> 2);
             }
             return seed;
         }
     };
 
-  protected:
+protected:
     std::vector<CompStruct> myComponents;
     std::list<double> cftBounds;
     std::list<double> cftBoundsBest;
@@ -113,20 +114,31 @@ class SolverLag {
     double directionPrevSquared;
 
     int solveSubgradient(int maxIterations);
+
     int RINS(int maxIterations);
 
     virtual double calculateCurrentSolution(bool save) = 0;
+
     virtual bool primalHeuristic() = 0;
+
     virtual int lagrangianPegging() = 0;
+
     virtual int separateCuts();
+
     virtual int addInitCuts() = 0;
 
     double calculateReducedCosts();
+
     void upgradeMultipliers();
-    double calculateSubgradientCuts(const cut &myCut);
-    double calculateSubgradientCutsPrevious(const cut &myCut);
+
+    double calculateSubgradientCuts(const cut& myCut);
+
+    double calculateSubgradientCutsPrevious(const cut& myCut);
+
     int checkPreviousCuts(bool addCuts);
+
     int createCuts(int iter);
+
     void writeStatistics();
 
     double alpha;
@@ -154,7 +166,9 @@ class SolverLag {
     double runtime;
 
     void updateMultipliersCFT();
+
     void updateMultipliersLucena();
+
     void updateMultipliersSherali();
 
     // inline bool
@@ -166,18 +180,23 @@ class SolverLag {
     static constexpr double epsInt = 1e-3;
     static constexpr double epsOpt = 1e-6;
 
-    int setVariableFixing(const std::vector<int> &toZero, const std::vector<int> &toOne);
+    int setVariableFixing(const std::vector<int>& toZero, const std::vector<int>& toOne);
+
     int initCuts();
 
     // bool initCuts;
 
-  public:
-    SolverLag(Instance &_instance, int _maxIterations);
+public:
+    SolverLag(Instance& instance, Parameters& params);
+
     virtual ~SolverLag();
+
     std::string statf;
 
     int writeCutsToInstance();
+
     int writeFixingToInstance();
+
     int writeSolutionToInstance();
 
     inline double getBestBound() const { return bestBound; }
@@ -196,7 +215,7 @@ class SolverLag {
         directionPrevSquared = dps;
     }
 
-    void initCuts(std::list<SolverLag::cut> &cuts);
+    void initCuts(std::list<SolverLag::cut>& cuts);
 
     std::string getStatistics() { return statf; }
 

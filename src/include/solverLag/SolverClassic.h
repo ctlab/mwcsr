@@ -11,15 +11,14 @@
 #include "SolverLag.h"
 
 class SolverClassic : public SolverLag {
-
     double calculateCurrentSolutionPegging();
     double calculateCurrentSolution(bool save);
     bool primalHeuristic();
     int lagrangianPegging();
     int addInitCuts();
 
-  public:
-    SolverClassic(Instance &_instance, int _maxIterations);
+public:
+    SolverClassic(Instance& instance, Parameters& params);
     // SolverClassic(const SolverClassic&);
 
     ~SolverClassic();

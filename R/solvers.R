@@ -45,20 +45,41 @@ rmwcs <- function(timelimit = 1800L,
     args$separation <- pmatch(args$separation, sep_methods)
     args$subgradient <- pmatch(args$subgradient, subgradients)
 
-    function(g, max_cardinallity, budget) {
+    function(g, max_cardinality, budget) {
         if(!is_igraph(g)){
             stop("Not a graph object")
+        }
+        if(is_directed(g)){
+            stop("Not an undirected graph")
         }
         if(!("score" %in% list.vertex.attributes(g))){
             stop("Please provide vertex attribute 'score'")
         }
-        scores <- V(g)$score
-        scores <- as.numeric(scores)
-        if(any(is.na(scores))){
-            stop("Invalid scores")
+        if(!missing(max_cardinality) && !missing(budget)){
+            stop("You cannot set both cardinallity and budget restrictions")
+        }
+        if(!missing(budget)){
+            if(!("cost" %in% list.vertex.attributes(g))){
+                warning("No costs provided. Setting to ones")
+                g <- set.vertex.attribute(g, name = "cost", value = 1)
+            }
+        }
+        scores <- as.numeric(V(g)$score)
+        costs <- as.numeric(V(g)$cost)
+        if(any(is.na(scores)) || (!missing(budget) && any(is.na(costs)))){
+            stop("Invalid score or cost")
         }
 
         instance <- list(edgelist = as_edgelist(g), scores = scores)
+
+        if(!missing(max_cardinality))
+            instance$card = as.integer(max_cardinality)
+
+        if(!missing(budget)){
+            instance$budget = budget
+            instance$costs = costs
+        }
+
         vs <- rmwcs_solve(instance, args)
         induced.subgraph(g, vids = vs)
     }

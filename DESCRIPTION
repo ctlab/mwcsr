@@ -1,6 +1,6 @@
 Package: mwcsr
 Title: Solvers for Various Maximum Weight Connected Subgraph Problems
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: c(
     person("Alexander", "Loboda", email = "loboda@rain.ifmo.ru", role = c("aut", "cre")), 
     person("Eduardo", "Alvarez-Miranda", email = "ealvarez@utalca.cl", role = "aut"), 
