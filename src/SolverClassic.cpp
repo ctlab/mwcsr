@@ -8,15 +8,14 @@
 #include "solverLag/SolverClassic.h"
 #include <queue>
 #include <stack>
-#include <assert.h>
 
 using std::vector;
 using std::priority_queue;
 
 using Rcpp::Rcout;
 
-SolverClassic::SolverClassic(Instance &_instance, int _maxIterations)
-    : SolverLag(_instance, _maxIterations) {
+SolverClassic::SolverClassic(Instance& instance, Parameters& params)
+        : SolverLag(instance, params) {
 }
 
 SolverClassic::~SolverClassic() {}
@@ -67,7 +66,7 @@ int SolverClassic::addInitCuts() {
             // myCut.frozen=false;
             myCuts.push_back(myCut);
             myCut.myHash =
-                myCut.myHasher(myCut.lhs, myCut.rhs, instance.nNodes);
+                    myCut.myHasher(myCut.lhs, myCut.rhs, instance.nNodes);
             myCutHash.insert(myCut.myHash);
         }
         nCuts++;
@@ -134,8 +133,8 @@ bool SolverClassic::primalHeuristic() {
         }
 
         priority_queue<nodevaluepair, std::vector<nodevaluepair>,
-                       std::greater<nodevaluepair>>
-            myPQueue;
+                std::greater<nodevaluepair>>
+                myPQueue;
         vector<int> inComponentBool = vector<int>(instance.nNodes, 0);
         vector<int> myBestSol = vector<int>(instance.nNodes, instance.nNodes + 1);
         vector<int> pred = vector<int>(instance.nNodes, -1);
@@ -201,8 +200,8 @@ bool SolverClassic::primalHeuristic() {
 
                     if (distance[l] < 0) {
                         Rcout << l << " " << distance[l] << " " << distance[k]
-                             << " " << toAdd << " " << inComponentBool[k]
-                             << "\n";
+                              << " " << toAdd << " " << inComponentBool[k]
+                              << "\n";
                         Rf_error("Primal heuristic bug.");
                     }
                 }
@@ -274,11 +273,11 @@ bool SolverClassic::primalHeuristic() {
         if (obj > incumbentObj) {
             incumbentObj = obj;
             improved = true;
-            double test=0.0;
+            double test = 0.0;
             for (int i = 0; i < instance.nNodes; ++i) {
                 incumbent[i] = inComponentBool[i];
                 // if(incumbent[i])Rcout<<i<<"\n";
-                test+=instance.myPrizes[i]*incumbent[i];
+                test += instance.myPrizes[i] * incumbent[i];
             }
             // Rcout<<test<<"\n";
             if (fabs(obj - test) > 1e-6) {

@@ -22,34 +22,34 @@ namespace chrono = std::chrono;
 
 bool cutToRemove(SolverLag::cut x) { return x.toRemove; }
 
-SolverLag::SolverLag(Instance &_instance, int _maxIterations)
-    : instance(_instance), myCuts{list<cut>()}, myNewCuts{list<cut>()},
-      realPrizes{vector<double>(instance.nNodes, 0)},
-      currentSolution{vector<double>(instance.nNodes, 0)},
-      previousSolution{vector<double>(instance.nNodes, 0)},
-      sumSolution{vector<int>(instance.nNodes, 0)}, incumbent{vector<bool>(
-                                                        instance.nNodes, 0)},
-      dualIncumbent{vector<int>(instance.nNodes, 0)}, labels{vector<int>(
-                                                          instance.nNodes, 0)},
-      fixedToZero{vector<int>(instance.nNodes, 0)}, fixedToOne{vector<int>(
-                                                        instance.nNodes, 0)},
-      incumbentObj{0.0}, subgradientSquared{1}, subgradientNorm{0},
-      directionPrevSquared{0}, alpha{instance.params.beta}, noImprov{0},
-      numberOfComponents{0}, bestBound{std::numeric_limits<double>::max()},
-      currentBound{std::numeric_limits<double>::max()},
-      previousBound{std::numeric_limits<double>::max()},
-      bestBoundCFT{std::numeric_limits<double>::max()},
-      worstBoundCFT{std::numeric_limits<double>::lowest()}, counterCFT{0},
-      maxIterations{_maxIterations}, iterations{0}, sepIter(instance.params.sepIter),
-      sepIterFreeze(instance.params.sepIterFreeze), inRins(false), savedObj(0.0),
-      runtime(0.0) {}
+SolverLag::SolverLag(Instance& instance, Parameters& params)
+        : instance(instance), params(params), myCuts{list<cut>()}, myNewCuts{list<cut>()},
+          realPrizes{vector<double>(instance.nNodes, 0)},
+          currentSolution{vector<double>(instance.nNodes, 0)},
+          previousSolution{vector<double>(instance.nNodes, 0)},
+          sumSolution{vector<int>(instance.nNodes, 0)}, incumbent{vector<bool>(
+                instance.nNodes, 0)},
+          dualIncumbent{vector<int>(instance.nNodes, 0)}, labels{vector<int>(
+                instance.nNodes, 0)},
+          fixedToZero{vector<int>(instance.nNodes, 0)}, fixedToOne{vector<int>(
+                instance.nNodes, 0)},
+          incumbentObj{0.0}, subgradientSquared{1}, subgradientNorm{0},
+          directionPrevSquared{0}, alpha{params.beta}, noImprov{0},
+          numberOfComponents{0}, bestBound{std::numeric_limits<double>::max()},
+          currentBound{std::numeric_limits<double>::max()},
+          previousBound{std::numeric_limits<double>::max()},
+          bestBoundCFT{std::numeric_limits<double>::max()},
+          worstBoundCFT{std::numeric_limits<double>::lowest()}, counterCFT{0},
+          maxIterations{params.maxIter}, iterations{0}, sepIter(params.sepIter),
+          sepIterFreeze(params.sepIterFreeze), inRins(false), savedObj(0.0),
+          runtime(0.0) {}
 
 SolverLag::~SolverLag() {}
 
 int SolverLag::solve() {
 
     solveSubgradient(maxIterations);
-    if (instance.params.solver == 1) {
+    if (params.solver == 1) {
         // writeCutsToInstance();
         writeFixingToInstance();
         writeSolutionToInstance();
@@ -79,6 +79,7 @@ int SolverLag::writeCutsToInstance() {
 
     return nCuts;
 }
+
 int SolverLag::writeFixingToInstance() {
 
     for (int i = 0; i < instance.nNodes; ++i) {
@@ -104,10 +105,10 @@ int SolverLag::solveSubgradient(int maxIterations) {
     // time_t startT;
     // time(&startT);
 
-    chrono::time_point<std::chrono::system_clock> startTime =
-        chrono::system_clock::now();
+    chrono::time_point <std::chrono::system_clock> startTime =
+            chrono::system_clock::now();
     iterations = 0;
-    // if(instance.params.outputlag)
+    // if(params.outputlag)
     //	Rcout<<"fixed "<<costBasedFixing()<<" variables to zero due to cost in
     //component"<<"\n";
 
@@ -115,7 +116,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
 
     int nFixed = 0;
 
-    if (instance.params.integer) {
+    if (params.integer) {
         eps = 0;
     }
 
@@ -146,17 +147,17 @@ int SolverLag::solveSubgradient(int maxIterations) {
             // "<<(currentBound>bestBound)<<"\n";
             bestBound = currentBound;
             boundImprov = true;
-            if (instance.params.solver == 1) {
+            if (params.solver == 1) {
                 writeCutsToInstance();
             }
         }
 
-        if (instance.params.subgradient != 2) {
+        if (params.subgradient != 2) {
             if (boundImprov) {
                 noImprov = 0;
                 bestBound = currentBound;
 
-                // if(instance.params.subgradient==1)
+                // if(params.subgradient==1)
                 {
                     for (int i = 0; i < instance.nNodes; ++i) {
                         dualIncumbent[i] = currentSolution[i];
@@ -168,10 +169,10 @@ int SolverLag::solveSubgradient(int maxIterations) {
 
         // previousBound=currentBound;
 
-        if (instance.params.subgradient == 2) {
+        if (params.subgradient == 2) {
             if (boundImprov) {
                 bestBound = currentBound;
-                for (cut &c : myCuts) {
+                for (cut& c : myCuts) {
                     c.bestLambda = c.lambda;
                 }
             }
@@ -185,7 +186,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
         }
 
         double bestBoundCheck = bestBound;
-        if (instance.params.integer) {
+        if (params.integer) {
             bestBoundCheck = floor(bestBoundCheck);
         }
 
@@ -193,12 +194,12 @@ int SolverLag::solveSubgradient(int maxIterations) {
 
         // if(iterations%50==0 && iterations>0) RINS(100);
 
-        if (iterations % instance.params.heurIter == 0) {
+        if (iterations % params.heurIter == 0) {
             primalHeuristic();
         }
 
         nFixed = 0;
-        if ((boundImprov) && instance.params.pegging > 0 && !inRins) {
+        if ((boundImprov) && params.pegging > 0 && !inRins) {
             // calculateCurrentSolution(false);
             for (unsigned c = 0; c < instance.components.size(); ++c) {
                 if (instance.maxRevenueInComponent[c] < incumbentObj &&
@@ -227,23 +228,23 @@ int SolverLag::solveSubgradient(int maxIterations) {
             break;
         }
 
-        if (instance.params.outputlag) {
+        if (params.outputlag) {
             if (inRins) {
                 Rcout << "RINS ";
             }
             Rcout << std::setprecision(9) << "iteration: \t" << iterations
-                 << "\t lagrangian bound: \t"
-                 << instance.transformInternalValue(bestBound)
-                 << "\t current bound: \t "
-                 << instance.transformInternalValue(currentBound)
-                 << "\t incumbent: \t "
-                 << instance.transformInternalValue(incumbentObj)
-                 << "\t number of active cuts: \t" << numberOfCuts << "\n";
+                  << "\t lagrangian bound: \t"
+                  << instance.transformInternalValue(bestBound)
+                  << "\t current bound: \t "
+                  << instance.transformInternalValue(currentBound)
+                  << "\t incumbent: \t "
+                  << instance.transformInternalValue(incumbentObj)
+                  << "\t number of active cuts: \t" << numberOfCuts << "\n";
         }
         if (nFixed)
             myCuts.erase(
-                std::remove_if(myCuts.begin(), myCuts.end(), cutToRemove),
-                myCuts.end());
+                    std::remove_if(myCuts.begin(), myCuts.end(), cutToRemove),
+                    myCuts.end());
         upgradeMultipliers();
         for (int i = 0; i < instance.nNodes; ++i) {
             previousSolution[i] = currentSolution[i];
@@ -253,16 +254,16 @@ int SolverLag::solveSubgradient(int maxIterations) {
         // Rcout<<alpha<<" "<< sqrt(subgradientSquared)<<"\n";
     }
 
-    if (instance.params.outputlag) {
+    if (params.outputlag) {
         Rcout << std::setprecision(9) << "iteration: \t" << iterations
-             << "\t lagrangian bound: \t"
-             << instance.transformInternalValue(bestBound)
-             << "\t incumbent: \t "
-             << instance.transformInternalValue(incumbentObj) << "\n";
+              << "\t lagrangian bound: \t"
+              << instance.transformInternalValue(bestBound)
+              << "\t incumbent: \t "
+              << instance.transformInternalValue(incumbentObj) << "\n";
     }
 
-    chrono::time_point<std::chrono::system_clock> endTime =
-        chrono::system_clock::now();
+    chrono::time_point <std::chrono::system_clock> endTime =
+            chrono::system_clock::now();
     chrono::duration<double> elapsedSeconds = endTime - startTime;
 
     // time_t endT;
@@ -283,7 +284,7 @@ double SolverLag::calculateReducedCosts() {
         // Rcout<<realPrizes[n]<<" "<<instance.myPrizes[n]<<"\n";
     }
 
-    for (cut &c : myCuts) {
+    for (cut& c : myCuts) {
         if (c.frozen)
             continue;
 
@@ -320,7 +321,7 @@ double SolverLag::calculateReducedCosts() {
 void SolverLag::writeStatistics() {
 
     // std::string
-    // filename(boost::filesystem::path(instance.params.file).stem().string());
+    // filename(boost::filesystem::path(params.file).stem().string());
 
     instance.bestBoundLag = bestBound;
     instance.incumbentObjLag = incumbentObj;
@@ -339,7 +340,7 @@ void SolverLag::writeStatistics() {
     instance.gapLag = (instance.transformInternalValue(bestBound) -
                        instance.transformInternalValue(incumbentObj)) /
                       instance.transformInternalValue(incumbentObj) * 100;
-    if (instance.params.inputformat == 0) {
+    if (params.inputformat == 0) {
         instance.gapLag = (instance.transformInternalValue(incumbentObj) -
                            instance.transformInternalValue(bestBound)) /
                           instance.transformInternalValue(bestBound) * 100;
@@ -359,7 +360,7 @@ int SolverLag::createCuts(int iter) {
     // numberOfCuts+=cnt;
     if (iter % sepIterFreeze == 0) {
         // Rcout<<"here"<<"\n";
-        for (cut &c : myCuts) {
+        for (cut& c : myCuts) {
             c.frozen = false;
         }
         numberOfCuts += cnt;
@@ -372,7 +373,7 @@ int SolverLag::createCuts(int iter) {
 }
 
 void SolverLag::updateMultipliersSherali() {
-    if (noImprov > instance.params.betaIter) {
+    if (noImprov > params.betaIter) {
         noImprov = 0;
         alpha /= 2;
         currentBound = bestBound;
@@ -381,14 +382,14 @@ void SolverLag::updateMultipliersSherali() {
         }
         subgradientSquared = 0;
         checkPreviousCuts(false);
-        for (cut &c : myCuts) {
+        for (cut& c : myCuts) {
             if (c.frozen)
                 continue;
             c.directionPrevious = 0;
         }
     }
     directionPrevSquared = 0.0;
-    for (cut &c : myCuts) {
+    for (cut& c : myCuts) {
         if (c.frozen)
             continue;
         directionPrevSquared += (c.directionPrevious * c.directionPrevious);
@@ -405,7 +406,7 @@ void SolverLag::updateMultipliersSherali() {
     // Rcout<<"sigma "<<sigma<<"\n";
     double directionSquared = 0.0;
     // Rcout<<"sherali "<<myCuts.size()<<"\n";
-    for (cut &c : myCuts) {
+    for (cut& c : myCuts) {
         if (c.frozen)
             continue;
         // cerr<<c.direction<<"\n";
@@ -417,7 +418,7 @@ void SolverLag::updateMultipliersSherali() {
     if (directionSquared < epsOpt) {
         // Rcout<<"directionSquared "<<directionSquared<<"\n";
         directionSquared = subgradientSquared;
-        for (cut &c : myCuts) {
+        for (cut& c : myCuts) {
             if (c.frozen)
                 continue;
             c.direction = c.subgradient;
@@ -430,7 +431,7 @@ void SolverLag::updateMultipliersSherali() {
     // Rcout<<theta<<" "<<alpha<<" "<<incumbentObj<<" "<<directionSquared<<"
     // "<<subgradientSquared<<"\n";
 
-    for (cut &c : myCuts) {
+    for (cut& c : myCuts) {
         if (c.frozen)
             continue;
         // cerr<<c.lambda<<" "<<c.lambda-theta*c.direction<<"
@@ -448,7 +449,7 @@ void SolverLag::updateMultipliersSherali() {
 }
 
 void SolverLag::updateMultipliersLucena() {
-    if (noImprov > instance.params.betaIter) {
+    if (noImprov > params.betaIter) {
         noImprov = 0;
         alpha /= 2;
     }
@@ -459,7 +460,7 @@ void SolverLag::updateMultipliersLucena() {
     // "<<subgradientSquared<<"\n";
     // incumbentObj=7;
 
-    for (cut &c : myCuts) {
+    for (cut& c : myCuts) {
         if (c.frozen)
             continue;
         // cerr<<"cut "<<c.lambda<<" "<<c.lambda-theta*c.subgradient<<"
@@ -471,10 +472,10 @@ void SolverLag::updateMultipliersLucena() {
 
 void SolverLag::updateMultipliersCFT() {
     // Rcout<<noImprov<<"\n";
-    if (noImprov >= instance.params.betaIter) {
+    if (noImprov >= params.betaIter) {
         noImprov = 0;
         alpha /= 2;
-        for (cut &c : myCuts) {
+        for (cut& c : myCuts) {
             c.lambda = c.bestLambda;
         }
     }
@@ -518,7 +519,7 @@ void SolverLag::updateMultipliersCFT() {
                         {
                                 c.lambda=c.bestLambda;
                         }
-                        alpha=instance.params.beta;
+                        alpha=params.beta;
                 }*/
                 // Rcout<<"alpha"<<alpha<<"\n";
             }
@@ -529,7 +530,7 @@ void SolverLag::updateMultipliersCFT() {
     double theta = alpha * (currentBound - incumbentObj) / (subgradientSquared);
     // Rcout<<theta<<"\n";
 
-    for (cut &c : myCuts) {
+    for (cut& c : myCuts) {
         if (c.frozen)
             continue;
         // cerr<<c.lambda<<" "<<c.lambda-theta*c.subgradient<<"
@@ -539,17 +540,17 @@ void SolverLag::updateMultipliersCFT() {
 }
 
 void SolverLag::upgradeMultipliers() {
-    if (instance.params.subgradient == 2) {
+    if (params.subgradient == 2) {
         updateMultipliersCFT();
         return;
     }
 
-    if (instance.params.subgradient == 0) {
+    if (params.subgradient == 0) {
         updateMultipliersLucena();
         return;
     }
 
-    if (instance.params.subgradient == 1) {
+    if (params.subgradient == 1) {
         updateMultipliersSherali();
         return;
     }
@@ -560,7 +561,7 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
 
     // int notViolated=0;
     // Rcout<<"myCuts.size() "<<myCuts.size()<<"\n";
-    for (cut &c : myCuts) {
+    for (cut& c : myCuts) {
         if (c.frozen)
             continue;
 
@@ -676,12 +677,12 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
             c.violated = false;
             c.age++;
 
-            if (c.lambda == 0 && c.subgradient > 0 && c.age > instance.params.maxAge) {
+            if (c.lambda == 0 && c.subgradient > 0 && c.age > params.maxAge) {
                 c.subgradient = 0;
             }
 
             if (c.lambda == 0 && c.subgradient == 0 &&
-                c.directionPrevious > 0 && c.age > instance.params.maxAge) {
+                c.directionPrevious > 0 && c.age > params.maxAge) {
                 // directionPrevSquared-=(c.directionPrevious*c.directionPrevious);
                 // c.directionPrevious=0.0;
             }
@@ -697,7 +698,7 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
         // myNewCuts.erase(std::remove_if(myNewCuts.begin(), myNewCuts.end(),
         // cutToRemove),	myNewCuts.end());
 
-        for (cut &c : myNewCuts) {
+        for (cut& c : myNewCuts) {
             if (!c.frozen) {
                 c.subgradient = calculateSubgradientCuts(c);
                 c.directionPrevious = calculateSubgradientCutsPrevious(c);
@@ -724,7 +725,7 @@ int SolverLag::checkPreviousCuts(bool addCuts) {
     return numberOfCuts;
 }
 
-double SolverLag::calculateSubgradientCuts(const cut &myCut) {
+double SolverLag::calculateSubgradientCuts(const cut& myCut) {
     double subg = myCut.rhsConst;
     for (nodevaluepair n : myCut.lhs) {
         // Rcout<<n<<" "<<currentSolution[n]<<" "<<subg<<"\n";
@@ -742,7 +743,7 @@ double SolverLag::calculateSubgradientCuts(const cut &myCut) {
     return subg;
 }
 
-double SolverLag::calculateSubgradientCutsPrevious(const cut &myCut) {
+double SolverLag::calculateSubgradientCutsPrevious(const cut& myCut) {
     double subg = myCut.rhsConst;
     for (nodevaluepair n : myCut.lhs) {
         // Rcout<<n<<" "<<currentSolution[n]<<" "<<subg<<"\n";
@@ -760,8 +761,8 @@ double SolverLag::calculateSubgradientCutsPrevious(const cut &myCut) {
     return subg;
 }
 
-int SolverLag::setVariableFixing(const vector<int> &toZero,
-                                 const vector<int> &toOne) {
+int SolverLag::setVariableFixing(const vector<int>& toZero,
+                                 const vector<int>& toOne) {
     int numberFixed = toZero.size() + toOne.size();
 
     for (unsigned i = 0; i < toZero.size(); ++i) {
@@ -779,9 +780,9 @@ int SolverLag::setVariableFixing(const vector<int> &toZero,
     return numberFixed;
 }
 
-void SolverLag::initCuts(list<SolverLag::cut> &cuts) {
+void SolverLag::initCuts(list<SolverLag::cut>& cuts) {
     myCuts = cuts;
-    for (cut &c : myCuts) {
+    for (cut& c : myCuts) {
         // cerr<<c.direction<<"\n";
         c.subgradient = 0;
         c.direction = 0;
@@ -807,7 +808,7 @@ int SolverLag::separateCuts() {
 
             CompStruct myComponentHelper;
             vector<bool> componentBoundary =
-                vector<bool>(instance.nNodes, false);
+                    vector<bool>(instance.nNodes, false);
             vector<int> componentBoundaryIndexed;
             vector<bool> inComponent = vector<bool>(instance.nNodes, false);
             vector<int> myComponent;
@@ -889,7 +890,7 @@ int SolverLag::separateCuts() {
             cut myCut;
 
             myCut.lambda = 0;
-            if (instance.params.sepIterFreeze == 0)
+            if (params.sepIterFreeze == 0)
                 myCut.frozen = false;
 
             double prizeMin = -99999999;
@@ -913,9 +914,9 @@ int SolverLag::separateCuts() {
                 if (!instance.realTerminals[myComponents[i].components[j]])
                     continue;
                 rhsPrize =
-                    realPrizes[myComponents[i].components[j]] /
-                    (max(instance.myBudgetCost[myComponents[i].components[j]],
-                         0.00001));
+                        realPrizes[myComponents[i].components[j]] /
+                        (max(instance.myBudgetCost[myComponents[i].components[j]],
+                             0.00001));
 
                 if (rhsPrize > prizeMin) {
                     n.id = myComponents[i].components[j];
@@ -925,7 +926,7 @@ int SolverLag::separateCuts() {
             myCut.rhs.push_back(n);
             // Rcout<<myComponents[i].sumPrize<<" "<<incumbentObj<<"\n";
             if (myComponents[i].sumPrize + epsInt >= incumbentObj ||
-                instance.params.separation == 0) {
+                params.separation == 0) {
                 nodevaluepair m;
                 m.value = 1.0;
                 m.id = myComponents[other].components[0];
@@ -943,13 +944,13 @@ int SolverLag::separateCuts() {
                     }
 
                     if (!instance
-                             .realTerminals[myComponents[other].components[j]])
+                            .realTerminals[myComponents[other].components[j]])
                         continue;
                     // Rcout<<"j "<<j<<" "<<components[other][j]<<"\n";
                     // rhsPrize=instance.myPrizes[myComponents[other].components[j]];
                     rhsPrize = realPrizes[myComponents[other].components[j]] /
                                (max(instance.myBudgetCost[myComponents[other]
-                                                              .components[j]],
+                                            .components[j]],
                                     0.00001));
 
                     if (rhsPrize > prizeMin) {
@@ -971,10 +972,10 @@ int SolverLag::separateCuts() {
 
             vector<int> myBoundary;
 
-            if (instance.params.separation == 0) {
+            if (params.separation == 0) {
 
                 int otherBoundarySize =
-                    myComponents[other].boundaryIndexed.size();
+                        myComponents[other].boundaryIndexed.size();
                 int otherBoundaryFound = 0;
                 // queue<node> myQueue=queue<node>();
                 queue<int> myQueue;
@@ -1070,7 +1071,7 @@ int SolverLag::separateCuts() {
 
             // myCut.lambda=myCut.lhs.size();
             myCut.myHash =
-                myCut.myHasher(myCut.lhs, myCut.rhs, instance.nNodes);
+                    myCut.myHasher(myCut.lhs, myCut.rhs, instance.nNodes);
 
             // Rcout<<"cut"<<"\n";
             if (myCutHash.find(myCut.myHash) != myCutHash.end())
@@ -1083,7 +1084,7 @@ int SolverLag::separateCuts() {
                 n.id = myCut.rhs[0].id;
                 dummy.push_back(n);
                 long helper1 =
-                    myCut.myHasher(myCut.lhs, dummy, instance.nNodes);
+                        myCut.myHasher(myCut.lhs, dummy, instance.nNodes);
                 if (myCutHash.find(helper1) != myCutHash.end())
                     continue;
                 // Rcout<<"cut2"<<"\n";
@@ -1093,7 +1094,7 @@ int SolverLag::separateCuts() {
                 n2.id = myCut.rhs[1].id;
                 dummy2.push_back(n2);
                 long helper2 =
-                    myCut.myHasher(myCut.lhs, dummy2, instance.nNodes);
+                        myCut.myHasher(myCut.lhs, dummy2, instance.nNodes);
                 if (myCutHash.find(helper2) != myCutHash.end())
                     continue;
                 // Rcout<<"cut3"<<"\n";

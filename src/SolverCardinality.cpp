@@ -14,8 +14,8 @@ using std::priority_queue;
 
 using Rcpp::Rcout;
 
-SolverCardinality::SolverCardinality(Instance &_instance, int _maxIterations)
-        : SolverLag(_instance, _maxIterations), weightLast{0.0}, weightOutside{0.0} {}
+SolverCardinality::SolverCardinality(Instance& instance, Parameters& params)
+        : SolverLag(instance, params), weightLast{0.0}, weightOutside{0.0} {}
 
 SolverCardinality::~SolverCardinality() {}
 
@@ -155,7 +155,7 @@ bool SolverCardinality::primalHeuristic() {
         int currentSize = 1;
         int bestSize = 1;
 
-        while (!myPQueue.empty() && currentSize < instance.params.cardCons) {
+        while (!myPQueue.empty() && currentSize < instance.cardCons) {
             nodevaluepair k2 = myPQueue.top();
             myPQueue.pop();
             int k = k2.id;
@@ -213,7 +213,7 @@ bool SolverCardinality::primalHeuristic() {
                     // Rcout<<currentNode<<" "<<pred[currentNode]<<"\n";
 
                     add++;
-                    if (currentSize + add > instance.params.cardCons) {
+                    if (currentSize + add > instance.cardCons) {
                         fit = false;
                         break;
                     }
@@ -281,7 +281,7 @@ bool SolverCardinality::primalHeuristic() {
             int countTerm = 0;
             currentSize = 1;
             while (!myPQueue.empty() && numBest > 0 &&
-                   currentSize < instance.params.cardCons) {
+                   currentSize < instance.cardCons) {
                 nodevaluepair k2 = myPQueue.top();
                 myPQueue.pop();
                 int k = k2.id;
@@ -338,7 +338,7 @@ bool SolverCardinality::primalHeuristic() {
                         // Rcout<<currentNode<<" "<<pred[currentNode]<<"\n";
 
                         add++;
-                        if (currentSize + add > instance.params.cardCons) {
+                        if (currentSize + add > instance.cardCons) {
                             fit = false;
                             break;
                         }
@@ -397,7 +397,7 @@ bool SolverCardinality::primalHeuristic() {
             // Rcout<<"before postprocessing "<<obj<<" "<<currentSize<<"\n";
 
             for (int n = 0; n < instance.nNodes; ++n) {
-                if (currentSize >= instance.params.cardCons)
+                if (currentSize >= instance.cardCons)
                     break;
                 if (!inComponentBool[n])
                     continue;
@@ -423,7 +423,7 @@ bool SolverCardinality::primalHeuristic() {
                     obj += instance.myPrizes[node];
                 }
                 currentSize++;
-                if (currentSize >= instance.params.cardCons)
+                if (currentSize >= instance.cardCons)
                     break;
             }
         } while (toAdd.size() > 0);
@@ -524,7 +524,7 @@ double SolverCardinality::calculateCurrentSolution(bool save) {
             solutionSize++;
             if (save && currentSolution[i])
                 sumSolution[i]++;
-            if (solutionSize > instance.params.cardCons) {
+            if (solutionSize > instance.cardCons) {
                 Rcout << "strange" << "\n";
             }
             continue;
@@ -557,7 +557,7 @@ double SolverCardinality::calculateCurrentSolution(bool save) {
 
         if (save && currentSolution[nv.id])
             sumSolution[nv.id]++;
-        if (solutionSize >= instance.params.cardCons)
+        if (solutionSize >= instance.cardCons)
             break;
     }
     if (i < myNV.size())

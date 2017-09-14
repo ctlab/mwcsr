@@ -7,11 +7,11 @@ using Rcpp::IntegerVector;
 using Rcpp::LogicalVector;
 using Rcpp::as;
 
-int getInt(List& params, string name){
+int getInt(List& params, string name) {
     return as<IntegerVector>(params[name])[0];
 }
 
-bool getBool(List& params, string name){
+bool getBool(List& params, string name) {
     return as<LogicalVector>(params[name])[0];
 }
 

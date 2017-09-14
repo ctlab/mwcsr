@@ -11,8 +11,6 @@
 #include "SolverLag.h"
 
 class SolverCardinality : public SolverLag {
-
-    double calculateCurrentSolutionPegging();
     double calculateCurrentSolution(bool save);
     bool primalHeuristic();
     int lagrangianPegging();
@@ -21,8 +19,8 @@ class SolverCardinality : public SolverLag {
     double weightLast;
     double weightOutside;
 
-  public:
-    SolverCardinality(Instance &_instance, int _maxIterations);
+public:
+    SolverCardinality(Instance& instance, Parameters& params);
 
     ~SolverCardinality();
 };

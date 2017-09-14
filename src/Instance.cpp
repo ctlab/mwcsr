@@ -17,11 +17,11 @@ using Rcpp::as;
 using std::vector;
 using std::queue;
 
-Instance::Instance(List& parameters, List& network)
-    : components{vector<vector<int>>()},
-      maxRevenueInComponent{vector<double>()}, nComponents{0}, maxPrize{0},
-      minWeight{std::numeric_limits<double>::max()}, sumPrizes{0},
-      nRealTerminals{0}, params(Parameters(parameters)) {
+Instance::Instance(List& network)
+        : components{vector<vector<int>>()},
+          maxRevenueInComponent{vector<double>()}, nComponents{0}, maxPrize{0},
+          minWeight{std::numeric_limits<double>::max()}, sumPrizes{0},
+          nRealTerminals{0} {
 
     readInstance(network);
 
@@ -271,27 +271,27 @@ void Instance::readInstance(List instance) {
     if (instance.containsElementNamed("costs")) {
         costs = as<NumericVector>(instance["costs"]);
     }
-    if(instance.containsElementNamed("budget")){
+    if (instance.containsElementNamed("budget")) {
         budget = instance["budget"];
     }
-    if(instance.containsElementNamed("card")){
-        params.cardCons = instance["card"];
+    if (instance.containsElementNamed("card")) {
+        cardCons = instance["card"];
     }
 
-    for (unsigned i = 0; i < nNodes; i++){
+    for (unsigned i = 0; i < nNodes; i++) {
         adjList.emplace_back();
         myPrizes[i] = scores[i];
         myTerminals[i] = i;
         myBudgetCost[i] = costs[i];
-        if(scores[i] > 0){
+        if (scores[i] > 0) {
             realTerminals[i] = true;
         }
-        if(scores[i] > maxPrize){
+        if (scores[i] > maxPrize) {
             maxPrize = scores[i];
         }
     }
 
-    for(unsigned i = 0; i < nEdges; i++){
+    for (unsigned i = 0; i < nEdges; i++) {
         int from = edges(i, 0) - 1;
         int to = edges(i, 1) - 1;
         adjList[from].push_back(to);

@@ -15,7 +15,6 @@
 #include <vector>
 
 class SolverBudget : public SolverLag {
-
     std::vector<std::vector<double>> M;
 
     double myBound = 0.0;
@@ -24,8 +23,8 @@ class SolverBudget : public SolverLag {
     int lagrangianPegging();
     int addInitCuts();
 
-  public:
-    SolverBudget(Instance &_instance, int _maxIterations);
+public:
+    SolverBudget(Instance& instance, Parameters& params);
     // SolverBudget(const SolverBudget&);
     virtual ~SolverBudget();
 };

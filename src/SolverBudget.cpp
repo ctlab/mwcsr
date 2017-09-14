@@ -17,9 +17,9 @@ using std::queue;
 
 using Rcpp::Rcout;
 
-SolverBudget::SolverBudget(Instance &_instance, int _maxIterations)
-    : SolverLag(_instance, _maxIterations), M{vector<vector<double>>(
-                                                instance.nNodes)} {
+SolverBudget::SolverBudget(Instance& instance, Parameters& params)
+        : SolverLag(instance, params), M{vector<vector<double>>(
+        instance.nNodes)} {
 
     for (int j = 0; j < instance.nNodes; j++) {
         if (instance.trueTerminals[j]) {
@@ -117,9 +117,7 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
             continue;
         } else if (realPrizes[j] <= 0.0 || fixedToZero[j]) {
             continue;
-        }
-
-        else if (realPrizes[j] > 0.0 && instance.myBudgetCost[j] == 0) {
+        } else if (realPrizes[j] > 0.0 && instance.myBudgetCost[j] == 0) {
             currentSolution[j] = 1;
             myBound += realPrizes[j];
             continue;
@@ -152,10 +150,10 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
                 myEntries[trueNodes * i + j] = myEntries[trueNodes * i + j - 1];
                 if (instance.myBudgetCost[jf[j]] <= i) {
                     double value =
-                        myEntries[trueNodes *
+                            myEntries[trueNodes *
                                       (i - instance.myBudgetCost[jf[j]]) +
-                                  j - 1] +
-                        realPrizes[jf[j]];
+                                      j - 1] +
+                            realPrizes[jf[j]];
                     if (value > myEntries[trueNodes * i + j])
                         myEntries[trueNodes * i + j] = value;
                 }
@@ -175,7 +173,7 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
         if ((j2 == 0 && myEntries[j2 + weight2 * trueNodes] > 0) ||
             (j2 > 0 &&
              myEntries[j2 + weight2 * trueNodes] !=
-                 myEntries[j2 - 1 + weight2 * trueNodes])) {
+             myEntries[j2 - 1 + weight2 * trueNodes])) {
             // Rcout<<j<<"\n";
             currentSolution[jf[j2]] = 1;
 
@@ -351,7 +349,7 @@ int SolverBudget::lagrangianPegging() {
         }
         if (addedObj > objHeur + 0.0001) {
             Rcout << "bug " << addedObj << " " << objHeur << " "
-                 << additionalCost << "\n";
+                  << additionalCost << "\n";
             Rf_error("Lagrangian pegging bug");
         }
 
@@ -427,14 +425,14 @@ bool SolverBudget::primalHeuristic() {
         vector<int> inComponentBool = vector<int>(instance.nNodes, false);
 
         priority_queue<nodevaluepair, vector<nodevaluepair>,
-                       greater<nodevaluepair>>
-            myPQueue;
+                greater<nodevaluepair>>
+                myPQueue;
         vector<int> pred = vector<int>(instance.nNodes, -1);
         vector<bool> extracted = vector<bool>(instance.nNodes, false);
         vector<double> distance =
-            vector<double>(instance.nNodes, std::numeric_limits<double>::max());
+                vector<double>(instance.nNodes, std::numeric_limits<double>::max());
         vector<int> myBestSol =
-            vector<int>(instance.nNodes, instance.nNodes + 1);
+                vector<int>(instance.nNodes, instance.nNodes + 1);
 
         incObj += instance.myPrizes[root];
         budget += instance.myBudgetCost[root];
@@ -488,19 +486,19 @@ bool SolverBudget::primalHeuristic() {
                     // "<<l<<" "<<k<<"\n";
                     if (distance[l] >
                         distance[k] +
-                            instance.myBudgetCost[l] * (1 - lpSolution[l]) +
-                            epsOpt)
-                    // if (distance[l] > distance[k] +
-                    // toAdd*(1-lpSolution[l])+epsOpt)
+                        instance.myBudgetCost[l] * (1 - lpSolution[l]) +
+                        epsOpt)
+                        // if (distance[l] > distance[k] +
+                        // toAdd*(1-lpSolution[l])+epsOpt)
                     {
                         // cerr<<distance[l]<<" "<<distance[k]+
                         // instance.myBudgetCost[l]*(1-lpSolution[l])+epsOpt<<"
                         // "<<l<<" "<<k<<"\n";
 
                         distance[l] =
-                            distance[k] +
-                            instance.myBudgetCost[l] * (1 - lpSolution[l]) +
-                            epsOpt;
+                                distance[k] +
+                                instance.myBudgetCost[l] * (1 - lpSolution[l]) +
+                                epsOpt;
                         // distance[l] = distance[k] +
                         // toAdd*(1-lpSolution[l])+epsOpt;
                         pred[l] = k;
@@ -596,7 +594,7 @@ bool SolverBudget::primalHeuristic() {
                         nv.id = j;
                         // nv.value=instance.myPrizes[j];
                         nv.value =
-                            instance.myPrizes[j] / instance.myBudgetCost[j];
+                                instance.myPrizes[j] / instance.myBudgetCost[j];
                         toAdd.push_back(nv);
                     }
                 }

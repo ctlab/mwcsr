@@ -20,7 +20,6 @@ struct Parameters {
     int maxIter = 1000;
     int betaIter = 5;
     bool integer = false;
-    int cardCons = 0;
     int separation = 0;
     int maxAge = 10;
     int outputlag = 1;

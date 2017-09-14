@@ -24,8 +24,8 @@ class Instance {
 
     std::vector<bool> nodesToRemove;
 
-  public:
-    Instance(Rcpp::List&, Rcpp::List&);
+public:
+    Instance(Rcpp::List&);
     ~Instance() = default;
 
     struct cut {
@@ -35,8 +35,6 @@ class Instance {
     };
 
     double transformInternalValue(double value) const;
-
-    Parameters params;
 
     std::vector<double> myPrizes;
     std::vector<double> myBudgetCost;
@@ -67,12 +65,13 @@ class Instance {
     double sumPrizes;
 
     double budget;
+    int cardCons;
 
     int nRealTerminals;
 
     int nFlowNodes;
     int nFlowArcs;
-    std::pair<int, int> *flowArcs;
+    std::pair<int, int>* flowArcs;
 
     std::vector<int> fixedToZero;
     std::vector<int> fixedToOne;
