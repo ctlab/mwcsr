@@ -70,7 +70,7 @@ rmwcs <- function(timelimit = 1800L,
             stop("Invalid score or cost")
         }
 
-        instance <- list(edgelist = as_edgelist(g), scores = scores)
+        instance <- list(edgelist = as_edgelist(g, names = FALSE), scores = scores)
 
         if(!missing(max_cardinality))
             instance$card = as.integer(max_cardinality)

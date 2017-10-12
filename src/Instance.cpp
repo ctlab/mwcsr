@@ -253,7 +253,7 @@ double Instance::transformInternalValue(double value) const {
     return value;
 }
 
-void Instance::readInstance(List instance) {
+void Instance::readInstance(List& instance) {
     auto edges = as<NumericMatrix>(instance["edgelist"]);
     auto scores = as<NumericVector>(instance["scores"]);
 

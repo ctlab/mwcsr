@@ -23,6 +23,7 @@ class Instance {
     int degreeZeroTest();
 
     std::vector<bool> nodesToRemove;
+    void readInstance(Rcpp::List& instance);
 
 public:
     Instance(Rcpp::List&);
@@ -89,7 +90,6 @@ public:
     double gapLag = -1;
     int solSize = 0;
 
-    void readInstance(Rcpp::List instance);
 };
 
 #endif /* INSTANCE_INSTANCE_H_ */
