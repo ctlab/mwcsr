@@ -328,4 +328,5 @@ void Instance::readInstance(List& instance) {
     }
     
     readEdges(edges);
+    nEdges *= 2;
 }
