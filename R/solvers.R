@@ -16,14 +16,14 @@
 #' @import igraph
 rmwcs <- function(timelimit = 1800L,
                   max_iterations = 1000L,
-                  beta_iterations = 5L,
+                  beta_iterations = 50L,
                   separation = "strong",
-                  max_age = 10L,
+                  max_age = 1000L,
                   startcons = TRUE,
                   pegging = TRUE,
-                  sep_iterations= 10L,
-                  sep_iter_freeze = 50L,
-                  heur_iterations = 10L,
+                  sep_iterations= 1L,
+                  sep_iter_freeze = 1L,
+                  heur_iterations = 1L,
                   subgradient = "classic",
                   beta = 2.0,
                   verbose = FALSE) {
@@ -69,8 +69,16 @@ rmwcs <- function(timelimit = 1800L,
         if(any(is.na(scores)) || (!missing(budget) && any(is.na(costs)))){
             stop("Invalid score or cost")
         }
+        edge_list = as_edgelist(g, names = FALSE)
+        edge_problem = FALSE
+        if ("score" %in% list.edge.attributes(g)) {
+            edge_scores <- as.numeric(E(g)$score)
+            stopifnot(all(edge_scores <= 0))
+            edge_list <- cbind(edge_list, edge_scores)
+            edge_problem = TRUE
+        }
 
-        instance <- list(edgelist = as_edgelist(g, names = FALSE), scores = scores)
+        instance <- list(edgelist = edge_list, scores = scores)
 
         if(!missing(max_cardinality))
             instance$card = as.integer(max_cardinality)
@@ -81,6 +89,12 @@ rmwcs <- function(timelimit = 1800L,
         }
 
         vs <- rmwcs_solve(instance, args)
-        induced.subgraph(g, vids = vs)
+        if (length(vs) > 1 && edge_problem) {
+            vs <- vs[vs > length(V(g))]
+            vs <- vs - length(V(g))
+            subgraph.edges(g, eids = vs)
+        } else {
+            induced.subgraph(g, vids = vs)
+        }
     }
 }

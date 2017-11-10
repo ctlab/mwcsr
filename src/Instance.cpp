@@ -253,12 +253,7 @@ double Instance::transformInternalValue(double value) const {
     return value;
 }
 
-void Instance::readInstance(List& instance) {
-    auto edges = as<NumericMatrix>(instance["edgelist"]);
-    auto scores = as<NumericVector>(instance["scores"]);
-
-    nNodes = static_cast<unsigned>(scores.size());
-    nEdges = static_cast<unsigned>(edges.nrow());
+void Instance::initStructures(unsigned nNodes) {
     realTerminals = vector<bool>(nNodes, false);
     trueTerminals = vector<bool>(nNodes, false);
     myTerminals = vector<int>(nNodes, -1);
@@ -266,6 +261,49 @@ void Instance::readInstance(List& instance) {
     nodesToRemove = vector<bool>(nNodes, false);
     myPrizes = vector<double>(nNodes);
     myBudgetCost = vector<double>(nNodes, 1);
+
+    for (unsigned i = 0; i < nNodes; i++){
+        adjList.emplace_back();
+        myTerminals[i] = i;
+    }
+}
+
+void Instance::addEdge(unsigned v, unsigned u) {
+    adjList[v].push_back(u);
+    adjList[u].push_back(v);
+}
+
+void Instance::readEdges(NumericMatrix& edges) {
+    nEdges = static_cast<unsigned>(edges.nrow());
+    bool edge_problem = edges.ncol() == 3;
+
+    if (edge_problem) {
+        for (unsigned i = 0; i < nEdges; i++) {
+            int from = edges(i, 0) - 1;
+            int to = edges(i, 1) - 1;
+            double weight = edges(i, 2);
+            myPrizes[i + nNodes] = weight;
+            addEdge(from, i + nNodes);
+            addEdge(i + nNodes, to);
+        }
+        nNodes += nEdges;
+        nEdges *= 2;
+    } else {
+        for (unsigned i = 0; i < nEdges; i++) {
+            int from = edges(i, 0) - 1;
+            int to = edges(i, 1) - 1;
+            addEdge(from, to);
+        }
+    }
+}
+
+void Instance::readInstance(List& instance) {
+    auto edges = as<NumericMatrix>(instance["edgelist"]);
+    auto scores = as<NumericVector>(instance["scores"]);
+
+    nNodes = static_cast<unsigned>(scores.size());
+    unsigned m = static_cast<unsigned>(edges.nrow());
+    initStructures(edges.ncol() == 3 ? nNodes + m : nNodes);
 
     NumericVector costs(myBudgetCost.begin(), myBudgetCost.end());
     if (instance.containsElementNamed("costs")) {
@@ -279,22 +317,15 @@ void Instance::readInstance(List& instance) {
     }
 
     for (unsigned i = 0; i < nNodes; i++) {
-        adjList.emplace_back();
         myPrizes[i] = scores[i];
-        myTerminals[i] = i;
         myBudgetCost[i] = costs[i];
-        if (scores[i] > 0) {
+        if (myPrizes[i] > 0) {
             realTerminals[i] = true;
         }
-        if (scores[i] > maxPrize) {
-            maxPrize = scores[i];
+        if (myPrizes[i] > maxPrize) {
+            maxPrize = myPrizes[i];
         }
     }
-
-    for (unsigned i = 0; i < nEdges; i++) {
-        int from = edges(i, 0) - 1;
-        int to = edges(i, 1) - 1;
-        adjList[from].push_back(to);
-        adjList[to].push_back(from);
-    }
+    
+    readEdges(edges);
 }

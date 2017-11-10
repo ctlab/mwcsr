@@ -29,6 +29,16 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
     test_graph(make_full_graph)
 })
 
+test_that("rmwcs works on graphs with negative edges", {
+    g <- make_empty_graph(3, directed = FALSE)
+    V(g)$score <- c(2, 3, 3)
+    g <- add_edges(g, c(1, 2, 2, 3))
+    E(g)$score <- c(-1, -10)
+    solve <- rmwcs()
+    module <- solve(g)
+    expect_true(length(V(module)) == 2 && length(E(module)) == 1)
+})
+
 test_that("rmwcs solver builds connected solutions on GAM instances", {
     solve <- rmwcs()
     for (instance in GAM) {
