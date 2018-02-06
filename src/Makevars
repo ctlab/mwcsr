@@ -1,3 +1,7 @@
 CXX_STD = CXX11
 
-PKG_CPPFLAGS = -Iinclude
+OBJECTS_RMWCS = rmwcs/Instance.o rmwcs/Parameters.o rmwcs/SolverBudget.o \
+rmwcs/SolverCardinality.o rmwcs/SolverClassic.o rmwcs/SolverLag.o \
+rmwcs/rmwcs.o
+
+OBJECTS = $(OBJECTS_RMWCS)
