@@ -59,6 +59,7 @@ namespace annealing {
             return false;
         }
         if (comp_size == size) {
+            boundary.add(e);
             return true;
         }
         if (comp_size == size - 1) {
@@ -70,6 +71,10 @@ namespace annealing {
     }
 
     void SimulatedAnnealing::remove_vertex(size_t v) {
-
+        size--;
+        for (Edge e: graph.neighbours(v)) {
+            boundary.remove(e.num());
+        }
+        module_vertices.remove(v);
     }
 }
