@@ -98,3 +98,30 @@ rmwcs <- function(timelimit = 1800L,
         }
     }
 }
+
+#' @export
+mwcs.solver <- function() {
+
+}
+
+#' @export
+gmwcs.solver <- function() {
+
+}
+
+#' @export
+java_solver <- function(cplex_jar,
+                        cplex_bin,
+                        solver_jar,
+                        timelimit,
+                        root,
+                        threads,
+                        unrooted_time,
+                        rooted_time) {
+    rJava::.jinit(classpath = c(cplex_jar, solver_jar), parameters = "-Xmx4m")
+
+    function(g) {
+        args <- rJava::.jarray(c("-h"))
+        rJava::J("ru.ifmo.ctddev.gmwcs.Main")$main(rJava::.jarray("-h"))
+    }
+}

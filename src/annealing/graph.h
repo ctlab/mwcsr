@@ -15,16 +15,23 @@ namespace annealing {
         bool operator==(const Edge& e);
         size_t opposite(size_t v);
         double weight();
+        size_t num();
+        size_t from();
+        size_t to();
     };
 
     class Graph {
         std::vector<double> vertex_weights;
         std::vector<std::vector<Edge>> adj;
+        std::vector<Edge> edges;
         size_t m;
     public:
         explicit Graph(size_t n);
         void add_edge(size_t v, size_t u, double weight);
-        const std::vector<Edge>& neighbours(size_t v);
+        const std::vector<Edge>& neighbours(size_t v) const;
+        size_t size() const;
+        size_t edgeset_size() const;
+        const Edge& edge(size_t e) const;
     };
 
 }

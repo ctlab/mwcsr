@@ -26,16 +26,42 @@ namespace annealing {
         return e.id == id;
     }
 
+    size_t Edge::num() {
+        return id;
+    }
+
+    size_t Edge::from() {
+        return v;
+    }
+
+    size_t Edge::to() {
+        return u;
+    }
+
     Graph::Graph(size_t n) {
         vertex_weights.resize(n);
         adj.resize(n, vector<Edge>());
     }
 
     void Graph::add_edge(size_t v, size_t u, double weight) {
-        adj[v].emplace_back(v, u, weight, m++);
+        Edge e(v, u, weight, m++);
+        adj[v].push_back(e);
+        edges.push_back(e);
     }
 
-    const vector<Edge> &Graph::neighbours(size_t v) {
+    const vector<Edge> &Graph::neighbours(size_t v) const {
         return adj[v];
+    }
+
+    size_t Graph::size() const {
+        return adj.size();
+    }
+
+    size_t Graph::edgeset_size() const {
+        return m;
+    }
+
+    const Edge &Graph::edge(size_t e) const {
+        return edges[e];
     }
 }
