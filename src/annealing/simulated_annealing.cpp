@@ -73,7 +73,9 @@ namespace annealing {
     void SimulatedAnnealing::remove_vertex(size_t v) {
         size--;
         for (Edge e: graph.neighbours(v)) {
-            boundary.remove(e.num());
+            if (boundary.contains(e.num())) {
+                boundary.remove(e.num());
+            }
         }
         module_vertices.remove(v);
     }
