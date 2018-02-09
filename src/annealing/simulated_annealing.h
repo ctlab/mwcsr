@@ -34,6 +34,7 @@ namespace annealing {
         Index module_edges;
         Index boundary;
         vector<bool> module_vertices;
+        vector<size_t> degree;
 
         double score = 0;
         size_t size = 0;
@@ -56,7 +57,7 @@ namespace annealing {
 
         void add_vertex(size_t v);
         void add_edge(size_t e);
-        bool remove_edge(size_t e);
+        bool remove_edge(size_t e, size_t v, size_t u);
         void remove_vertex(size_t v);
 
         bool accepts(double diff);

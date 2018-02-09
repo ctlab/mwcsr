@@ -14,6 +14,7 @@ namespace annealing {
                                            temp_func(cooling_schedule),
                                            tokens{graph.edgeset_size()},
                                            random_engine(random_engine),
+                                           degree{graph.size(), 0},
                                            unif{random_engine},
                                            dynamic_graph{graph.size()},
                                            module_vertices{graph.size(), false},
@@ -52,6 +53,8 @@ namespace annealing {
         Edge edge = graph.edge(e);
         size_t v = edge.from();
         size_t u = edge.to();
+        ++degree[v];
+        ++degree[u];
         if (!module_vertices[v]) {
             add_vertex(v);
         }
@@ -62,10 +65,8 @@ namespace annealing {
         score += edge.weight();
     }
 
-    bool SimulatedAnnealing::remove_edge(size_t e) {
+    bool SimulatedAnnealing::remove_edge(size_t e, size_t v, size_t u) {
         Edge edge = graph.edge(e);
-        size_t v = edge.from();
-        size_t u = edge.to();
         dynamic_graph.remove(std::move(tokens[e]));
         size_t comp_size = dynamic_graph.component_size(v);
         if (comp_size < size - 1 && comp_size != 1) {
@@ -77,11 +78,13 @@ namespace annealing {
             return true;
         }
         if (comp_size == size - 1) {
-            remove_vertex(v);
-        } else {
             remove_vertex(u);
+        } else {
+            remove_vertex(v);
         }
         score -= edge.weight();
+        --degree[v];
+        --degree[u];
         return true;
     }
 
@@ -140,12 +143,44 @@ namespace annealing {
         if (accepts(diff)) {
             add_edge(e);
         }
+        score += diff;
     }
 
     void SimulatedAnnealing::remove_from_module() {
         size_t e = module_edges.random();
         const Edge& edge = graph.edge(e);
-        // TODO TODO TODO TODO TODO TODO TODOOOOOO TODODODODO
+        double diff = -edge.weight();
+        size_t v = edge.from();
+        size_t u = edge.to();
+        if (degree[v] == 1 && degree[u] == 1) {
+            if (unif() > 0.5) {
+                std::swap(v, u);
+            }
+            diff -= graph.weight(u);
+            if (accepts(diff)) {
+                if(remove_edge(e, v, u)) {
+                    score += diff;
+                }
+            }
+            return;
+        }
+
+        if (degree[v] == 1) {
+            std::swap(v, u);
+        }
+
+        if (degree[u] == 1) {
+            diff -= graph.weight(v);
+            if (accepts(diff)) {
+                if (remove_edge(e, v, u)) {
+                    score += diff;
+                }
+            }
+            return;
+        }
+        if (remove_edge(e, v, u)) {
+            score += diff;
+        }
     }
 
     StandardUniformDistribution::StandardUniformDistribution(RandomEngine &re) :re(re) {}

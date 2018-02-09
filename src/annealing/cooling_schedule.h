@@ -3,6 +3,7 @@
 
 
 class CoolingSchedule {
+public:
     virtual double temperature() = 0;
 };
 
