@@ -14,10 +14,10 @@ namespace annealing {
         Edge(size_t from, size_t to, double weight, size_t num);
         bool operator==(const Edge& e);
         size_t opposite(size_t v);
-        double weight();
+        double weight()const;
         size_t num();
-        size_t from();
-        size_t to();
+        size_t from()const;
+        size_t to()const;
     };
 
     class Graph {
@@ -32,6 +32,7 @@ namespace annealing {
         size_t size() const;
         size_t edgeset_size() const;
         const Edge& edge(size_t e) const;
+        double weight(size_t v) const;
     };
 
 }

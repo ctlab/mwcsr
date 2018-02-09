@@ -1,15 +1,22 @@
 #include "simulated_annealing.h"
 
+namespace {
+    double probability(double e, double es, double temp) {
+        return std::min(1.0, exp(es - e / temp));
+    }
+}
+
 namespace annealing {
 
-    SimulatedAnnealing::SimulatedAnnealing(const Graph &graph, std::function<uint_fast32_t> &random_engine)
+    SimulatedAnnealing::SimulatedAnnealing(const Graph &graph, std::function<uint_fast32_t> &random_engine,
+                                           CoolingSchedule& cooling_schedule)
                                           :graph(graph),
-                                           score(0.0),
-                                           size(0),
+                                           temp_func(cooling_schedule),
                                            tokens{graph.edgeset_size()},
                                            random_engine(random_engine),
+                                           unif{random_engine},
                                            dynamic_graph{graph.size()},
-                                           module_vertices{graph.size(), random_engine},
+                                           module_vertices{graph.size(), false},
                                            module_edges{graph.edgeset_size(), random_engine},
                                            boundary{graph.edgeset_size(), random_engine} {}
 
@@ -18,12 +25,17 @@ namespace annealing {
     }
 
     void SimulatedAnnealing::step() {
-
+        temperature = temp_func.temperature();
+        if (size == 0) {
+            empty_module_step();
+        } else {
+            edge_step();
+        }
     }
 
     void SimulatedAnnealing::add_vertex(size_t v) {
         size++;
-        module_vertices.add(v);
+        module_vertices[v] = true;
         for (Edge e: graph.neighbours(v)) {
             size_t u = e.opposite(v);
             size_t e_id = e.num();
@@ -31,6 +43,7 @@ namespace annealing {
                 boundary.add(e_id);
             }
         }
+        score += graph.weight(v);
     }
 
     void SimulatedAnnealing::add_edge(size_t e) {
@@ -39,13 +52,14 @@ namespace annealing {
         Edge edge = graph.edge(e);
         size_t v = edge.from();
         size_t u = edge.to();
-        if (!module_vertices.contains(v)) {
+        if (!module_vertices[v]) {
             add_vertex(v);
         }
-        if (!module_vertices.contains(u)) {
+        if (!module_vertices[u]) {
             add_vertex(u);
         }
         tokens[e] = std::move(dynamic_graph.add(v, u));
+        score += edge.weight();
     }
 
     bool SimulatedAnnealing::remove_edge(size_t e) {
@@ -67,6 +81,7 @@ namespace annealing {
         } else {
             remove_vertex(u);
         }
+        score -= edge.weight();
         return true;
     }
 
@@ -77,6 +92,65 @@ namespace annealing {
                 boundary.remove(e.num());
             }
         }
-        module_vertices.remove(v);
+        module_vertices[v] = false;
+        score -= graph.weight(v);
+    }
+
+    void SimulatedAnnealing::empty_module_step() {
+        size_t v = uniform(graph.size());
+        if (accepts(graph.weight(v))) {
+            add_vertex(v);
+        }
+    }
+
+    bool SimulatedAnnealing::accepts(double diff) {
+        double prob = probability(score, score + diff, temperature);
+        return unif() < prob;
+    }
+
+    void SimulatedAnnealing::edge_step() {
+        size_t bdr_sz = boundary.size();
+        size_t mdl_sz = module_edges.size();
+        size_t r = uniform(bdr_sz + mdl_sz);
+        if (r < bdr_sz) {
+            add_from_bdr();
+        } else {
+            remove_from_module();
+        }
+    }
+
+    size_t SimulatedAnnealing::uniform(size_t n) {
+        std::uniform_int_distribution uniform_int_distribution(0, n - 1);
+        return (size_t)uniform_int_distribution(random_engine);
+    }
+
+    void SimulatedAnnealing::add_from_bdr() {
+        size_t e = boundary.random();
+        const Edge& edge = graph.edge(e);
+        size_t v = edge.from();
+        size_t u = edge.to();
+        double diff = 0.0;
+        if (!module_vertices[v]) {
+            diff += graph.weight(v);
+        }
+        if (!module_vertices[u]) {
+            diff += graph.weight(u);
+        }
+        diff += edge.weight();
+        if (accepts(diff)) {
+            add_edge(e);
+        }
+    }
+
+    void SimulatedAnnealing::remove_from_module() {
+        size_t e = module_edges.random();
+        const Edge& edge = graph.edge(e);
+        // TODO TODO TODO TODO TODO TODO TODOOOOOO TODODODODO
+    }
+
+    StandardUniformDistribution::StandardUniformDistribution(RandomEngine &re) :re(re) {}
+
+    double StandardUniformDistribution::operator()(){
+        return unif(re);
     }
 }

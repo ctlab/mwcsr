@@ -8,7 +8,7 @@ namespace annealing {
 
     Edge::Edge(size_t from, size_t to, double weight, size_t num) :v(from), u(to), w(weight), id(num) {}
 
-    double Edge::weight() {
+    double Edge::weight()const {
         return w;
     }
 
@@ -30,11 +30,11 @@ namespace annealing {
         return id;
     }
 
-    size_t Edge::from() {
+    size_t Edge::from()const {
         return v;
     }
 
-    size_t Edge::to() {
+    size_t Edge::to()const {
         return u;
     }
 
@@ -63,5 +63,9 @@ namespace annealing {
 
     const Edge &Graph::edge(size_t e) const {
         return edges[e];
+    }
+
+    double Graph::weight(size_t v) const {
+        return vertex_weights[v];
     }
 }
