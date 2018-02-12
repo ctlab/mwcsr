@@ -6,9 +6,9 @@ using std::vector;
 
 namespace annealing {
 
-    Edge::Edge(size_t from, size_t to, double weight, size_t num) :v(from), u(to), w(weight), id(num) {}
+    Edge::Edge(size_t from, size_t to, double weight, size_t num) : v(from), u(to), w(weight), id(num) {}
 
-    double Edge::weight()const {
+    double Edge::weight() const {
         return w;
     }
 
@@ -22,7 +22,7 @@ namespace annealing {
         }
     }
 
-    bool Edge::operator==(const Edge &e) {
+    bool Edge::operator==(const Edge& e) {
         return e.id == id;
     }
 
@@ -30,11 +30,11 @@ namespace annealing {
         return id;
     }
 
-    size_t Edge::from()const {
+    size_t Edge::from() const {
         return v;
     }
 
-    size_t Edge::to()const {
+    size_t Edge::to() const {
         return u;
     }
 
@@ -49,7 +49,7 @@ namespace annealing {
         edges.push_back(e);
     }
 
-    const vector<Edge> &Graph::neighbours(size_t v) const {
+    const vector<Edge>& Graph::neighbours(size_t v) const {
         return adj[v];
     }
 
@@ -61,11 +61,13 @@ namespace annealing {
         return m;
     }
 
-    const Edge &Graph::edge(size_t e) const {
+    const Edge& Graph::edge(size_t e) const {
         return edges[e];
     }
 
     double Graph::weight(size_t v) const {
         return vertex_weights[v];
     }
+
+    Graph::Graph() {}
 }

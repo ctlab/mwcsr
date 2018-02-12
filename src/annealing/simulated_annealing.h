@@ -9,6 +9,7 @@
 #include "graph.h"
 #include "index.h"
 #include "definitions.h"
+#include "module.h"
 
 #include "../dgraph/DynamicGraph.h"
 #include "cooling_schedule.h"
@@ -18,9 +19,10 @@ namespace annealing {
 
     class StandardUniformDistribution {
         RandomEngine& re;
-        std::uniform_real_distribution unif;
+        std::uniform_real_distribution<> unif;
     public:
         explicit StandardUniformDistribution(RandomEngine& re);
+
         double operator()();
 
     };
@@ -33,37 +35,33 @@ namespace annealing {
         const Graph& graph;
         Index module_edges;
         Index boundary;
-        vector<bool> module_vertices;
+        Index module_vertices;
         vector<size_t> degree;
 
         double score = 0;
         size_t size = 0;
         std::vector<EdgeToken> tokens;
-        CoolingSchedule temp_func;
         double temperature;
 
-        vector<size_t> best_module;
         double best_score = 0;
+        Module best;
 
     public:
-        explicit SimulatedAnnealing(const Graph& graph, RandomEngine& random_engine,
-                                    CoolingSchedule& cooling_schedule);
-        void run();
+        explicit SimulatedAnnealing(const Graph& graph, RandomEngine& random_engine);
+
+        void run(CoolingSchedule& schedule);
 
     private:
-        void step();
+        void step(CoolingSchedule& schedule);
+
         void empty_module_step();
         void edge_step();
-
         void add_vertex(size_t v);
         void add_edge(size_t e);
         bool remove_edge(size_t e, size_t v, size_t u);
         void remove_vertex(size_t v);
-
         bool accepts(double diff);
-
         size_t uniform(size_t n);
-
         void add_from_bdr();
         void remove_from_module();
     };

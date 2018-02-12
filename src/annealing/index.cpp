@@ -4,7 +4,7 @@
 
 namespace annealing {
 
-    Index::Index(size_t n, RandomEngine& re) :re(re), n(n) {
+    Index::Index(size_t n, RandomEngine& re) : re(re), n(n) {
         map.resize(n, 0);
         exists.resize(n, false);
     }
@@ -45,5 +45,9 @@ namespace annealing {
 
     size_t Index::size() {
         return data.size();
+    }
+
+    std::vector<size_t> Index::content() {
+        return data;
     }
 }

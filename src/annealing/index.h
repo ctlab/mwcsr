@@ -13,7 +13,7 @@ namespace annealing {
         std::vector<size_t> map;
         std::vector<size_t> data;
         std::vector<bool> exists;
-        std::function<uint_fast32_t> &re;
+        RandomEngine& re;
         size_t n;
     public:
         Index(size_t n, RandomEngine& re);
@@ -23,6 +23,7 @@ namespace annealing {
         size_t random();
         size_t operator()(size_t);
         size_t size();
+        std::vector<size_t> content();
     };
 
 }

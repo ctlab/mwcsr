@@ -8,35 +8,39 @@ namespace {
 
 namespace annealing {
 
-    SimulatedAnnealing::SimulatedAnnealing(const Graph &graph, std::function<uint_fast32_t> &random_engine,
-                                           CoolingSchedule& cooling_schedule)
+    SimulatedAnnealing::SimulatedAnnealing(const Graph &graph, RandomEngine& random_engine)
                                           :graph(graph),
-                                           temp_func(cooling_schedule),
                                            tokens{graph.edgeset_size()},
                                            random_engine(random_engine),
                                            degree{graph.size(), 0},
                                            unif{random_engine},
                                            dynamic_graph{graph.size()},
-                                           module_vertices{graph.size(), false},
+                                           module_vertices{graph.size(), random_engine},
                                            module_edges{graph.edgeset_size(), random_engine},
                                            boundary{graph.edgeset_size(), random_engine} {}
 
-    void SimulatedAnnealing::run() {
+    void SimulatedAnnealing::run(CoolingSchedule& schedule) {
+        while (schedule.is_hot()) {
 
+        }
     }
 
-    void SimulatedAnnealing::step() {
-        temperature = temp_func.temperature();
+    void SimulatedAnnealing::step(CoolingSchedule& schedule) {
+        temperature = schedule.temperature();
         if (size == 0) {
             empty_module_step();
         } else {
             edge_step();
         }
+        if (score > best_score) {
+            score = best_score;
+            best = Module(graph, module_vertices.content(), module_edges.content());
+        }
     }
 
     void SimulatedAnnealing::add_vertex(size_t v) {
         size++;
-        module_vertices[v] = true;
+        module_vertices.add(v);
         for (Edge e: graph.neighbours(v)) {
             size_t u = e.opposite(v);
             size_t e_id = e.num();
@@ -55,10 +59,10 @@ namespace annealing {
         size_t u = edge.to();
         ++degree[v];
         ++degree[u];
-        if (!module_vertices[v]) {
+        if (!module_vertices.contains(v)) {
             add_vertex(v);
         }
-        if (!module_vertices[u]) {
+        if (!module_vertices.contains(u)) {
             add_vertex(u);
         }
         tokens[e] = std::move(dynamic_graph.add(v, u));
@@ -95,7 +99,7 @@ namespace annealing {
                 boundary.remove(e.num());
             }
         }
-        module_vertices[v] = false;
+        module_vertices.remove(v);
         score -= graph.weight(v);
     }
 
@@ -123,8 +127,8 @@ namespace annealing {
     }
 
     size_t SimulatedAnnealing::uniform(size_t n) {
-        std::uniform_int_distribution uniform_int_distribution(0, n - 1);
-        return (size_t)uniform_int_distribution(random_engine);
+        std::uniform_int_distribution<size_t> sampler(0, n - 1);
+        return sampler(random_engine);
     }
 
     void SimulatedAnnealing::add_from_bdr() {
@@ -133,10 +137,10 @@ namespace annealing {
         size_t v = edge.from();
         size_t u = edge.to();
         double diff = 0.0;
-        if (!module_vertices[v]) {
+        if (!module_vertices.contains(v)) {
             diff += graph.weight(v);
         }
-        if (!module_vertices[u]) {
+        if (!module_vertices.contains(u)) {
             diff += graph.weight(u);
         }
         diff += edge.weight();

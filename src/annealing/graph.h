@@ -26,6 +26,7 @@ namespace annealing {
         std::vector<Edge> edges;
         size_t m;
     public:
+        Graph();
         explicit Graph(size_t n);
         void add_edge(size_t v, size_t u, double weight);
         const std::vector<Edge>& neighbours(size_t v) const;

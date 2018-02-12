@@ -5,7 +5,7 @@
 #include <functional>
 
 namespace annealing {
-    typedef std::function<uint_fast32_t> RandomEngine;
+    typedef std::mt19937 RandomEngine;
 }
 
 #endif //ANNEALING_DEFINITIONS_H
