@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <cmath>
 
 #include "graph.h"
 
@@ -45,7 +46,8 @@ namespace annealing {
 
     void Graph::add_edge(size_t v, size_t u, double weight) {
         Edge e(v, u, weight, m++);
-        adj[v].push_back(e);
+        adj.at(v).push_back(e);
+        adj.at(u).push_back(e);
         edges.push_back(e);
     }
 
@@ -70,4 +72,8 @@ namespace annealing {
     }
 
     Graph::Graph() {}
+
+    void Graph::set_weight(size_t v, double w) {
+        vertex_weights.at(v) = w;
+    }
 }

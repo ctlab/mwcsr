@@ -25,10 +25,13 @@ namespace annealing {
         std::vector<std::vector<Edge>> adj;
         std::vector<Edge> edges;
         size_t m;
+
     public:
         Graph();
         explicit Graph(size_t n);
         void add_edge(size_t v, size_t u, double weight);
+        void set_weight(size_t v, double w);
+
         const std::vector<Edge>& neighbours(size_t v) const;
         size_t size() const;
         size_t edgeset_size() const;
