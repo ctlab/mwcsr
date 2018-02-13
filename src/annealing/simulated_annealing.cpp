@@ -21,12 +21,12 @@ namespace annealing {
 
     void SimulatedAnnealing::run(CoolingSchedule& schedule) {
         while (schedule.is_hot()) {
-
+            temperature = schedule.next();
+            strike();
         }
     }
 
-    void SimulatedAnnealing::step(CoolingSchedule& schedule) {
-        temperature = schedule.temperature();
+    void SimulatedAnnealing::strike() {
         if (size == 0) {
             empty_module_step();
         } else {

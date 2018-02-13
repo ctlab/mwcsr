@@ -52,7 +52,7 @@ namespace annealing {
         void run(CoolingSchedule& schedule);
 
     private:
-        void step(CoolingSchedule& schedule);
+        void strike();
 
         void empty_module_step();
         void edge_step();
