@@ -100,6 +100,15 @@ rmwcs <- function(timelimit = 1800L,
 }
 
 #' @export
+annealing_solver(initial_temperature = 42.0,
+                 final_temperature = 1e-4,
+                 cooling_scheme = c("fast", "Boltzmann")) {
+    function(g) {
+
+    }
+}
+
+#' @export
 mwcs.solver <- function() {
 
 }
