@@ -56,8 +56,15 @@ test_that("error is throwing when trying to assign bad values", {
 
 test_that("root setting works", {
     g <- make_ring(3)
+    V(g)$name <- letters[1:3]
+
     instance <- mwcs_instance(g, parse_vertex_weights = FALSE)
     root(instance) <- 1L
     expect_is(instance, "rooted_mwcs_instance")
-    expect_error(root(instance) <- 0)
+
+    expect_error(root(instance) <- 0L)
+    expect_error(root(instance) <- NA)
+
+    root(instance) <- "a"
+    expect_equal(instance$root, 1)
 })
