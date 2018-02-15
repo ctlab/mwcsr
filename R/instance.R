@@ -1,3 +1,4 @@
+#' ctor for mwcs_instance
 #' @export
 mwcs_instance <- function(graph,
                           parse_vertex_weights = TRUE,
@@ -86,11 +87,13 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
     x
 }
 
+#' assignment operator for vertex weights
 #' @export
 `vertex_weights<-` <- function(x, value) {
     set_parameter(x, value, parameter = "vertex_weights", sub_op = igraph::V)
 }
 
+#' assignment operator for edge weights
 #' @export
 `edge_weights<-` <- function (x, value) {
     x <- set_parameter(x, value, parameter = "edge_weights", sub_op = igraph::E,
@@ -101,6 +104,7 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
     x
 }
 
+#' assignment operator for budgets
 #' @export
 `budgets<-` <- function(x, value) {
     x <- set_parameter(x, value, parameter = "budgets", sub_op = igraph::V,
@@ -111,6 +115,7 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
     x
 }
 
+#' assignment operator for the root
 #' @export
 `root<-` <- function(x, value) {
     check_mwcs(x)
@@ -133,6 +138,7 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
     x
 }
 
+#' equality operator for mwcs instances
 #' @export
 `==.mwcs_instance` <- function(x, y) {
     setequal(class(x), class(y)) &

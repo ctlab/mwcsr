@@ -99,16 +99,19 @@ rmwcs <- function(timelimit = 1800L,
     }
 }
 
+#' ctor for mwcs solver
 #' @export
 mwcs.solver <- function() {
 
 }
 
+#' ctor for gmwcs solver
 #' @export
 gmwcs.solver <- function() {
 
 }
 
+#' ctor for java solver
 #' @export
 java_solver <- function(cplex_jar,
                         cplex_bin,
