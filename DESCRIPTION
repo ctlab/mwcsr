@@ -12,6 +12,7 @@ Description: The package implements algorithms for solving various Maximum
     variant of the problem.
 Depends: R (>= 3.3)
 Imports:
+    rJava,
     igraph,
     Rcpp, 
     methods

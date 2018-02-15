@@ -115,13 +115,17 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 `root<-` <- function(x, value) {
     check_mwcs(x)
     if (is.integer(value)) {
+        if (value < 1 | value > length(V(x$graph))) {
+            stop("No such vertex in the graph")
+        }
         x$root <- value
-    }
-    if (is.character(value)) {
+    } else if (is.character(value)) {
         if (!(value %in% names(V(x$graph)))) {
             stop("No such vertex in the graph")
         }
         x$root <- which(names(V(x$graph)) == value)
+    } else {
+        stop("Argument should be integer of vertex name")
     }
     if (!inherits(x, "rooted_mwcs_instance")) {
         class(x) <- c("rooted_mwcs_instance", class(x))

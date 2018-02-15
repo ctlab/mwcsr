@@ -41,3 +41,23 @@ test_that("parsing of edge weights and budgets works", {
     expect_setequal(names(instance), names(expected))
     expect_equal(instance[names(expected)], expected[names(expected)])
 })
+
+test_that("error is throwing when trying to assign bad values", {
+    g <- igraph::make_ring(4)
+
+    V(g)$weight <- c(1, 2, 3, "")
+    expect_error(mwcs_instance(g))
+
+    V(g)$weight <- c(1, 2, 3, 4)
+    instance <- mwcs_instance(g)
+
+    expect_error(budgets(instance) <- setNames(5, "a"))
+})
+
+test_that("root setting works", {
+    g <- make_ring(3)
+    instance <- mwcs_instance(g, parse_vertex_weights = FALSE)
+    root(instance) <- 1L
+    expect_is(instance, "rooted_mwcs_instance")
+    expect_error(root(instance) <- 0)
+})
