@@ -7,6 +7,15 @@
 mwcs_instance(graph, parse_vertex_weights = TRUE,
   parse_edge_weights = FALSE, parse_budgets = FALSE)
 }
+\arguments{
+\item{graph}{a graph}
+
+\item{parse_vertex_weights}{wether or not parse vertex attribute "weight"}
+
+\item{parse_edge_weights}{wether or not parse edge attribute "weight"}
+
+\item{parse_budgets}{wether or not parse vertex attribute "budget"}
+}
 \description{
 ctor for mwcs_instance
 }

@@ -1,4 +1,8 @@
 #' ctor for mwcs_instance
+#' @param graph a graph
+#' @param parse_vertex_weights wether or not parse vertex attribute "weight"
+#' @param parse_edge_weights wether or not parse edge attribute "weight"
+#' @param parse_budgets wether or not parse vertex attribute "budget"
 #' @export
 mwcs_instance <- function(graph,
                           parse_vertex_weights = TRUE,
@@ -88,12 +92,16 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 }
 
 #' assignment operator for vertex weights
+#' @param x a variable name.
+#' @param value a value to be assigned to x.
 #' @export
 `vertex_weights<-` <- function(x, value) {
     set_parameter(x, value, parameter = "vertex_weights", sub_op = igraph::V)
 }
 
 #' assignment operator for edge weights
+#' @param x a variable name.
+#' @param value a value to be assigned to x.
 #' @export
 `edge_weights<-` <- function (x, value) {
     x <- set_parameter(x, value, parameter = "edge_weights", sub_op = igraph::E,
@@ -105,6 +113,8 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 }
 
 #' assignment operator for budgets
+#' @param x a variable name.
+#' @param value a value to be assigned to x.
 #' @export
 `budgets<-` <- function(x, value) {
     x <- set_parameter(x, value, parameter = "budgets", sub_op = igraph::V,
@@ -116,6 +126,8 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 }
 
 #' assignment operator for the root
+#' @param x a variable name.
+#' @param value a value to be assigned to x.
 #' @export
 `root<-` <- function(x, value) {
     check_mwcs(x)
@@ -139,6 +151,7 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 }
 
 #' equality operator for mwcs instances
+#' @param x,y mwcs instances
 #' @export
 `==.mwcs_instance` <- function(x, y) {
     setequal(class(x), class(y)) &

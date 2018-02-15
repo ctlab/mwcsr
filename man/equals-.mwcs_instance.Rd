@@ -6,6 +6,9 @@
 \usage{
 \method{==}{mwcs_instance}(x, y)
 }
+\arguments{
+\item{x, y}{mwcs instances}
+}
 \description{
 equality operator for mwcs instances
 }

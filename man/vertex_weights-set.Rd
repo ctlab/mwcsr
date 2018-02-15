@@ -6,6 +6,11 @@
 \usage{
 vertex_weights(x) <- value
 }
+\arguments{
+\item{x}{a variable name.}
+
+\item{value}{a value to be assigned to x.}
+}
 \description{
 assignment operator for vertex weights
 }
