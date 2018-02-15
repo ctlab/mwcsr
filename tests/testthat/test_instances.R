@@ -67,4 +67,7 @@ test_that("root setting works", {
 
     root(instance) <- "a"
     expect_equal(instance$root, 1)
+
+    root(instance) <- NULL
+    expect_false("rooted_mwcs_insatnce" %in% class(instance))
 })

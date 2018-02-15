@@ -131,6 +131,10 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 #' @export
 `root<-` <- function(x, value) {
     check_mwcs(x)
+    if (is.null(value)) {
+        class(x) <- class(x)[class(x) != "rooted_mwcs_instance"]
+        return(x)
+    }
     if (is.integer(value)) {
         if (value < 1 | value > length(V(x$graph))) {
             stop("No such vertex in the graph")
