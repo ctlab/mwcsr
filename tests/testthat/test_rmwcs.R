@@ -21,7 +21,7 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
         solve(g)
         solve(g, max_cardinality = cardinality)
         g <- set.vertex.attribute(g, name = "cost", value = runif(size))
-        solve(g, budget = cardinality)
+        expect_is(solve(g, budget = cardinality), "igraph")
     }
 
     test_graph(make_ring)

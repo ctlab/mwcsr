@@ -11,7 +11,7 @@
 #include "definitions.h"
 #include "module.h"
 
-#include "../dgraph/DynamicGraph.h"
+#include "DynamicGraph.h"
 #include "cooling_schedule.h"
 
 namespace annealing {

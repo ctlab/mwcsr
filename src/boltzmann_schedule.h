@@ -1,7 +1,7 @@
 #ifndef ANNEALING_BOLTZMANN_ANNEALING_H
 #define ANNEALING_BOLTZMANN_ANNEALING_H
 
-#include "../cooling_schedule.h"
+#include "cooling_schedule.h"
 
 namespace annealing {
 

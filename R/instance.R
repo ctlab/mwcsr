@@ -8,7 +8,7 @@ mwcs_instance <- function(graph,
         stop("Not a graph object")
     }
 
-    if(igraph::is_directed(g)){
+    if(igraph::is_directed(graph)){
         stop("Not an undirected graph")
     }
 
@@ -18,14 +18,14 @@ mwcs_instance <- function(graph,
         }
         vertex_weights(obj) <- V(graph)$weight
     } else {
-        vertex_weights(obj) <- rep(0, len(V(graph)))
+        vertex_weights(obj) <- rep(0, length(V(graph)))
     }
 
     if (parse_edge_weights) {
         if (!("weight") %in% list.edge.attributes(graph)) {
             stop("Couldn't parse edge weights: no such edge attribute")
         }
-        edge_vertices(obj) <- V(graph)$weight
+        edge_weights(obj) <- E(graph)$weight
     }
 
     if (parse_budgets) {
@@ -35,6 +35,7 @@ mwcs_instance <- function(graph,
         budgets(obj) <- V(graph)$budget
     }
     obj$solved_to_optimality <- FALSE
+    obj
 }
 
 check_mwcs <- function(x) {
@@ -51,7 +52,7 @@ size <- function(instance) {
 }
 
 good_values <- function(values) {
-    values <- as.numeric(values)
+    values <- setNames(as.numeric(values), names(values))
     if (any(is.na(values))) {
         stop("NA weight presented or came from coercion to numeric type")
     }
@@ -69,7 +70,7 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
     }
 
     if (length(names(value)) > 0) {
-        diff <- setdiff(names(elements), names(value))
+        diff <- setdiff(names(value), names(elements))
         if (length(diff) != 0) {
             stop(paste("These elemenents are not presented in the graph: ",
                        names(diff)))
@@ -80,15 +81,17 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
         if (length(value) > length(elements)) {
             stop("Too many values to assign")
         }
-        x[[parameter]][1:length(elements)] <- values
+        x[[parameter]][1:length(elements)] <- value
     }
     x
 }
 
+#' @export
 `vertex_weights<-` <- function(x, value) {
     set_parameter(x, value, parameter = "vertex_weights", sub_op = igraph::V)
 }
 
+#' @export
 `edge_weights<-` <- function (x, value) {
     x <- set_parameter(x, value, parameter = "edge_weights", sub_op = igraph::E,
                   initial = inherits(x, "gmwcs_instance"))
@@ -98,15 +101,17 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
     x
 }
 
+#' @export
 `budgets<-` <- function(x, value) {
-    x <- set_parameter(x, value, parameter = "budget", sub_op = igraph::V,
-                  initial = ingerits(x, "budget_mwcs_instance"))
+    x <- set_parameter(x, value, parameter = "budgets", sub_op = igraph::V,
+                  initial = inherits(x, "budget_mwcs_instance"))
     if (!inherits(x, "budget_mwcs_instance")) {
         class(x) <- c("budget_mwcs_instance", class(x))
     }
     x
 }
 
+#' @export
 `root<-` <- function(x, value) {
     check_mwcs(x)
     if (is.integer(value)) {
@@ -122,4 +127,11 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
         class(x) <- c("rooted_mwcs_instance", class(x))
     }
     x
+}
+
+#' @export
+`==.mwcs_instance` <- function(x, y) {
+    setequal(class(x), class(y)) &
+    setequal(names(x), names(y)) &
+    all.equal(x[names(y)], y[names(y)])
 }

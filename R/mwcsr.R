@@ -1,4 +1,4 @@
-#' @useDynLib mwcsr, .registration = TRUE
+#' @useDynLib mwcsr
 #' @importFrom Rcpp sourceCpp
 NULL
 

@@ -1,7 +1,7 @@
 #ifndef ANNEALING_FAST_SCHEDULE_H
 #define ANNEALING_FAST_SCHEDULE_H
 
-#include "../cooling_schedule.h"
+#include "cooling_schedule.h"
 
 namespace annealing {
 

@@ -14,7 +14,7 @@ namespace annealing {
                                            random_engine(random_engine),
                                            degree{graph.size(), 0},
                                            unif{random_engine},
-                                           dynamic_graph{graph.size()},
+                                           dynamic_graph{(unsigned)graph.size()},
                                            module_vertices{graph.size(), random_engine},
                                            module_edges{graph.edgeset_size(), random_engine},
                                            boundary{graph.edgeset_size(), random_engine} {}
