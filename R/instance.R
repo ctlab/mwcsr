@@ -2,6 +2,12 @@ mwcs_class <- "mwcs_instance"
 budget_class <- "budget_mwcs_instance"
 rooted_class <- "rooted_mwcs_instance"
 gmwcs_class <- "gmwcs_instance"
+cardinality_class <- "cardinality_mwcs_instance"
+
+remove_class <- function(x, class) {
+    class(x) <- class(x)[class(x) != class]
+    x
+}
 
 #' ctor for mwcs_instance
 #' @param graph a graph
@@ -108,8 +114,8 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 #' @export
 `edge_weights<-` <- function (x, value) {
     if (is.null(value)) {
-        class(x) <- class(x)[class(x) != gmwcs_class]
-        return(x)
+        x$edge_weights <- NULL
+        return(remove_class(x, gmwcs_class))
     }
     x <- set_parameter(x, value, parameter = "edge_weights", sub_op = igraph::E,
                   initial = inherits(x, gmwcs_class))
@@ -119,14 +125,20 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
     x
 }
 
+remove_budget_class <- function(x) {
+    x <- remove_class(x, budget_class)
+    x$budget <- NULL
+    x$budget_costs <- NULL
+    x
+}
+
 #' assignment operator for budget costs
 #' @param x a variable name.
 #' @param value a value to be assigned to x.
 #' @export
 `budget_costs<-` <- function(x, value) {
     if (is.null(value)) {
-        class(x) <- class(x)[class(x) != budget_class]
-        return(x)
+        return(remove_budget_class(x))
     }
     x <- set_parameter(x, value, parameter = "budget_costs", sub_op = igraph::V,
                   initial = inherits(x, budget_class))
@@ -142,6 +154,9 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 #' @param value a value to be assigned to x.
 #' @export
 `budget<-` <- function(x, value) {
+    if (is.null(value)) {
+        return(remove_budget_class(x))
+    }
     value <- as.numeric(value)
     if (is.na(value)) {
         stop("Budget mustn't be a NA")
@@ -155,6 +170,25 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
     x
 }
 
+#' assignment operator for the maximum cardinality of solution
+#' @export
+#' @param x a variable name.
+#' @param value a value to be assigned to x.
+`max_cardinality<-` <- function(x, value) {
+    if (is.null(value)) {
+        x$cardinality <- NULL
+        return(remove_class(x, cardinality_class))
+    }
+    value <- as.integer(x)
+    if (is.na(value) | value < 0) {
+        stop("Invalid argument")
+    }
+    if (!inherits(x, cardinality_class)) {
+        class(x) <- c(cardinality_class, class(x))
+    }
+    x
+}
+
 #' assignment operator for the root
 #' @param x a variable name.
 #' @param value a value to be assigned to x.
@@ -162,8 +196,8 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 `root<-` <- function(x, value) {
     check_mwcs(x)
     if (is.null(value)) {
-        class(x) <- class(x)[class(x) != rooted_class]
-        return(x)
+        x$root <- NULL
+        return(remove_class(x, rooted_class))
     }
     if (is.integer(value)) {
         if (value < 1 | value > length(V(x$graph))) {
