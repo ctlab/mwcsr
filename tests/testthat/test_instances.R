@@ -28,14 +28,15 @@ test_that("parsing of edge weights and budgets works", {
     budgets <- seq(0, 1, length.out = 4)
     E(g)$weight <- edge_weights
     V(g)$weight <- vertex_weights
-    V(g)$budget <- budgets
+    V(g)$budget_cost <- budgets
     instance <- mwcs_instance(g, parse_edge_weights = TRUE, parse_budgets = TRUE)
 
     expected <- mwcs_instance(g, parse_vertex_weights = FALSE)
     class(expected) <- c("budget_mwcs_instance", "gmwcs_instance", "mwcs_instance")
     expected$vertex_weights <- vertex_weights
     expected$edge_weights <- edge_weights
-    expected$budgets <- budgets
+    expected$budget_costs <- budgets
+    expected$budget <- Inf
 
     expect_setequal(class(instance), class(expected))
     expect_setequal(names(instance), names(expected))
@@ -51,7 +52,7 @@ test_that("error is throwing when trying to assign bad values", {
     V(g)$weight <- c(1, 2, 3, 4)
     instance <- mwcs_instance(g)
 
-    expect_error(budgets(instance) <- setNames(5, "a"))
+    expect_error(budget_costs(instance) <- setNames(5, "a"))
 })
 
 test_that("root setting works", {

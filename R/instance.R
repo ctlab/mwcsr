@@ -1,3 +1,8 @@
+mwcs_class <- "mwcs_instance"
+budget_class <- "budget_mwcs_instance"
+rooted_class <- "rooted_mwcs_instance"
+gmwcs_class <- "gmwcs_instance"
+
 #' ctor for mwcs_instance
 #' @param graph a graph
 #' @param parse_vertex_weights wether or not parse vertex attribute "weight"
@@ -8,7 +13,7 @@ mwcs_instance <- function(graph,
                           parse_vertex_weights = TRUE,
                           parse_edge_weights = FALSE,
                           parse_budgets = FALSE) {
-    obj <- structure(list(graph = graph), class = "mwcs_instance")
+    obj <- structure(list(graph = graph), class = mwcs_class)
     if (!igraph::is_igraph(graph)) {
         stop("Not a graph object")
     }
@@ -34,25 +39,23 @@ mwcs_instance <- function(graph,
     }
 
     if (parse_budgets) {
-        if (!("budget") %in% list.vertex.attributes(graph)) {
+        if (!("budget_cost") %in% list.vertex.attributes(graph)) {
             stop("Couldn't parse budgets: no such vertex attribute")
         }
-        budgets(obj) <- V(graph)$budget
+        budget_costs(obj) <- V(graph)$budget_cost
     }
     obj$solved_to_optimality <- FALSE
     obj
 }
 
 check_mwcs <- function(x) {
-    if (!inherits(x, "mwcs_instance")) {
+    if (!inherits(x, mwcs_class)) {
         stop("Not a MWCS instance")
     }
 }
 
 size <- function(instance) {
-    if (!inherits(x, "mwcs_instance")) {
-        stop("Not a MWCS instance")
-    }
+    check_mwcs(instance)
     len(V(x$graph))
 }
 
@@ -104,23 +107,50 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 #' @param value a value to be assigned to x.
 #' @export
 `edge_weights<-` <- function (x, value) {
+    if (is.null(value)) {
+        class(x) <- class(x)[class(x) != gmwcs_class]
+        return(x)
+    }
     x <- set_parameter(x, value, parameter = "edge_weights", sub_op = igraph::E,
-                  initial = inherits(x, "gmwcs_instance"))
-    if (!inherits(x, "gmwcs_instance")) {
+                  initial = inherits(x, gmwcs_class))
+    if (!inherits(x, gmwcs_class)) {
         class(x) <- c("gmwcs_instance", class(x))
     }
     x
 }
 
-#' assignment operator for budgets
+#' assignment operator for budget costs
 #' @param x a variable name.
 #' @param value a value to be assigned to x.
 #' @export
-`budgets<-` <- function(x, value) {
-    x <- set_parameter(x, value, parameter = "budgets", sub_op = igraph::V,
-                  initial = inherits(x, "budget_mwcs_instance"))
-    if (!inherits(x, "budget_mwcs_instance")) {
-        class(x) <- c("budget_mwcs_instance", class(x))
+`budget_costs<-` <- function(x, value) {
+    if (is.null(value)) {
+        class(x) <- class(x)[class(x) != budget_class]
+        return(x)
+    }
+    x <- set_parameter(x, value, parameter = "budget_costs", sub_op = igraph::V,
+                  initial = inherits(x, budget_class))
+    if (!inherits(x, budget_class)) {
+        class(x) <- c(budget_class, class(x))
+        x$budget <- Inf
+    }
+    x
+}
+
+#' assignment operator for the budget
+#' @param x a variable name.
+#' @param value a value to be assigned to x.
+#' @export
+`budget<-` <- function(x, value) {
+    value <- as.numeric(value)
+    if (is.na(value)) {
+        stop("Budget mustn't be a NA")
+    }
+    if (inherits(x, budget_class)) {
+        x$budget <- value
+    } else {
+        budget_costs(x) <- 0
+        x$budget <- value
     }
     x
 }
@@ -132,7 +162,7 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 `root<-` <- function(x, value) {
     check_mwcs(x)
     if (is.null(value)) {
-        class(x) <- class(x)[class(x) != "rooted_mwcs_instance"]
+        class(x) <- class(x)[class(x) != rooted_class]
         return(x)
     }
     if (is.integer(value)) {
@@ -148,8 +178,8 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
     } else {
         stop("Argument should be integer of vertex name")
     }
-    if (!inherits(x, "rooted_mwcs_instance")) {
-        class(x) <- c("rooted_mwcs_instance", class(x))
+    if (!inherits(x, rooted_class)) {
+        class(x) <- c(rooted_class, class(x))
     }
     x
 }
