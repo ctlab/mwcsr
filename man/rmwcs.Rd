@@ -5,10 +5,9 @@
 \title{Generates a rmwcs solver with corresponding parameters}
 \usage{
 rmwcs(timelimit = 1800L, max_iterations = 1000L, beta_iterations = 50L,
-  separation = "strong", max_age = 1000L, startcons = TRUE,
-  pegging = TRUE, sep_iterations = 1L, sep_iter_freeze = 1L,
-  heur_iterations = 1L, subgradient = "classic", beta = 2,
-  verbose = FALSE)
+  separation = "strong", start_constraints = TRUE, pegging = TRUE,
+  sep_iterations = 1L, sep_iter_freeze = 1L, heur_iterations = 1L,
+  subgradient = "classic", beta = 2, verbose = FALSE)
 }
 \arguments{
 \item{timelimit}{Timelimit in seconds}
@@ -19,13 +18,9 @@ rmwcs(timelimit = 1800L, max_iterations = 1000L, beta_iterations = 50L,
 
 \item{separation}{Separation: "strong" of "fast"}
 
-\item{max_age}{Extending the life of non-violated inequalities}
-
-\item{startcons}{Whether to add flow-conservation/degree cons at start}
-
 \item{pegging}{Pegging (variable fixing)}
 
-\item{sep_iterations}{After how many iterations we are separating}
+\item{sep_iterations}{Extending the life of non-violated inequalities}
 
 \item{sep_iter_freeze}{After how many iterations we are checking added ineqs}
 
@@ -36,6 +31,10 @@ rmwcs(timelimit = 1800L, max_iterations = 1000L, beta_iterations = 50L,
 \item{beta}{Beta for subgradient}
 
 \item{verbose}{Whether to print solving progress}
+
+\item{startcons}{Whether to add flow-conservation/degree cons at start}
+
+\item{sep_iterations}{After how many iterations we are separating}
 }
 \description{
 Generates a rmwcs solver with corresponding parameters

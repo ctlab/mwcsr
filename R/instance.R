@@ -9,6 +9,14 @@ remove_class <- function(x, class) {
     x
 }
 
+to_list <- function(instance) {
+    l <- instance
+    l$graph <- NULL
+    class(l) <- NULL
+    l$edgelist <- as_edgelist(instance$graph, names = FALSE)
+    l
+}
+
 #' ctor for mwcs_instance
 #' @param graph a graph
 #' @param parse_vertex_weights wether or not parse vertex attribute "weight"
@@ -19,7 +27,8 @@ mwcs_instance <- function(graph,
                           parse_vertex_weights = TRUE,
                           parse_edge_weights = FALSE,
                           parse_budgets = FALSE) {
-    obj <- structure(list(graph = graph), class = mwcs_class)
+    obj <- structure(list(graph = graph, upper_bound = NA, solution = NULL),
+                     class = mwcs_class)
     if (!igraph::is_igraph(graph)) {
         stop("Not a graph object")
     }
@@ -113,6 +122,7 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
 #' @param value a value to be assigned to x.
 #' @export
 `edge_weights<-` <- function (x, value) {
+    check_mwcs(x)
     if (is.null(value)) {
         x$edge_weights <- NULL
         return(remove_class(x, gmwcs_class))
@@ -137,6 +147,10 @@ remove_budget_class <- function(x) {
 #' @param value a value to be assigned to x.
 #' @export
 `budget_costs<-` <- function(x, value) {
+    check_mwcs(x)
+    if (inherits(x, cardinality_class)) {
+        stop("Budget and cardinality features are mutually exclusive")
+    }
     if (is.null(value)) {
         return(remove_budget_class(x))
     }
@@ -154,6 +168,10 @@ remove_budget_class <- function(x) {
 #' @param value a value to be assigned to x.
 #' @export
 `budget<-` <- function(x, value) {
+    check_mwcs(x)
+    if (inherits(x, cardinality_class)) {
+        stop("Budget and cardinality features are mutually exclusive")
+    }
     if (is.null(value)) {
         return(remove_budget_class(x))
     }
@@ -175,6 +193,10 @@ remove_budget_class <- function(x) {
 #' @param x a variable name.
 #' @param value a value to be assigned to x.
 `max_cardinality<-` <- function(x, value) {
+    check_mwcs(x)
+    if (inherits(x, budget_class)) {
+        stop("Budget and cardinality features are mutually exclusive")
+    }
     if (is.null(value)) {
         x$cardinality <- NULL
         return(remove_class(x, cardinality_class))
@@ -222,6 +244,8 @@ remove_budget_class <- function(x) {
 #' @param x,y mwcs instances
 #' @export
 `==.mwcs_instance` <- function(x, y) {
+    check_mwcs(x)
+    check_mwcs(y)
     setequal(class(x), class(y)) &
     setequal(names(x), names(y)) &
     all.equal(x[names(y)], y[names(y)])

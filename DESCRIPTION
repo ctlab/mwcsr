@@ -15,7 +15,8 @@ Imports:
     rJava,
     igraph,
     Rcpp, 
-    methods
+    methods,
+    parallel
 Suggests:
     testthat
 License: MIT + file LICENSE
