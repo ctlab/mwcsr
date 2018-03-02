@@ -9,12 +9,12 @@ check_sa_solver <- function(solver) {
 
 #' @export
 parameters.simulated_annealing_solver <- function(solver) {
-    check_sa_solver(solver);
     list(parameter("normalization", type = "logical"),
-         parameter("schedule", type = "mc", mc = schedules),
-         parameter("initial_temperature", type = "float", is_positive = TRUE),
-         parameter("final_temperature", type = "float", is_positive = TRUE),
-         parameter("verbose", type = "logical"))
+        parameter("schedule", type = "mc", mc = schedules),
+        parameter("initial_temperature", type = "float", positive = TRUE),
+        parameter("final_temperature", type = "float", positive = TRUE),
+        parameter("verbose", type = "logical"))
+
 }
 
 #' ctor for annealing solver

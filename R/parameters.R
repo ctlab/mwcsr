@@ -1,13 +1,13 @@
 parameter <- function(name,
                       type = c("integer", "float", "logical", "mc", "file"),
                       is_null_possible = FALSE,
-                      is_positive = FALSE,
-                      is_nonnegtive = FALSE,
+                      positive = FALSE,
+                      nonnegative = FALSE,
                       mc = NULL,
                       file = NULL) {
     structure(list(name = name,
                    is_null_possible = is_null_possible,
-                   is_positive = is_positive,
+                   positive = positive,
                    mc = mc,
                    file = file), class = c(type, parameter_class))
 }
@@ -37,12 +37,12 @@ check_parameter.integer <- function (param, value) {
     if (is.na(value)) {
         stop(paste("Parameter", param$name, "mustn't be NA"))
     }
-    if (param$is_positive) {
+    if (param$positive) {
         if (value <= 0L) {
             stop(paste("Parameter", param$name, "must be positive"))
         }
     }
-    if (param$is_nonnegative) {
+    if (param$nonnegative) {
         if (value < 0L) {
             stop(paste("Parameter", param$name, "must be non-negative"))
         }
@@ -54,12 +54,12 @@ check_parameter.float <- function (param, value) {
     if (is.na(value)) {
         stop(paste("Parameter", param$name, "mustn't be NA"))
     }
-    if (param$is_positive) {
+    if (param$positive) {
         if (value <= 0) {
             stop(paste("Parameter", param$name, "must be positive"))
         }
     }
-    if (param$is_nonnegative) {
+    if (param$nonnegative) {
         if (value < 0) {
             stop(paste("Parameter", param$name, "must be non-negative"))
         }

@@ -8,7 +8,13 @@ check_gmwcs_solver <- function(solver) {
 
 #' @export
 parameters.gmwcs_sovler <- function() {
-     check_gmwcs_solver();
+    list(parameter("cplex_bin", type = "file"),
+         parameter("cplex_jar", type = "file"),
+         parameter("gmwcs_jar", type = "file"),
+         parameter("threads", type = "integer", positive = TRUE),
+         parameter("timelimit", type = "integer", positive = TRUE,
+                   is_null_possible = TRUE),
+         parameter("verbose", type = "logical"))
 }
 
 #' @export

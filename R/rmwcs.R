@@ -11,18 +11,17 @@ check_rmwcs_solver <- function(solver) {
 
 #' @export
 parameters.rmwcs_solver <- function(solver) {
-    ckeck_rmwcs_solver(solver)
-    list(parameter("timelimit", type = "integer", is_positive =  TRUE,
+    list(parameter("timelimit", type = "integer", positive =  TRUE,
                    is_null_possible = TRUE),
-         parameter("max_iterations", type = "integer", is_positive = TRUE,
+         parameter("max_iterations", type = "integer", positive = TRUE,
                    is_null_possible = TRUE),
-         parameter("beta_iterations", type = "integer", is_positive = TRUE),
+         parameter("beta_iterations", type = "integer", positive = TRUE),
          parameter("separation", type = "mc", mc = sep_methods),
-         parameter("sep_iterations", type = "integer", is_positive = TRUE),
+         parameter("sep_iterations", type = "integer", positive = TRUE),
          parameter("start_constraints", type = "logical"),
          parameter("pegging", type = "logical"),
-         parameter("sep_iter_freeze", type = "integer", is_positive = TRUE),
-         parameter("heur_iterations", type = "integer", is_positive = TRUE),
+         parameter("sep_iter_freeze", type = "integer", positive = TRUE),
+         parameter("heur_iterations", type = "integer", positive = TRUE),
          parameter("subgradient", type = "mc", mc = subgradients),
          parameter("beta", type = "float"),
          parameter("verbose", type = "logical"))
