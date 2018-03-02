@@ -8,6 +8,7 @@ parameter <- function(name,
     structure(list(name = name,
                    is_null_possible = is_null_possible,
                    positive = positive,
+                   nonnegative = nonnegative,
                    mc = mc,
                    file = file), class = c(type, parameter_class))
 }
@@ -27,7 +28,7 @@ check_parameter <- function(param, value) {
         }
     }
     if (length(value) == 0) {
-        stop(paste("Parameter", param$name, "mustn't be zero length vector"))
+        stop(paste("Parameter", param$name, "mustn't be a zero length vector"))
     }
     UseMethod("check_parameter")
 }

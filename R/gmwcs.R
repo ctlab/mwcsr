@@ -8,13 +8,15 @@ check_gmwcs_solver <- function(solver) {
 
 #' @export
 parameters.gmwcs_sovler <- function() {
-    list(parameter("cplex_bin", type = "file"),
+    l <- list(parameter("cplex_bin", type = "file"),
          parameter("cplex_jar", type = "file"),
          parameter("gmwcs_jar", type = "file"),
          parameter("threads", type = "integer", positive = TRUE),
          parameter("timelimit", type = "integer", positive = TRUE,
                    is_null_possible = TRUE),
          parameter("verbose", type = "logical"))
+    names(l) <- lapply(l, function(x) x$name)
+    l
 }
 
 #' @export
@@ -26,5 +28,5 @@ gmwcs_solver <- function (cplex_bin,
                           verbose = TRUE){
     x <- structure(list(), class = c(gmwcs_class, mwcs_class))
     params <- mget(names(formals()))
-    do.call(set_parameters(c(list(solver = x), params)))
+    do.call(set_parameters, c(list(solver = x), params))
 }

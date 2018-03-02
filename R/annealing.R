@@ -1,4 +1,4 @@
-sa_class <- "simulated_anneanling_solver"
+sa_class <- "simulated_annealing_solver"
 schedules <- c("fast", "boltzmann")
 
 check_sa_solver <- function(solver) {
@@ -9,11 +9,13 @@ check_sa_solver <- function(solver) {
 
 #' @export
 parameters.simulated_annealing_solver <- function(solver) {
-    list(parameter("normalization", type = "logical"),
+    l <- list(parameter("normalization", type = "logical"),
         parameter("schedule", type = "mc", mc = schedules),
         parameter("initial_temperature", type = "float", positive = TRUE),
         parameter("final_temperature", type = "float", positive = TRUE),
         parameter("verbose", type = "logical"))
+    names(l) <- lapply(l, function(x) x$name)
+    l
 
 }
 
@@ -31,7 +33,7 @@ annealing_solver <- function(normalization = TRUE,
                              verbose = FALSE) {
     x <- structure(list(), class = c(sa_class, mwcs_class))
     params <- mget(names(formals()))
-    do.call(set_parameters(c(list(solver = x), params)))
+    do.call(set_parameters, c(list(solver = x), params))
 }
 
 #' @export

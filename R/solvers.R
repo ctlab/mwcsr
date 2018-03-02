@@ -24,7 +24,7 @@ set_parameters <- function(solver, ...) {
     for (param_name in names(actual)) {
         param <- params[[param_name]]
         if (!param_name %in% names(params)) {
-            stop(paste("Unknown parameter", param, "for the solver"))
+            stop(paste("Unknown parameter", param_name, "for the solver"))
         }
         check_parameter(param, actual[[param_name]])
         solver[[param_name]] <- actual[[param_name]]
@@ -38,11 +38,7 @@ parameters.default <- function(...) {
 }
 
 #' @export
-parameters <- function(solver) {
-    l <- UseMethod("parameters")
-    names(l) <- lapply(l, function(x) x$name)
-    l
-}
+parameters <- function(solver) UseMethod("parameters")
 
 #' Sets time limitation for a solver
 #' @param x a variable name.

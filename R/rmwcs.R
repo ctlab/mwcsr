@@ -11,7 +11,7 @@ check_rmwcs_solver <- function(solver) {
 
 #' @export
 parameters.rmwcs_solver <- function(solver) {
-    list(parameter("timelimit", type = "integer", positive =  TRUE,
+    l <- list(parameter("timelimit", type = "integer", positive =  TRUE,
                    is_null_possible = TRUE),
          parameter("max_iterations", type = "integer", positive = TRUE,
                    is_null_possible = TRUE),
@@ -25,6 +25,8 @@ parameters.rmwcs_solver <- function(solver) {
          parameter("subgradient", type = "mc", mc = subgradients),
          parameter("beta", type = "float"),
          parameter("verbose", type = "logical"))
+    names(l) <- lapply(l, function(x) x$name)
+    l
 }
 
 #' Generates a rmwcs solver with corresponding parameters
@@ -56,7 +58,7 @@ rmwcs <- function(timelimit = 1800L,
                   verbose = FALSE) {
     x <- structure(list(), class = c(rmwcs_class, mwcs_class))
     params <- mget(names(formals()))
-    do.call(set_parameters(c(list(solver = x), params)))
+    do.call(set_parameters, c(list(solver = x), params))
 }
 
 #' @export
