@@ -1,0 +1,24 @@
+gmwcs_class <- "gmwcs_solver"
+
+check_gmwcs_solver <- function(solver) {
+    if (!inherits(solver, gmwcs_class)) {
+        stop("Function called with an invalid SA solver instance")
+    }
+}
+
+#' @export
+parameters.gmwcs_sovler <- function() {
+     check_gmwcs_solver();
+}
+
+#' @export
+gmwcs_solver <- function (cplex_bin,
+                          cplex_jar,
+                          gmwcs_jar,
+                          threads = parallel::detectCores(),
+                          timelimit = NULL,
+                          verbose = TRUE){
+    x <- structure(list(), class = c(gmwcs_class, mwcs_class))
+    params <- mget(names(formals()))
+    do.call(set_parameters(c(list(solver = x), params)))
+}
