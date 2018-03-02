@@ -26,8 +26,7 @@ set_parameters <- function(solver, ...) {
         if (!param_name %in% names(params)) {
             stop(paste("Unknown parameter", param_name, "for the solver"))
         }
-        check_parameter(param, actual[[param_name]])
-        solver[[param_name]] <- actual[[param_name]]
+        solver[[param_name]] <- check_parameter(param, actual[[param_name]])
     }
     solver
 }

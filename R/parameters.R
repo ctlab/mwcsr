@@ -48,6 +48,7 @@ check_parameter.integer <- function (param, value) {
             stop(paste("Parameter", param$name, "must be non-negative"))
         }
     }
+    value
 }
 
 check_parameter.float <- function (param, value) {
@@ -65,6 +66,7 @@ check_parameter.float <- function (param, value) {
             stop(paste("Parameter", param$name, "must be non-negative"))
         }
     }
+    value
 }
 
 check_parameter.logical <- function (param, value) {
@@ -72,6 +74,7 @@ check_parameter.logical <- function (param, value) {
     if (is.na(value)) {
         stop(paste("Parameter", param$name, "mustn't be NA"))
     }
+    value
 }
 
 check_parameter.mc <- function (param, value) {
@@ -83,6 +86,7 @@ check_parameter.file <- function(param, value) {
     if (!file.exists(file)) {
         stop(paste("File", file, "does not exist"))
     }
+    file
 }
 
 check_parameter.defaule <- function(param, value) {
