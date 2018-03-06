@@ -15,7 +15,8 @@
 #include "cooling_schedule.h"
 
 namespace annealing {
-    using namespace dgraph;
+    using dgraph::DynamicGraph;
+    using dgraph::EdgeToken;
 
     class StandardUniformDistribution {
         RandomEngine& re;
@@ -50,6 +51,8 @@ namespace annealing {
         explicit SimulatedAnnealing(const Graph& graph, RandomEngine& random_engine);
 
         void run(CoolingSchedule& schedule);
+        vector<size_t> vertices();
+        vector<Edge> edges();
 
     private:
         void strike();

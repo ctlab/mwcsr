@@ -29,7 +29,7 @@ class Instance {
     void initStructures(unsigned);
 
 public:
-    Instance(Rcpp::List&);
+    explicit Instance(Rcpp::List&);
     ~Instance() = default;
 
     struct cut {

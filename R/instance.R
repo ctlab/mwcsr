@@ -14,6 +14,7 @@ to_list <- function(instance) {
     l$graph <- NULL
     class(l) <- NULL
     l$edgelist <- as_edgelist(instance$graph, names = FALSE)
+    l$size <- length(V(instance$graph))
     l
 }
 

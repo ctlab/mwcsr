@@ -187,6 +187,14 @@ namespace annealing {
         }
     }
 
+    vector<size_t> SimulatedAnnealing::vertices() {
+        return best.vertices();
+    }
+
+    vector<Edge> SimulatedAnnealing::edges() {
+        return best.edges();
+    }
+
     StandardUniformDistribution::StandardUniformDistribution(RandomEngine &re) :re(re) {}
 
     double StandardUniformDistribution::operator()(){

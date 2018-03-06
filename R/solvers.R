@@ -15,7 +15,23 @@ check_features <- function(instance, features) {
 }
 
 #' @export
-solve <- function(solver, instance) UseMethod("solve")
+solve <- function(solver, instance) {
+    check_mwcs(instance)
+    check_mwcs_solver(solver)
+    check_features(instance, features(solver))
+
+    UseMethod("solve")
+}
+
+solve.default <- function(solver, instance) {
+    stop("An abstract solver can't solve an instance")
+}
+
+features <- function(solver) UseMethod("features")
+
+features.default <- function (solver) {
+    stop("An abstract solver doesn't have features")
+}
 
 #' @export
 set_parameters <- function(solver, ...) {

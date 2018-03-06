@@ -5,7 +5,7 @@
 
 namespace annealing {
 
-    class FastSchedule : CoolingSchedule {
+    class FastSchedule : public CoolingSchedule {
     public:
         FastSchedule(double t0, double min);
         double next() override;

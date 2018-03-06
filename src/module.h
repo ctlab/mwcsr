@@ -3,6 +3,8 @@
 
 #include "graph.h"
 
+using namespace mwcsr;
+
 namespace annealing {
 
     class Module {

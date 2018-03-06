@@ -33,8 +33,6 @@ rmwcs(timelimit = 1800L, max_iterations = 1000L, beta_iterations = 50L,
 \item{verbose}{Whether to print solving progress}
 
 \item{startcons}{Whether to add flow-conservation/degree cons at start}
-
-\item{sep_iterations}{After how many iterations we are separating}
 }
 \description{
 Generates a rmwcs solver with corresponding parameters

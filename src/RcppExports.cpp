@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// sa_solve
+IntegerVector sa_solve(List& instance, List& solver);
+RcppExport SEXP _mwcsr_sa_solve(SEXP instanceSEXP, SEXP solverSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List& >::type instance(instanceSEXP);
+    Rcpp::traits::input_parameter< List& >::type solver(solverSEXP);
+    rcpp_result_gen = Rcpp::wrap(sa_solve(instance, solver));
+    return rcpp_result_gen;
+END_RCPP
+}
 // solve_annealing
 Rcpp::IntegerVector solve_annealing(Rcpp::List& network);
 RcppExport SEXP _mwcsr_solve_annealing(SEXP networkSEXP) {
@@ -30,6 +42,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_mwcsr_sa_solve", (DL_FUNC) &_mwcsr_sa_solve, 2},
     {"_mwcsr_solve_annealing", (DL_FUNC) &_mwcsr_solve_annealing, 1},
     {"_mwcsr_rmwcs_solve", (DL_FUNC) &_mwcsr_rmwcs_solve, 2},
     {NULL, NULL, 0}

@@ -3,9 +3,9 @@
 
 #include "graph.h"
 
-using std::vector;
+namespace mwcsr {
 
-namespace annealing {
+    using std::vector;
 
     Edge::Edge(size_t from, size_t to, double weight, size_t num) : v(from), u(to), w(weight), id(num) {}
 
@@ -13,7 +13,7 @@ namespace annealing {
         return w;
     }
 
-    size_t Edge::opposite(size_t w) {
+    size_t Edge::opposite(size_t w) const {
         if (w == v) {
             return u;
         } else if (w == u) {
@@ -23,11 +23,11 @@ namespace annealing {
         }
     }
 
-    bool Edge::operator==(const Edge& e) {
+    bool Edge::operator==(const Edge& e) const {
         return e.id == id;
     }
 
-    size_t Edge::num() {
+    size_t Edge::num() const {
         return id;
     }
 
@@ -76,4 +76,5 @@ namespace annealing {
     void Graph::set_weight(size_t v, double w) {
         vertex_weights.at(v) = w;
     }
+
 }

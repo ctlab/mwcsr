@@ -7,6 +7,10 @@ check_sa_solver <- function(solver) {
     }
 }
 
+features.simulated_annealing_solver <- function(solver) {
+    c(mwcs_class, gmwcs_class)
+}
+
 #' @export
 parameters.simulated_annealing_solver <- function(solver) {
     l <- list(parameter("normalization", type = "logical"),
@@ -16,7 +20,6 @@ parameters.simulated_annealing_solver <- function(solver) {
         parameter("verbose", type = "logical"))
     names(l) <- lapply(l, function(x) x$name)
     l
-
 }
 
 #' ctor for annealing solver
@@ -38,9 +41,9 @@ annealing_solver <- function(normalization = TRUE,
 
 #' @export
 solve.simulated_annealing_solver <- function(solver, instance) {
-    check_sa_solver(solver)
-    check_mwcs(instance)
-    features <- c(mwcs_class, gmwcs_class)
-    check_features(instance, features)
-
+    inst_rep <- to_list(instance)
+    if (is.null(inst_rep$edge_weights)) {
+        inst_rep$edge_weights <- rep(0, length(inst_rep$edgelist))
+    }
+    res <- sa_solve(inst_rep, solver)
 }

@@ -4,7 +4,8 @@
 #include <cstddef>
 #include <vector>
 
-namespace annealing {
+namespace mwcsr {
+
     class Edge {
         size_t v;
         size_t u;
@@ -12,10 +13,11 @@ namespace annealing {
         double w;
     public:
         Edge(size_t from, size_t to, double weight, size_t num);
-        bool operator==(const Edge& e);
-        size_t opposite(size_t v);
+
+        bool operator==(const Edge& e) const;
+        size_t opposite(size_t v) const;
         double weight() const;
-        size_t num();
+        size_t num() const;
         size_t from() const;
         size_t to() const;
     };

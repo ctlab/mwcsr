@@ -5,7 +5,7 @@
 
 namespace annealing {
 
-    class BoltzmannSchedule : CoolingSchedule {
+    class BoltzmannSchedule : public CoolingSchedule {
     public:
         BoltzmannSchedule(double t0, double min);
         double next() override;
