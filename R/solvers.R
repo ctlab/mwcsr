@@ -1,8 +1,8 @@
-mwcs_class <- "mwcs_solver"
+mwcs_solver_class <- "mwcs_solver"
 parameter_class <- "solver_parameter"
 
 check_mwcs_solver <- function(x) {
-    if (!inherits(x, mwcs_class)) {
+    if (!inherits(x, mwcs_solver_class)) {
         stop("Not a MWCS solver")
     }
 }
@@ -15,15 +15,15 @@ check_features <- function(instance, features) {
 }
 
 #' @export
-solve <- function(solver, instance) {
+solve_mwcsp <- function(solver, instance) {
     check_mwcs(instance)
     check_mwcs_solver(solver)
     check_features(instance, features(solver))
 
-    UseMethod("solve")
+    UseMethod("solve_mwcsp")
 }
 
-solve.default <- function(solver, instance) {
+solve_mwcsp.default <- function(solver, instance) {
     stop("An abstract solver can't solve an instance")
 }
 
@@ -40,9 +40,10 @@ set_parameters <- function(solver, ...) {
     for (param_name in names(actual)) {
         param <- params[[param_name]]
         if (!param_name %in% names(params)) {
-            stop(paste("Unknown parameter", param_name, "for the solver"))
+            warning(paste("Unknown parameter", param_name, "for the solver"))
+        } else {
+            solver[[param_name]] <- check_parameter(param, actual[[param_name]])
         }
-        solver[[param_name]] <- check_parameter(param, actual[[param_name]])
     }
     solver
 }
@@ -59,4 +60,6 @@ parameters <- function(solver) UseMethod("parameters")
 #' @param x a variable name.
 #' @param value a value to be assigned to x.
 #' @export
-`timelimit<-` <- function(x, value) UseMethod("timelimit<-")
+`timelimit<-` <- function(x, value) {
+    set_parameters(x, timelimit = value)
+}

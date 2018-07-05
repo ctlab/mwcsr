@@ -21,7 +21,7 @@ Parameters::Parameters(List params) {
     betaIter = getInt(params, "beta_iterations");
     separation = getInt(params, "separation");
     maxAge = getInt(params, "max_age");
-    startcons = getBool(params, "startcons");
+    startcons = getBool(params, "start_constraints");
     pegging = getBool(params, "pegging");
     sepIter = getInt(params, "sep_iterations");
     sepIterFreeze = getInt(params, "sep_iter_freeze");

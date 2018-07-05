@@ -6,7 +6,7 @@
 #include "SolverBudget.h"
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector rmwcs_solve(Rcpp::List& network, Rcpp::List& params) {
+Rcpp::List rmwcs_solve(Rcpp::List& network, Rcpp::List& params) {
     Instance instance(network);
     Parameters parameters(params);
 
@@ -32,5 +32,9 @@ Rcpp::IntegerVector rmwcs_solve(Rcpp::List& network, Rcpp::List& params) {
             vertices.push_back(i + 1);
         }
     }
-    return Rcpp::IntegerVector(vertices.begin(), vertices.end());
+
+    Rcpp::List ret;
+    ret["graph"] = Rcpp::IntegerVector(vertices.begin(), vertices.end());
+    ret["ub"] = Rcpp::NumericVector::create(instance.bestBoundLag);
+    return ret;
 }

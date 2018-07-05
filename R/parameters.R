@@ -10,7 +10,8 @@ parameter <- function(name,
                    positive = positive,
                    nonnegative = nonnegative,
                    mc = mc,
-                   file = file), class = c(type, parameter_class))
+                   file = file),
+              class = c(paste0(type, "_parameter"), parameter_class))
 }
 
 check_parameter_class <- function(parameter) {
@@ -33,7 +34,7 @@ check_parameter <- function(param, value) {
     UseMethod("check_parameter")
 }
 
-check_parameter.integer <- function (param, value) {
+check_parameter.integer_parameter <- function (param, value) {
     value <- as.integer(value)
     if (is.na(value)) {
         stop(paste("Parameter", param$name, "mustn't be NA"))
@@ -51,7 +52,7 @@ check_parameter.integer <- function (param, value) {
     value
 }
 
-check_parameter.float <- function (param, value) {
+check_parameter.float_parameter <- function (param, value) {
     value <- as.numeric(value)
     if (is.na(value)) {
         stop(paste("Parameter", param$name, "mustn't be NA"))
@@ -69,7 +70,7 @@ check_parameter.float <- function (param, value) {
     value
 }
 
-check_parameter.logical <- function (param, value) {
+check_parameter.logical_parameter <- function (param, value) {
     value <- as.logical(value)
     if (is.na(value)) {
         stop(paste("Parameter", param$name, "mustn't be NA"))
@@ -77,11 +78,11 @@ check_parameter.logical <- function (param, value) {
     value
 }
 
-check_parameter.mc <- function (param, value) {
+check_parameter.mc_parameter <- function (param, value) {
     match.arg(value, param$mc)
 }
 
-check_parameter.file <- function(param, value) {
+check_parameter.file_parameter <- function(param, value) {
     file <- param$file
     if (!file.exists(file)) {
         stop(paste("File", file, "does not exist"))
@@ -89,6 +90,6 @@ check_parameter.file <- function(param, value) {
     file
 }
 
-check_parameter.defaule <- function(param, value) {
+check_parameter.default <- function(param, value) {
     stop("Invalid state")
 }

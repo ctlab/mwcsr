@@ -15,6 +15,7 @@ parameters.rmwcs_solver <- function(solver) {
                    is_null_possible = TRUE),
          parameter("max_iterations", type = "integer", positive = TRUE,
                    is_null_possible = TRUE),
+         parameter("max_age", type = "integer", positive = TRUE),
          parameter("beta_iterations", type = "integer", positive = TRUE),
          parameter("separation", type = "mc", mc = sep_methods),
          parameter("sep_iterations", type = "integer", positive = TRUE),
@@ -37,6 +38,7 @@ parameters.rmwcs_solver <- function(solver) {
 #' @param sep_iterations Extending the life of non-violated inequalities
 #' @param startcons Whether to add flow-conservation/degree cons at start
 #' @param pegging Pegging (variable fixing)
+#' @param max_age extending the life of non-violated inequalities
 #' @param sep_iter_freeze After how many iterations we are checking added ineqs
 #' @param heur_iterations After how many iterations we are doing heuristics
 #' @param subgradient Subgradient: "classic", "average", "cft"
@@ -50,31 +52,35 @@ rmwcs <- function(timelimit = 1800L,
                   separation = "strong",
                   start_constraints = TRUE,
                   pegging = TRUE,
+                  max_age = 3,
                   sep_iterations= 1L,
                   sep_iter_freeze = 1L,
                   heur_iterations = 1L,
                   subgradient = "classic",
                   beta = 2.0,
                   verbose = FALSE) {
-    x <- structure(list(), class = c(rmwcs_class, mwcs_class))
+    x <- structure(list(), class = c(rmwcs_class, mwcs_solver_class))
     params <- mget(names(formals()))
     do.call(set_parameters, c(list(solver = x), params))
 }
 
 #' @export
-solve.rmwcs_solver <- function(solver, instance) {
-    check_sa_solver(solver)
+features.rmwcs_solver <- function(solver) {
+    c(mwcs_class, budget_class, cardinality_class)
+}
+
+#' @export
+solve_mwcsp.rmwcs_solver <- function(solver, instance) {
+    check_rmwcs_solver(solver)
     check_mwcs(instance)
     instance_rep <- to_list(instance)
-    features <- c(mwcs_class, budget_class, cardinality_class)
-    check_features(instance, features)
 
+    solver$separation <- pmatch(solver$separation, sep_methods) - 1
+    solver$subgradient <- pmatch(solver$subgradient, subgradients) - 1
     vs <- rmwcs_solve(instance_rep, solver)
-    if (length(vs) > 1 && edge_problem) {
-        vs <- vs[vs > length(V(g))]
-        vs <- vs - length(V(g))
-        subgraph.edges(g, eids = vs)
-    } else {
-        induced.subgraph(g, vids = vs)
-    }
+    instance$solution <- vs$graph
+    instance$upper_bound <- vs$ub
+    weight <- sum(instance$vertex_weights[vs$graph])
+    instance$solved_to_optimality <- isTRUE(all.equal(weight, vs$ub))
+    instance
 }

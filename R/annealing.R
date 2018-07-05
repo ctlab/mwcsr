@@ -40,7 +40,7 @@ annealing_solver <- function(normalization = TRUE,
 }
 
 #' @export
-solve.simulated_annealing_solver <- function(solver, instance) {
+solve_mwcsp.simulated_annealing_solver <- function(solver, instance) {
     inst_rep <- to_list(instance)
     if (is.null(inst_rep$edge_weights)) {
         inst_rep$edge_weights <- rep(0, length(inst_rep$edgelist))

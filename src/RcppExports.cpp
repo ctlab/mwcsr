@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // sa_solve
-IntegerVector sa_solve(List& instance, List& solver);
+List sa_solve(List& instance, List& solver);
 RcppExport SEXP _mwcsr_sa_solve(SEXP instanceSEXP, SEXP solverSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -29,7 +29,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // rmwcs_solve
-Rcpp::IntegerVector rmwcs_solve(Rcpp::List& network, Rcpp::List& params);
+Rcpp::List rmwcs_solve(Rcpp::List& network, Rcpp::List& params);
 RcppExport SEXP _mwcsr_rmwcs_solve(SEXP networkSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
