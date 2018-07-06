@@ -77,8 +77,9 @@ solve_mwcsp.rmwcs_solver <- function(solver, instance) {
 
     solver$separation <- pmatch(solver$separation, sep_methods) - 1
     solver$subgradient <- pmatch(solver$subgradient, subgradients) - 1
+
     vs <- rmwcs_solve(instance_rep, solver)
-    instance$solution <- vs$graph
+    instance$solution <- igraph::induced_subgraph(instance$graph, vs$graph)
     instance$upper_bound <- vs$ub
     weight <- sum(instance$vertex_weights[vs$graph])
     instance$solved_to_optimality <- isTRUE(all.equal(weight, vs$ub))

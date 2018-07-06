@@ -15,7 +15,7 @@ readSTP <- function(filename){
 
     make_empty_graph(n = n, directed = F) %>%
         add_edges(t(edge_list)) %>%
-        set.vertex.attribute("score", scores[, 1], scores[, 2])
+        set.vertex.attribute("weight", scores[, 1], scores[, 2])
 }
 
 dir <- "inst/extdata/"

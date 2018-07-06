@@ -55,6 +55,14 @@ test_that("error is throwing when trying to assign bad values", {
     expect_error(budget_costs(instance) <- setNames(5, "a"))
 })
 
+test_that("cardinality class works", {
+    g <- igraph::make_ring(4)
+    V(g)$weight <- c(1, 2, 3, 4)
+    instance <- mwcs_instance(g)
+    max_cardinality(instance) <- 2
+    expect(inherits(instance, "cardinality_mwcs_instance"))
+})
+
 test_that("root setting works", {
     g <- make_ring(3)
     V(g)$name <- letters[1:3]

@@ -64,6 +64,16 @@ mwcs_instance <- function(graph,
     obj
 }
 
+#' @export
+upper_bound <- function(instance) {
+    instance$ub
+}
+
+#' @export
+solution <- function(instance) {
+    instance$solution
+}
+
 check_mwcs <- function(x) {
     if (!inherits(x, mwcs_class)) {
         stop("Not a MWCS instance")
@@ -202,7 +212,7 @@ remove_budget_class <- function(x) {
         x$cardinality <- NULL
         return(remove_class(x, cardinality_class))
     }
-    value <- as.integer(x)
+    value <- as.integer(value)
     if (is.na(value) | value < 0) {
         stop("Invalid argument")
     }
