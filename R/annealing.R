@@ -34,7 +34,7 @@ annealing_solver <- function(normalization = TRUE,
                              initial_temperature = 1.0,
                              final_temperature = 1e-6,
                              verbose = FALSE) {
-    x <- structure(list(), class = c(sa_class, mwcs_class))
+    x <- structure(list(), class = c(sa_class, mwcs_solver_class))
     params <- mget(names(formals()))
     do.call(set_parameters, c(list(solver = x), params))
 }
@@ -46,4 +46,12 @@ solve_mwcsp.simulated_annealing_solver <- function(solver, instance) {
         inst_rep$edge_weights <- rep(0, length(inst_rep$edgelist))
     }
     res <- sa_solve(inst_rep, solver)
+    if (length(res$edges) == 0) {
+        instance$solution <- igraph::induced_subgraph(instance$graph,
+                                                      vids = res$vertices)
+    } else {
+        instance$solution <- igraph::subgraph.edges(instance$graph,
+                                                    eids = res$edges)
+    }
+    instance
 }

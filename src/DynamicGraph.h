@@ -45,6 +45,8 @@ namespace dgraph {
         EdgeToken(EdgeToken&&) noexcept;
         ~EdgeToken() = default;
 
+        bool moved();
+
         friend class DynamicGraph;
     };
 

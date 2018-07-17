@@ -2,6 +2,7 @@
 #define SRC_UTILS_H
 
 #include <Rcpp.h>
+#include <iostream>
 
 #include "graph.h"
 

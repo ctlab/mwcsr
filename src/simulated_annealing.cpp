@@ -42,7 +42,6 @@ namespace annealing {
         size++;
         module_vertices.add(v);
         for (Edge e: graph.neighbours(v)) {
-            size_t u = e.opposite(v);
             size_t e_id = e.num();
             if (!(module_edges.contains(e_id) || boundary.contains(e_id))) {
                 boundary.add(e_id);
@@ -77,15 +76,19 @@ namespace annealing {
             tokens[e] = std::move(dynamic_graph.add(v, u));
             return false;
         }
+        module_edges.remove(e);
         if (comp_size == size) {
             boundary.add(e);
             return true;
         }
+
+
         if (comp_size == size - 1) {
             remove_vertex(u);
         } else {
             remove_vertex(v);
         }
+
         score -= edge.weight();
         --degree[v];
         --degree[u];
@@ -118,6 +121,11 @@ namespace annealing {
     void SimulatedAnnealing::edge_step() {
         size_t bdr_sz = boundary.size();
         size_t mdl_sz = module_edges.size();
+
+        if (size == 1) {
+            ++mdl_sz;
+        }
+
         size_t r = uniform(bdr_sz + mdl_sz);
         if (r < bdr_sz) {
             add_from_bdr();
@@ -151,6 +159,11 @@ namespace annealing {
     }
 
     void SimulatedAnnealing::remove_from_module() {
+        if (size == 1) {
+            remove_vertex(module_vertices.random());
+            return;
+        }
+
         size_t e = module_edges.random();
         const Edge& edge = graph.edge(e);
         double diff = -edge.weight();

@@ -39,7 +39,7 @@ namespace mwcsr {
         return u;
     }
 
-    Graph::Graph(size_t n) {
+    Graph::Graph(size_t n) :m(0) {
         vertex_weights.resize(n);
         adj.resize(n, vector<Edge>());
     }

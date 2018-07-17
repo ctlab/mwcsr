@@ -49,9 +49,11 @@ namespace dgraph {
 
     void DynamicGraph::remove(EdgeToken&& edge_token) {
         Edge* link = edge_token.edge;
+        edge_token.edge = nullptr;
         if (link == nullptr) {
             return;
         }
+
         unsigned v = link->from();
         unsigned u = link->to();
         bool complex_deletion = link->is_tree_edge();
@@ -71,7 +73,7 @@ namespace dgraph {
         if (complex_deletion) {
             for (unsigned i = level; i < size; i++){
                 // find new connection
-                // to do that choose less component
+                // to do that choose the lesser component
                 if(forests[i].size(v) > forests[i].size(u)){
                     std::swap(v, u);
                 }
@@ -255,4 +257,8 @@ namespace dgraph {
     }
 
     EdgeToken::EdgeToken() :edge(nullptr){}
+
+    bool EdgeToken::moved() {
+        return edge == nullptr;
+    }
 }

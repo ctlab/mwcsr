@@ -19,7 +19,7 @@ List sa_solve(List& instance, List& solver) {
     std::mt19937 re;
     SimulatedAnnealing sa(g, re);
 
-    if (solver["schedule"] == "fast") {
+    if (solver["schedule"] == "1") {
         FastSchedule cs(initial, final);
         sa.run(cs);
     } else {
