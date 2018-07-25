@@ -33,7 +33,7 @@ namespace annealing {
             edge_step();
         }
         if (score > best_score) {
-            score = best_score;
+            best_score = score;
             best = Module(graph, module_vertices.content(), module_edges.content());
         }
     }
@@ -77,6 +77,7 @@ namespace annealing {
             return false;
         }
         module_edges.remove(e);
+        score -= edge.weight();
         if (comp_size == size) {
             boundary.add(e);
             return true;
@@ -89,7 +90,6 @@ namespace annealing {
             remove_vertex(v);
         }
 
-        score -= edge.weight();
         --degree[v];
         --degree[u];
         return true;
@@ -155,7 +155,6 @@ namespace annealing {
         if (accepts(diff)) {
             add_edge(e);
         }
-        score += diff;
     }
 
     void SimulatedAnnealing::remove_from_module() {
@@ -175,9 +174,7 @@ namespace annealing {
             }
             diff -= graph.weight(u);
             if (accepts(diff)) {
-                if(remove_edge(e, v, u)) {
-                    score += diff;
-                }
+                remove_edge(e, v, u);
             }
             return;
         }
@@ -189,15 +186,11 @@ namespace annealing {
         if (degree[u] == 1) {
             diff -= graph.weight(v);
             if (accepts(diff)) {
-                if (remove_edge(e, v, u)) {
-                    score += diff;
-                }
+                remove_edge(e, v, u);
             }
             return;
         }
-        if (remove_edge(e, v, u)) {
-            score += diff;
-        }
+        remove_edge(e, v, u);
     }
 
     vector<size_t> SimulatedAnnealing::vertices() {

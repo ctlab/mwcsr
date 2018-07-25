@@ -19,7 +19,7 @@ List sa_solve(List& instance, List& solver) {
     std::mt19937 re;
     SimulatedAnnealing sa(g, re);
 
-    if (solver["schedule"] == "1") {
+    if (solver["schedule"] != "1") {
         FastSchedule cs(initial, final);
         sa.run(cs);
     } else {
@@ -28,8 +28,8 @@ List sa_solve(List& instance, List& solver) {
     }
     auto vs = sa.vertices();
     auto es = sa.edges();
-    vector<size_t> edges;
-    std::transform(es.begin(), es.end(), edges.begin(), [](Edge e){return e.num();});
+    vector<size_t> edges(es.size(), 0);
+    std::transform(es.begin(), es.end(), edges.begin(), [](Edge e){return e.num() + 1;});
     List ret;
     ret["vertices"] = IntegerVector(vs.begin(), vs.end());
     ret["edges"] = IntegerVector(edges.begin(), edges.end());
