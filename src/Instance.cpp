@@ -36,23 +36,6 @@ Instance::Instance(List& network)
 
     fixedToOne = vector<int>(nNodes, 0);
     fixedToZero = vector<int>(nNodes, 0);
-
-    nFlowNodes = 2 * nNodes;
-    nFlowArcs = 2 * nEdges + nNodes;
-
-    flowArcs = new std::pair<int, int>[nFlowArcs];
-    int counter = 0;
-    for (int i = 0; i < nNodes; ++i) {
-        flowArcs[counter] = std::make_pair(i, i + nNodes);
-        counter++;
-    }
-
-    for (int i = 0; i < nNodes; ++i) {
-        for (int j : adjList[i]) {
-            flowArcs[counter] = std::make_pair(i + nNodes, j);
-            counter++;
-        }
-    }
 }
 
 void Instance::rebuildDatastructures() {

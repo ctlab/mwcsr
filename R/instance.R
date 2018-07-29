@@ -107,7 +107,7 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
         diff <- setdiff(names(value), names(elements))
         if (length(diff) != 0) {
             stop(paste("These elemenents are not presented in the graph: ",
-                       names(diff)))
+                       paste(diff)))
         }
         positions <- match(names(value), names(elements))
         x[[parameter]][positions] <- value

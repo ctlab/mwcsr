@@ -73,10 +73,6 @@ public:
 
     int nRealTerminals;
 
-    int nFlowNodes;
-    int nFlowArcs;
-    std::pair<int, int>* flowArcs;
-
     std::vector<int> fixedToZero;
     std::vector<int> fixedToOne;
     std::vector<cut> myCuts;
