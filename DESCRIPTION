@@ -13,7 +13,6 @@ Description: The package implements algorithms for solving various Maximum
 Depends: R (>= 3.3)
 Imports:
     igraph,
-    rJava,
     Rcpp, 
     methods,
     parallel

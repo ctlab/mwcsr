@@ -54,7 +54,7 @@ void Instance::rebuildDatastructures() {
         if (!nodesToRemove[i]) {
             backMap[i] = newNNodes;
             map.push_back(i);
-            adjList2.push_back(vector<int>());
+            adjList2.emplace_back();
             myPrizes2.push_back(myPrizes[i]);
             myBudgetCost2.push_back(myBudgetCost[i]);
             realTerminals2.push_back(realTerminals[i]);
