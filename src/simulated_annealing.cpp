@@ -12,7 +12,7 @@ namespace annealing {
                                           :graph(graph),
                                            tokens{graph.edgeset_size()},
                                            random_engine(random_engine),
-                                           degree{graph.size(), 0},
+                                           degree(std::vector<size_t>(graph.size(), 0)),
                                            unif{random_engine},
                                            dynamic_graph{(unsigned)graph.size()},
                                            module_vertices{graph.size(), random_engine},

@@ -46,8 +46,8 @@ namespace mwcsr {
 
     void Graph::add_edge(size_t v, size_t u, double weight) {
         Edge e(v, u, weight, m++);
-        adj.at(v).push_back(e);
-        adj.at(u).push_back(e);
+        adj[v].push_back(e);
+        adj[u].push_back(e);
         edges.push_back(e);
     }
 
