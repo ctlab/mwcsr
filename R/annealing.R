@@ -23,11 +23,12 @@ parameters.simulated_annealing_solver <- function(solver) {
 }
 
 #' ctor for annealing solver
-#' @param normalize adjust all weights so that all possible changes have
+#' @param normalization adjust all weights so that all possible changes have
 #' mean square 1.0
-#' @param boltzmann annealing or fast annealing
-#' @param initial_temperature initial temperature
-#' @param final_temperature final temperature
+#' @param schedule boltzmann annealing or fast annealing
+#' @param initial_temperature initial value for the temperature
+#' @param final_temperature final value for the temperature
+#' @param verbose whether be verbose or not
 #' @export
 annealing_solver <- function(normalization = TRUE,
                              schedule = c("fast", "boltzmann"),
@@ -39,8 +40,26 @@ annealing_solver <- function(normalization = TRUE,
     do.call(set_parameters, c(list(solver = x), params))
 }
 
+normalize_weights <- function(instance) {
+    weights <- c(instance$vertex_weights, instance$edge_weights)
+    edges <- igraph::as_data_frame(instance$graph)
+    for (i in 1:nrow(edges)) {
+        with_endpoints <- instance$vertex_weights[as.integer(edges[i, ])]
+        with_endpoints <- with_endpoints + instance$edge_weights[i]
+        weights <- c(weights, with_endpoints)
+    }
+    m <- mean(weights)
+    d <- sd(weights)
+    instance$vertex_weights <- instance$vertex_weights / d
+    instance$edge_weights <- instance$edge_weights / d
+    instance
+}
+
 #' @export
 solve_mwcsp.simulated_annealing_solver <- function(solver, instance) {
+    if (solver$normalization) {
+        instance <- normalize_weights(instance)
+    }
     inst_rep <- to_list(instance)
     if (is.null(inst_rep$edge_weights)) {
         inst_rep$edge_weights <- rep(0, length(inst_rep$edgelist))

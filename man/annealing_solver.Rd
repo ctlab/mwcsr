@@ -8,14 +8,16 @@ annealing_solver(normalization = TRUE, schedule = c("fast", "boltzmann"),
   initial_temperature = 1, final_temperature = 1e-06, verbose = FALSE)
 }
 \arguments{
-\item{initial_temperature}{initial temperature}
-
-\item{final_temperature}{final temperature}
-
-\item{normalize}{adjust all weights so that all possible changes have
+\item{normalization}{adjust all weights so that all possible changes have
 mean square 1.0}
 
-\item{boltzmann}{annealing or fast annealing}
+\item{schedule}{boltzmann annealing or fast annealing}
+
+\item{initial_temperature}{initial value for the temperature}
+
+\item{final_temperature}{final value for the temperature}
+
+\item{verbose}{whether be verbose or not}
 }
 \description{
 ctor for annealing solver

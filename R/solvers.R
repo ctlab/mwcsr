@@ -33,6 +33,9 @@ features.default <- function (solver) {
     stop("An abstract solver doesn't have features")
 }
 
+#' Sets values of specific parameters
+#' @param solver a solver
+#' @param ... listed parameter names and values assigned to them
 #' @export
 set_parameters <- function(solver, ...) {
     params <- parameters(solver)
@@ -53,6 +56,8 @@ parameters.default <- function(...) {
     stop("Abstact solver doesn't have parameters")
 }
 
+#' The method returns all parameters supported by specific solver
+#' @param solver a solver object
 #' @export
 parameters <- function(solver) UseMethod("parameters")
 

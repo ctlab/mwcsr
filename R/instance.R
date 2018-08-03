@@ -64,11 +64,15 @@ mwcs_instance <- function(graph,
     obj
 }
 
+#' Returns the best known estimation on the upper bound of the score
+#' @param instance an instance of the MWCS problem
 #' @export
 upper_bound <- function(instance) {
     instance$ub
 }
 
+#' Returns the most weighted connected subgraph
+#' @param instance an instance of MWCS problem
 #' @export
 solution <- function(instance) {
     instance$solution

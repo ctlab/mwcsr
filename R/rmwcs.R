@@ -36,7 +36,7 @@ parameters.rmwcs_solver <- function(solver) {
 #' @param beta_iterations Number of nonimproving iterations until beta is halfed
 #' @param separation Separation: "strong" of "fast"
 #' @param sep_iterations Extending the life of non-violated inequalities
-#' @param startcons Whether to add flow-conservation/degree cons at start
+#' @param start_constraints Whether to add flow-conservation/degree cons at start
 #' @param pegging Pegging (variable fixing)
 #' @param max_age extending the life of non-violated inequalities
 #' @param sep_iter_freeze After how many iterations we are checking added ineqs
