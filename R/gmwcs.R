@@ -7,7 +7,7 @@ check_gmwcs_solver <- function(solver) {
 }
 
 #' @export
-parameters.gmwcs_sovler <- function() {
+parameters.gmwcs_sovler <- function(solver) {
     l <- list(parameter("cplex_bin", type = "file"),
          parameter("cplex_jar", type = "file"),
          parameter("gmwcs_jar", type = "file"),

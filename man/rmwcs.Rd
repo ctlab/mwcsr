@@ -19,6 +19,8 @@ rmwcs(timelimit = 1800L, max_iterations = 1000L, beta_iterations = 50L,
 
 \item{separation}{Separation: "strong" of "fast"}
 
+\item{start_constraints}{Whether to add flow-conservation/degree cons at start}
+
 \item{pegging}{Pegging (variable fixing)}
 
 \item{max_age}{extending the life of non-violated inequalities}
@@ -34,8 +36,6 @@ rmwcs(timelimit = 1800L, max_iterations = 1000L, beta_iterations = 50L,
 \item{beta}{Beta for subgradient}
 
 \item{verbose}{Whether to print solving progress}
-
-\item{startcons}{Whether to add flow-conservation/degree cons at start}
 }
 \description{
 Generates a rmwcs solver with corresponding parameters
