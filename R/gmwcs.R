@@ -24,7 +24,7 @@ parameters.gmwcs_sovler <- function(solver) {
 #' @param cplex_jar a path to cplex JNI jar file
 #' @param gmwcs_jar a path to GMWCS solver jar file
 #' @param threads number of threads for simultaneous computation
-#' @param timelimits maximum number of seconds to solve the problem
+#' @param timelimit maximum number of seconds to solve the problem
 #' @param verbose whether or not be verbose
 #' @export
 gmwcs_solver <- function (cplex_bin,

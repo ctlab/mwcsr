@@ -16,9 +16,9 @@ gmwcs_solver(cplex_bin, cplex_jar, gmwcs_jar,
 
 \item{threads}{number of threads for simultaneous computation}
 
-\item{verbose}{whether or not be verbose}
+\item{timelimit}{maximum number of seconds to solve the problem}
 
-\item{timelimits}{maximum number of seconds to solve the problem}
+\item{verbose}{whether or not be verbose}
 }
 \description{
 Returns a solver object for GMWCS solver

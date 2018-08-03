@@ -14,6 +14,9 @@ check_features <- function(instance, features) {
     }
 }
 
+#' Solves a MWCS instance
+#' @param solver a solver object
+#' @param instance an MWCS instance
 #' @export
 solve_mwcsp <- function(solver, instance) {
     check_mwcs(instance)
