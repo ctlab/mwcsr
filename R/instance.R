@@ -194,12 +194,10 @@ remove_budget_class <- function(x) {
     if (is.na(value)) {
         stop("Budget mustn't be a NA")
     }
-    if (inherits(x, budget_class)) {
-        x$budget <- value
-    } else {
+    if (!inherits(x, budget_class)) {
         budget_costs(x) <- 0
-        x$budget <- value
     }
+    x$budget <- value
     x
 }
 
@@ -223,6 +221,7 @@ remove_budget_class <- function(x) {
     if (!inherits(x, cardinality_class)) {
         class(x) <- c(cardinality_class, class(x))
     }
+    x$cardinality <- value
     x
 }
 

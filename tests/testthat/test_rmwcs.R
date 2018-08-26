@@ -30,7 +30,8 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
         solve_mwcsp(solver, instance)
 
         max_cardinality(instance) <- cardinality
-        solve_mwcsp(solver, instance)
+        instance <- solve_mwcsp(solver, instance)
+        expect_lt(length(V(solution(instance))), 3)
 
         g <- set.vertex.attribute(g, name = "budget_cost", value = runif(size))
         instance <- mwcs_instance(g, parse_vertex_weights = FALSE,

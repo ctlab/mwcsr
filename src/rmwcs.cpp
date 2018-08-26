@@ -13,7 +13,7 @@ Rcpp::List rmwcs_solve(Rcpp::List& network, Rcpp::List& params) {
     std::unique_ptr<SolverLag> solver;
     if (network.containsElementNamed("budget")) {
         solver.reset(new SolverBudget(instance, parameters));
-    } else if (network.containsElementNamed("card")) {
+    } else if (network.containsElementNamed("cardinality")) {
         solver.reset(new SolverCardinality(instance, parameters));
     } else {
         solver.reset(new SolverClassic(instance, parameters));
