@@ -1,8 +1,8 @@
 #include "simulated_annealing.h"
 
 namespace {
-    double probability(double e, double es, double temp) {
-        return std::min(1.0, exp((es - e) / temp));
+    double probability(double ds, double temp) {
+        return std::min(1.0, exp(ds / temp));
     }
 }
 
@@ -78,11 +78,14 @@ namespace annealing {
         }
         module_edges.remove(e);
         score -= edge.weight();
+
+        --degree[v];
+        --degree[u];
+
         if (comp_size == size) {
             boundary.add(e);
             return true;
         }
-
 
         if (comp_size == size - 1) {
             remove_vertex(u);
@@ -90,8 +93,6 @@ namespace annealing {
             remove_vertex(v);
         }
 
-        --degree[v];
-        --degree[u];
         return true;
     }
 
@@ -114,7 +115,7 @@ namespace annealing {
     }
 
     bool SimulatedAnnealing::accepts(double diff) {
-        double prob = probability(score, score + diff, temperature);
+        double prob = probability(diff, temperature);
         return unif() < prob;
     }
 
@@ -184,7 +185,7 @@ namespace annealing {
         }
 
         if (degree[u] == 1) {
-            diff -= graph.weight(v);
+            diff -= graph.weight(u);
             if (accepts(diff)) {
                 remove_edge(e, v, u);
             }
