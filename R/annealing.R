@@ -48,7 +48,7 @@ normalize_weights <- function(instance) {
         with_endpoints <- with_endpoints + instance$edge_weights[i]
         weights <- c(weights, with_endpoints)
     }
-    m <- mean(weights)
+    weights <- c(weights, -weights)
     d <- sd(weights)
     instance$vertex_weights <- instance$vertex_weights / d
     instance$edge_weights <- instance$edge_weights / d

@@ -15,11 +15,12 @@ List sa_solve(List& instance, List& solver) {
     Graph g = read_graph(instance);
     double initial = solver["initial_temperature"];
     double final = solver["final_temperature"];
+    std::string schedule = solver["schedule"];    
 
     std::mt19937 re;
     SimulatedAnnealing sa(g, re);
 
-    if (solver["schedule"] != "1") {
+    if (schedule == "fast") {
         FastSchedule cs(initial, final);
         sa.run(cs);
     } else {

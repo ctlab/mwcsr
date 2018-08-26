@@ -2,7 +2,7 @@
 
 namespace {
     double probability(double e, double es, double temp) {
-        return std::min(1.0, exp(es - e / temp));
+        return std::min(1.0, exp((es - e) / temp));
     }
 }
 
