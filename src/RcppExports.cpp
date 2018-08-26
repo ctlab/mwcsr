@@ -17,17 +17,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// solve_annealing
-Rcpp::IntegerVector solve_annealing(Rcpp::List& network);
-RcppExport SEXP _mwcsr_solve_annealing(SEXP networkSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List& >::type network(networkSEXP);
-    rcpp_result_gen = Rcpp::wrap(solve_annealing(network));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rmwcs_solve
 Rcpp::List rmwcs_solve(Rcpp::List& network, Rcpp::List& params);
 RcppExport SEXP _mwcsr_rmwcs_solve(SEXP networkSEXP, SEXP paramsSEXP) {
@@ -43,7 +32,6 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_mwcsr_sa_solve", (DL_FUNC) &_mwcsr_sa_solve, 2},
-    {"_mwcsr_solve_annealing", (DL_FUNC) &_mwcsr_solve_annealing, 1},
     {"_mwcsr_rmwcs_solve", (DL_FUNC) &_mwcsr_rmwcs_solve, 2},
     {NULL, NULL, 0}
 };

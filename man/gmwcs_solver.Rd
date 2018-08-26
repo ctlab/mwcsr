@@ -5,7 +5,8 @@
 \title{Returns a solver object for GMWCS solver}
 \usage{
 gmwcs_solver(cplex_bin, cplex_jar, gmwcs_jar,
-  threads = parallel::detectCores(), timelimit = NULL, verbose = TRUE)
+  threads = parallel::detectCores(), timelimit = NULL,
+  verbose = TRUE)
 }
 \arguments{
 \item{cplex_bin}{a path to cplex library file}

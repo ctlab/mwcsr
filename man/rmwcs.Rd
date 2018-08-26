@@ -4,11 +4,11 @@
 \alias{rmwcs}
 \title{Generates a rmwcs solver with corresponding parameters}
 \usage{
-rmwcs(timelimit = 1800L, max_iterations = 1000L, beta_iterations = 50L,
-  separation = "strong", start_constraints = TRUE, pegging = TRUE,
-  max_age = 3, sep_iterations = 1L, sep_iter_freeze = 1L,
-  heur_iterations = 1L, subgradient = "classic", beta = 2,
-  verbose = FALSE)
+rmwcs(timelimit = 1800L, max_iterations = 1000L,
+  beta_iterations = 50L, separation = "strong",
+  start_constraints = TRUE, pegging = TRUE, max_age = 3,
+  sep_iterations = 1L, sep_iter_freeze = 1L, heur_iterations = 1L,
+  subgradient = "classic", beta = 2, verbose = FALSE)
 }
 \arguments{
 \item{timelimit}{Timelimit in seconds}
