@@ -295,8 +295,8 @@ void Instance::readInstance(List& instance) {
     if (instance.containsElementNamed("budget")) {
         budget = instance["budget"];
     }
-    if (instance.containsElementNamed("card")) {
-        cardCons = instance["card"];
+    if (instance.containsElementNamed("cardinality")) {
+        cardCons = instance["cardinality"];
     }
 
     for (unsigned i = 0; i < nNodes; i++) {

@@ -40,7 +40,7 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
         budget(instance) <- cardinality
         s <- solve_mwcsp(solver, instance)
 
-        expect_lt(length(V(solution(s))), cardinality + 1)
+        expect_lte(sum(V(solution(s))$budget_cost), cardinality)
     }
 
     test_graph(make_ring)
