@@ -110,10 +110,10 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
     if (length(names(value)) > 0) {
         diff <- setdiff(names(value), names(elements))
         if (length(diff) != 0) {
-            stop(paste("These elemenents are not presented in the graph: ",
-                       paste(diff)))
+            warning(paste("No such vertices in graph:",
+                       do.call(paste, c(list(sep = ", "), lapply(diff, list)))))
         }
-        positions <- match(names(value), names(elements))
+        positions <- match(setdiff(names(value), diff), names(elements))
         x[[parameter]][positions] <- value
     } else {
         if (length(value) > length(elements)) {
