@@ -43,7 +43,7 @@ test_that("parsing of edge weights and budgets works", {
     expect_equal(instance[names(expected)], expected[names(expected)])
 })
 
-test_that("error is throwing when trying to assign bad values", {
+test_that("warning in case of assigning bad values", {
     g <- igraph::make_ring(4)
 
     V(g)$weight <- c(1, 2, 3, "")
@@ -52,7 +52,7 @@ test_that("error is throwing when trying to assign bad values", {
     V(g)$weight <- c(1, 2, 3, 4)
     instance <- mwcs_instance(g)
 
-    expect_error(budget_costs(instance) <- setNames(5, "a"))
+    expect_warning(budget_costs(instance) <- setNames(5, "a"))
 })
 
 test_that("cardinality class works", {

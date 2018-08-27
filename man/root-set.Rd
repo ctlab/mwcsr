@@ -2,7 +2,7 @@
 % Please edit documentation in R/instance.R
 \name{root<-}
 \alias{root<-}
-\title{assignment operator for the root}
+\title{assignment operator for root vertex}
 \usage{
 root(x) <- value
 }
@@ -12,5 +12,5 @@ root(x) <- value
 \item{value}{a value to be assigned to x.}
 }
 \description{
-assignment operator for the root
+assignment operator for root vertex
 }

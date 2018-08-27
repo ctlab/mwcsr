@@ -225,7 +225,7 @@ remove_budget_class <- function(x) {
     x
 }
 
-#' assignment operator for the root
+#' assignment operator for root vertex
 #' @param x a variable name.
 #' @param value a value to be assigned to x.
 #' @export
@@ -237,16 +237,16 @@ remove_budget_class <- function(x) {
     }
     if (is.integer(value)) {
         if (value < 1 | value > length(V(x$graph))) {
-            stop("No such vertex in the graph")
+            stop("No such vertex in graph")
         }
         x$root <- value
     } else if (is.character(value)) {
         if (!(value %in% names(V(x$graph)))) {
-            stop("No such vertex in the graph")
+            stop("No such vertex in graph")
         }
         x$root <- which(names(V(x$graph)) == value)
     } else {
-        stop("Argument should be integer of vertex name")
+        stop("Argument must be integer or a vertex name")
     }
     if (!inherits(x, rooted_class)) {
         class(x) <- c(rooted_class, class(x))
