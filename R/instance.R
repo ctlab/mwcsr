@@ -113,8 +113,9 @@ set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
             warning(paste("No such vertices in graph:",
                        do.call(paste, c(list(sep = ", "), lapply(diff, list)))))
         }
-        positions <- match(setdiff(names(value), diff), names(elements))
-        x[[parameter]][positions] <- value
+        remain <- setdiff(names(value), diff)
+        positions <- match(remain, names(elements))
+        x[[parameter]][positions] <- value[remain]
     } else {
         if (length(value) > length(elements)) {
             stop("Too many values to assign")
