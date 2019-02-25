@@ -73,6 +73,7 @@ features.rmwcs_solver <- function(solver) {
 solve_mwcsp.rmwcs_solver <- function(solver, instance) {
     check_rmwcs_solver(solver)
     check_mwcs(instance)
+    instance$graph <- igraph::simplify(instance$graph)
     instance_rep <- to_list(instance)
 
     solver$separation <- pmatch(solver$separation, sep_methods) - 1
