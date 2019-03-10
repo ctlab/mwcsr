@@ -13,13 +13,11 @@ features.simulated_annealing_solver <- function(solver) {
 
 #' @export
 parameters.simulated_annealing_solver <- function(solver) {
-    l <- list(parameter("normalization", type = "logical"),
+    params(parameter("normalization", type = "logical"),
         parameter("schedule", type = "mc", mc = schedules),
         parameter("initial_temperature", type = "float", positive = TRUE),
         parameter("final_temperature", type = "float", positive = TRUE),
         parameter("verbose", type = "logical"))
-    names(l) <- lapply(l, function(x) x$name)
-    l
 }
 
 #' ctor for annealing solver

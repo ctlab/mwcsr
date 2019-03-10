@@ -49,6 +49,7 @@ test_that("warning in case of assigning bad values", {
     V(g)$weight <- c(1, 2, 3, "")
     expect_error(mwcs_instance(g))
 
+
     V(g)$weight <- c(1, 2, 3, 4)
     instance <- mwcs_instance(g)
 

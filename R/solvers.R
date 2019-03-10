@@ -55,8 +55,41 @@ set_parameters <- function(solver, ...) {
 }
 
 #' @export
+`[<-.mwcs_solver` <- function(x, i = NULL, j = NULL, value) {
+    params <- list(solver = x)
+    params[[i]] <- value
+    do.call(set_parameters, params)
+}
+
+#' @export
+`[.mwcs_solver` <- function(x, i = NULL, j = NULL, value) {
+    x[[i]]
+}
+
+#' @export
+print.mwcs_solver <- function(x) {
+    check_mwcs_solver(x)
+    cat("MWCS Solver: ", class(x)[1], "\n\n")
+
+    cat("Parameters:\n")
+    get_param_name <- function(x) setNames(x$name, NULL)
+    param_names <- sapply(parameters(x), get_param_name)
+    params <- data.frame(name = param_names,
+                         value = sapply(param_names, function(y) x[y]),
+                         row.names = NULL)
+    print(params, right = FALSE, row.names = FALSE)
+    cat("\n")
+
+    cat("Supported MWCS instance types: \n")
+    cat(paste(sapply(features(x), function(x) paste0("  ", x)),
+              collapse = "\n"))
+    cat("\n")
+    invisible(x)
+}
+
+#' @export
 parameters.default <- function(...) {
-    stop("Abstact solver doesn't have parameters")
+    stop("Object is not an MWCS solver or is an abstract solver")
 }
 
 #' The method returns all parameters supported by specific solver

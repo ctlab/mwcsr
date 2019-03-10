@@ -3,15 +3,39 @@ parameter <- function(name,
                       is_null_possible = FALSE,
                       positive = FALSE,
                       nonnegative = FALSE,
-                      mc = NULL,
-                      file = NULL) {
+                      mc = NULL) {
     structure(list(name = name,
+                   type = type,
                    is_null_possible = is_null_possible,
                    positive = positive,
                    nonnegative = nonnegative,
-                   mc = mc,
-                   file = file),
+                   mc = mc),
               class = c(paste0(type, "_parameter"), parameter_class))
+}
+
+params <- function(...) {
+    l <- list(...)
+    names(l) <- lapply(l, function(x) x$name)
+    structure(l, class = "mwcs_solver_params")
+}
+
+#' @export
+print.mwcs_solver_params <- function (x) {
+    df <- data.frame(name = sapply(x, function(x) x$name))
+    df[["type"]] <- sapply(x, function(x) x$type)
+    df[["value"]] <- sapply(x, function(x) {
+        if (x$type == "mc") {
+            quote <- function(x) paste0("\"", x, "\"")
+            paste0("{", paste0(sapply(x$mc, quote), collapse = ", "), "}")
+        } else if (x$positive) {
+            "positive"
+        } else if (x$nonnegative) {
+            "non-negative"
+        } else {
+            ""
+        }
+    })
+    print(df, row.names = FALSE, right = FALSE)
 }
 
 check_parameter_class <- function(parameter) {
@@ -83,7 +107,7 @@ check_parameter.mc_parameter <- function (param, value) {
 }
 
 check_parameter.file_parameter <- function(param, value) {
-    file <- param$file
+    file <- value
     if (!file.exists(file)) {
         stop(paste("File", file, "does not exist"))
     }

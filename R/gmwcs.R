@@ -8,15 +8,13 @@ check_gmwcs_solver <- function(solver) {
 
 #' @export
 parameters.gmwcs_sovler <- function(solver) {
-    l <- list(parameter("cplex_bin", type = "file"),
+    params(parameter("cplex_bin", type = "file"),
          parameter("cplex_jar", type = "file"),
          parameter("gmwcs_jar", type = "file"),
          parameter("threads", type = "integer", positive = TRUE),
          parameter("timelimit", type = "integer", positive = TRUE,
                    is_null_possible = TRUE),
          parameter("verbose", type = "logical"))
-    names(l) <- lapply(l, function(x) x$name)
-    l
 }
 
 #' Returns a solver object for GMWCS solver

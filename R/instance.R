@@ -28,8 +28,7 @@ mwcs_instance <- function(graph,
                           parse_vertex_weights = TRUE,
                           parse_edge_weights = FALSE,
                           parse_budgets = FALSE) {
-    obj <- structure(list(graph = graph, upper_bound = NA, solution = NULL),
-                     class = mwcs_class)
+    obj <- structure(list(graph = graph, upper_bound = NA), class = mwcs_class)
     if (!igraph::is_igraph(graph)) {
         stop("Not a graph object")
     }
@@ -97,14 +96,14 @@ good_values <- function(values) {
     values
 }
 
-set_parameter <- function(x, value, parameter, sub_op, initial = FALSE) {
+set_parameter <- function(x, value, parameter, sub_op, initial = NULL) {
     check_mwcs(x)
     value <- good_values(value)
 
     elements <- sub_op(x$graph)
 
-    if (initial) {
-        x[[parameter]] <- rep(0.0, length(elements))
+    if (!is.null(initial)) {
+        x[[parameter]] <- rep(initial, length(elements))
     }
 
     if (length(names(value)) > 0) {
