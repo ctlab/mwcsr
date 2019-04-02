@@ -31,7 +31,5 @@ gmwcs_solver <- function (cplex_bin,
                           threads = parallel::detectCores(),
                           timelimit = NULL,
                           verbose = TRUE){
-    x <- structure(list(), class = c(gmwcs_class, mwcs_class))
-    params <- mget(names(formals()))
-    do.call(set_parameters, c(list(solver = x), params))
+    solver_ctor(c(gmwcs_class, mwcs_class))
 }

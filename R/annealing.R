@@ -33,9 +33,7 @@ annealing_solver <- function(normalization = TRUE,
                              initial_temperature = 1.0,
                              final_temperature = 1e-6,
                              verbose = FALSE) {
-    x <- structure(list(), class = c(sa_class, mwcs_solver_class))
-    params <- mget(names(formals()))
-    do.call(set_parameters, c(list(solver = x), params))
+    solver_ctor(c(sa_class, mwcs_solver_class))
 }
 
 normalize_weights <- function(instance) {

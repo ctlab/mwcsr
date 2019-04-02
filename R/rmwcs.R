@@ -57,9 +57,7 @@ rmwcs <- function(timelimit = 1800L,
                   subgradient = "classic",
                   beta = 2.0,
                   verbose = FALSE) {
-    x <- structure(list(), class = c(rmwcs_class, mwcs_solver_class))
-    params <- mget(names(formals()))
-    do.call(set_parameters, c(list(solver = x), params))
+    solver_ctor(c(rmwcs_class, mwcs_solver_class))
 }
 
 #' @export

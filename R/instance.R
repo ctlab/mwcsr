@@ -28,7 +28,7 @@ mwcs_instance <- function(graph,
                           parse_vertex_weights = TRUE,
                           parse_edge_weights = FALSE,
                           parse_budgets = FALSE) {
-    obj <- structure(list(graph = graph, upper_bound = NA), class = mwcs_class)
+    obj <- structure(list(graph = graph), class = mwcs_class)
     if (!igraph::is_igraph(graph)) {
         stop("Not a graph object")
     }
@@ -59,15 +59,7 @@ mwcs_instance <- function(graph,
         }
         budget_costs(obj) <- V(graph)$budget_cost
     }
-    obj$solved_to_optimality <- FALSE
     obj
-}
-
-#' Returns the best known estimation on the upper bound of the score
-#' @param instance an instance of the MWCS problem
-#' @export
-upper_bound <- function(instance) {
-    instance$ub
 }
 
 #' Returns the most weighted connected subgraph

@@ -14,6 +14,12 @@ check_features <- function(instance, features) {
     }
 }
 
+solver_ctor <- function(classes) {
+    params <- as.list(parent.frame(1L))
+    x <- structure(list(), class = classes)
+    do.call(set_parameters, c(list(solver = x), params))
+}
+
 #' Solves a MWCS instance
 #' @param solver a solver object
 #' @param instance an MWCS instance
