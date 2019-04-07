@@ -1,6 +1,23 @@
 mwcs_solver_class <- "mwcs_solver"
 parameter_class <- "solver_parameter"
 
+to_list <- function(instance) {
+    l <- instance
+    l$graph <- NULL
+    class(l) <- NULL
+    l$edgelist <- as_edgelist(instance$graph, names = FALSE)
+    l$size <- length(V(instance$graph))
+    l
+}
+
+good_values <- function(values) {
+    values <- setNames(as.numeric(values), names(values))
+    if (any(is.na(values))) {
+        stop("NA weight presented or came from coercion to numeric type")
+    }
+    values
+}
+
 check_mwcs_solver <- function(x) {
     if (!inherits(x, mwcs_solver_class)) {
         stop("Not a MWCS solver")
@@ -25,9 +42,15 @@ solver_ctor <- function(classes) {
 #' @param instance an MWCS instance
 #' @export
 solve_mwcsp <- function(solver, instance) {
-    check_mwcs(instance)
     check_mwcs_solver(solver)
-    check_features(instance, features(solver))
+
+    if (!igraph:is_igraph(graph)) {
+        stop("Not a graph object")
+    }
+
+    if(igraph::is_directed(graph)){
+        stop("Not an undirected graph")
+    }
 
     UseMethod("solve_mwcsp")
 }

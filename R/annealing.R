@@ -51,6 +51,16 @@ normalize_weights <- function(instance) {
     instance
 }
 
+#' Solve generalized maximum weight subgraph problem using simulated annealing
+#'
+#' Simulated annealing is a heuristic method of solving optimization problems.
+#' Typically, it allows to find some good solution in a short time. This
+#' implementation doesn't compute any upper bound on solution, so there is no
+#' guarantee of optimality of solution provided.
+#'
+#' @param solver The solver object.
+#' @param instance An igraph instance to work with.
+#' @return An object of class mwcsp_solution.
 #' @export
 solve_mwcsp.simulated_annealing_solver <- function(solver, instance) {
     if (solver$normalization) {
