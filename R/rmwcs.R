@@ -60,20 +60,37 @@ rmwcs <- function(timelimit = 1800L,
     solver_ctor(c(rmwcs_class, mwcs_solver_class))
 }
 
+#' Solves MWCS problem using relax-and-cut approach
+#' @param solver An rmwcs solver object.
+#' @param instance An igraph object.
+#' @param cardinality integer maximum number of vertices in solution
+#' @param budget numeric maximum budget of solution.
 #' @export
-features.rmwcs_solver <- function(solver) {
-    c(mwcs_class, budget_class, cardinality_class)
-}
-
-#' @export
-solve_mwcsp.rmwcs_solver <- function(solver, instance) {
+solve_mwcsp.rmwcs_solver <- function(solver, instance, cardinality = NULL,
+                                     budget = NULL) {
     check_rmwcs_solver(solver)
-    check_mwcs(instance)
-    instance$graph <- igraph::simplify(instance$graph)
-    instance_rep <- to_list(instance)
+
+    if (!is.null(cardinality) && !is.null(budget)) {
+        stop("One of the arguments 'cardinality' and 'budget' must be NULL")
+    }
+
+    instance <- igraph::simplify(instance)
 
     solver$separation <- pmatch(solver$separation, sep_methods) - 1
     solver$subgradient <- pmatch(solver$subgradient, subgradients) - 1
+
+    instance_rep <- instance_from_graph(instance)
+    instance_rep$vertex_weights <- vattr_values(instance, "weight")
+
+    if (!is.null(budget)) {
+        instance_rep$budget <- vattr_values(instance, "budget")
+    }
+
+    if (!is.null(cardinality)) {
+        cardinality <- as.integer(cardinality)
+        stopifnot(cardinality > 0)
+        instance_rep$cardinality <- cardinality
+    }
 
     vs <- rmwcs_solve(instance_rep, solver)
     instance$solution <- igraph::induced_subgraph(instance$graph, vs$graph)

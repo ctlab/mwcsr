@@ -7,10 +7,6 @@ check_sa_solver <- function(solver) {
     }
 }
 
-features.simulated_annealing_solver <- function(solver) {
-    c(mwcs_class, gmwcs_class)
-}
-
 #' @export
 parameters.simulated_annealing_solver <- function(solver) {
     params(parameter("normalization", type = "logical"),
@@ -58,7 +54,7 @@ normalize_weights <- function(instance) {
 #' implementation doesn't compute any upper bound on solution, so there is no
 #' guarantee of optimality of solution provided.
 #'
-#' @param solver The solver object.
+#' @param solver An annealing solver object.
 #' @param instance An igraph instance to work with.
 #' @return An object of class mwcsp_solution.
 #' @export

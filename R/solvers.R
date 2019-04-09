@@ -1,19 +1,27 @@
 mwcs_solver_class <- "mwcs_solver"
 parameter_class <- "solver_parameter"
 
-to_list <- function(instance) {
-    l <- instance
-    l$graph <- NULL
-    class(l) <- NULL
-    l$edgelist <- as_edgelist(instance$graph, names = FALSE)
-    l$size <- length(V(instance$graph))
-    l
+EPS <- 1e-8
+
+instance_from_graph <- function(graph) {
+    edgelist <- as_edgelist(graph, names = FALSE)
+    list(edgelist = matrix(as.integer(edgelist), ncol = 2),
+         size = length(V(graph)))
 }
 
-good_values <- function(values) {
-    values <- setNames(as.numeric(values), names(values))
+vattr_values <- function(graph, attr, nonnegative = FALSE) {
+    if (!(attr %in% names(vertex.attributes(graph)))) {
+        stop(paste("Can't find vertex attribute ", attr))
+    }
+    values <- as.numeric(vertex_attr(graph, attr))
     if (any(is.na(values))) {
         stop("NA weight presented or came from coercion to numeric type")
+    }
+    if (nonnegative) {
+        if (any(values < 0)) {
+            stop(paste0("All values of vertex attribute '", attr, "' must be
+                        nonnegative"))
+        }
     }
     values
 }
@@ -21,13 +29,6 @@ good_values <- function(values) {
 check_mwcs_solver <- function(x) {
     if (!inherits(x, mwcs_solver_class)) {
         stop("Not a MWCS solver")
-    }
-}
-
-check_features <- function(instance, features) {
-    extra_classes <- setdiff(class(instance), features)
-    if (length(extra_classes) > 0) {
-        stop(paste("The solver doesn't support these features:", extra_classes))
     }
 }
 
@@ -57,12 +58,6 @@ solve_mwcsp <- function(solver, instance) {
 
 solve_mwcsp.default <- function(solver, instance) {
     stop("An abstract solver can't solve an instance")
-}
-
-features <- function(solver) UseMethod("features")
-
-features.default <- function (solver) {
-    stop("An abstract solver doesn't have features")
 }
 
 #' Sets values of specific parameters
@@ -109,10 +104,6 @@ print.mwcs_solver <- function(x) {
     print(params, right = FALSE, row.names = FALSE)
     cat("\n")
 
-    cat("Supported MWCS instance types: \n")
-    cat(paste(sapply(features(x), function(x) paste0("  ", x)),
-              collapse = "\n"))
-    cat("\n")
     invisible(x)
 }
 

@@ -281,7 +281,7 @@ void Instance::readEdges(NumericMatrix& edges) {
 }
 
 void Instance::readInstance(List& instance) {
-    auto edges = as<NumericMatrix>(instance["edgelist"]);
+    auto edges = as<IntegerMatrix>(instance["edgelist"]);
     auto scores = as<NumericVector>(instance["vertex_weights"]);
 
     nNodes = static_cast<unsigned>(scores.size());
