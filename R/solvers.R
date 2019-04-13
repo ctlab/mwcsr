@@ -9,18 +9,39 @@ instance_from_graph <- function(graph) {
          size = length(V(graph)))
 }
 
-vattr_values <- function(graph, attr, nonnegative = FALSE) {
-    if (!(attr %in% names(vertex.attributes(graph)))) {
-        stop(paste("Can't find vertex attribute ", attr))
+graph_to_list <- function(graph) {
+    l$edgelist <- as_edgelist(instance$graph, names = FALSE)
+    l$size <- length(V(instance$graph))
+    l
+}
+
+vertex_attr_set <- list(list  = igraph::list.vertex.attributes,
+                        query = igraph::vertex_attr,
+                        name  = "vertex")
+
+edge_attr_set <- list(list  = igraph::list.edge.attributes,
+                      query = igraph::edge_attr,
+                      name  = "edge")
+
+attr_values <- function(graph, attr, type = "V", nonnegative = FALSE) {
+    attr_set <- NULL
+    if (type == "V") {
+        attr_set <- vertex_attr_set
+    } else {
+        attr_set <- edge_attr_set
     }
-    values <- as.numeric(vertex_attr(graph, attr))
+    if (!(attr %in% attr_set$list(graph))) {
+        stop(paste0("Can't find ", attr_set$name, " attribute '", attr, "'"))
+    }
+    values <- as.numeric(attr_set$query(graph, attr))
     if (any(is.na(values))) {
-        stop("NA weight presented or came from coercion to numeric type")
+        stop(paste0("NA value found for the ", attr_set$name, " attribute '",
+                    attr, "' or it came from coercion to numeric type"))
     }
     if (nonnegative) {
         if (any(values < 0)) {
-            stop(paste0("All values of vertex attribute '", attr, "' must be
-                        nonnegative"))
+            stop(paste0("All values of ", attr_set$name, " attribute '", attr,
+                        "' must be nonnegative"))
         }
     }
     values

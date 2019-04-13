@@ -309,7 +309,7 @@ void Instance::readInstance(List& instance) {
             maxPrize = myPrizes[i];
         }
     }
-    
+
     readEdges(edges);
     nEdges *= 2;
 }

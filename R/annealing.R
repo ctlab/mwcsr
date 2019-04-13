@@ -62,17 +62,19 @@ solve_mwcsp.simulated_annealing_solver <- function(solver, instance) {
     if (solver$normalization) {
         instance <- normalize_weights(instance)
     }
-    inst_rep <- to_list(instance)
-    if (is.null(inst_rep$edge_weights)) {
+    inst_rep <- graph_to_list(instance)
+    inst_rep$vertex_weights <- attr_values(instance, "weight", "V")
+
+    if (!("weight" %in% edge.attributes(instance))) {
         inst_rep$edge_weights <- rep(0, length(inst_rep$edgelist))
+    } else {
+        inst_rep$edge_weights <- attr_values(instance, "weight", "E")
     }
+
     res <- sa_solve(inst_rep, solver)
     if (length(res$edges) == 0) {
-        instance$solution <- igraph::induced_subgraph(instance$graph,
-                                                      vids = res$vertices)
+        igraph::induced_subgraph(instance$graph, vids = res$vertices)
     } else {
-        instance$solution <- igraph::subgraph.edges(instance$graph,
-                                                    eids = res$edges)
+        igraph::subgraph.edges(instance$graph, eids = res$edges)
     }
-    instance
 }
