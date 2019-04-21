@@ -9,15 +9,15 @@ namespace {
 namespace annealing {
 
     SimulatedAnnealing::SimulatedAnnealing(const Graph &graph, RandomEngine& random_engine)
-                                          :graph(graph),
-                                           tokens{graph.edgeset_size()},
-                                           random_engine(random_engine),
-                                           degree(std::vector<size_t>(graph.size(), 0)),
+                                          :random_engine(random_engine),
                                            unif{random_engine},
                                            dynamic_graph{(unsigned)graph.size()},
-                                           module_vertices{graph.size(), random_engine},
+                                           graph(graph),
                                            module_edges{graph.edgeset_size(), random_engine},
-                                           boundary{graph.edgeset_size(), random_engine} {}
+                                           boundary{graph.edgeset_size(), random_engine},
+                                           module_vertices{graph.size(), random_engine},
+                                           degree(std::vector<size_t>(graph.size(), 0)),
+                                           tokens{graph.edgeset_size()} {}
 
     void SimulatedAnnealing::run(CoolingSchedule& schedule) {
         while (schedule.is_hot()) {
@@ -73,7 +73,7 @@ namespace annealing {
         dynamic_graph.remove(std::move(tokens[e]));
         size_t comp_size = dynamic_graph.component_size(v);
         if (comp_size < size - 1 && comp_size != 1) {
-            tokens[e] = std::move(dynamic_graph.add(v, u));
+            tokens[e] = dynamic_graph.add(v, u);
             return false;
         }
         module_edges.remove(e);

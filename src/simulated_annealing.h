@@ -42,7 +42,7 @@ namespace annealing {
         double score = 0;
         size_t size = 0;
         std::vector<EdgeToken> tokens;
-        double temperature;
+        double temperature = 0;
 
         double best_score = 0;
         Module best;

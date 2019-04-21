@@ -33,17 +33,11 @@ annealing_solver <- function(normalization = TRUE,
 }
 
 normalize_weights <- function(instance) {
-    weights <- c(instance$vertex_weights, instance$edge_weights)
-    edges <- igraph::as_data_frame(instance$graph)
-    for (i in 1:nrow(edges)) {
-        with_endpoints <- instance$vertex_weights[as.integer(edges[i, ])]
-        with_endpoints <- with_endpoints + instance$edge_weights[i]
-        weights <- c(weights, with_endpoints)
+    weights <- c(V(instance)$weight, E(instance)$weight)
+    support <- sum(weights[weights > 0]) / 2
+    if (any(weights < -EPS)) {
+        support <- min(support, -min(weights))
     }
-    weights <- c(weights, -weights)
-    d <- sd(weights)
-    instance$vertex_weights <- instance$vertex_weights / d
-    instance$edge_weights <- instance$edge_weights / d
     instance
 }
 
@@ -65,7 +59,7 @@ solve_mwcsp.simulated_annealing_solver <- function(solver, instance) {
     inst_rep <- graph_to_list(instance)
     inst_rep$vertex_weights <- attr_values(instance, "weight", "V")
 
-    if (!("weight" %in% edge.attributes(instance))) {
+    if (!("weight" %in% igraph::edge.attributes(instance))) {
         inst_rep$edge_weights <- rep(0, length(inst_rep$edgelist))
     } else {
         inst_rep$edge_weights <- attr_values(instance, "weight", "E")
@@ -73,8 +67,10 @@ solve_mwcsp.simulated_annealing_solver <- function(solver, instance) {
 
     res <- sa_solve(inst_rep, solver)
     if (length(res$edges) == 0) {
-        igraph::induced_subgraph(instance$graph, vids = res$vertices)
+        g <- igraph::induced_subgraph(instance, vids = res$vertices)
     } else {
-        igraph::subgraph.edges(instance$graph, eids = res$edges)
+        g <- igraph::subgraph.edges(instance, eids = res$edges)
     }
+    weight <- sum(V(g)$weight) + sum(E(g)$weight)
+    solution(g, weight, solved_to_optimality = NA)
 }

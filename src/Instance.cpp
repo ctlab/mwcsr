@@ -12,6 +12,7 @@
 using Rcpp::NumericVector;
 using Rcpp::List;
 using Rcpp::NumericMatrix;
+using Rcpp::IntegerMatrix;
 using Rcpp::as;
 
 using std::vector;
@@ -256,7 +257,7 @@ void Instance::addEdge(unsigned v, unsigned u) {
     adjList[u].push_back(v);
 }
 
-void Instance::readEdges(NumericMatrix& edges) {
+void Instance::readEdges(IntegerMatrix& edges) {
     nEdges = static_cast<unsigned>(edges.nrow());
     bool edge_problem = edges.ncol() == 3;
 

@@ -24,7 +24,7 @@ class Instance {
 
     std::vector<bool> nodesToRemove;
     void readInstance(Rcpp::List& instance);
-    void readEdges(Rcpp::NumericMatrix&);
+    void readEdges(Rcpp::IntegerMatrix&);
     void addEdge(unsigned, unsigned);
     void initStructures(unsigned);
 

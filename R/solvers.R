@@ -10,9 +10,8 @@ instance_from_graph <- function(graph) {
 }
 
 graph_to_list <- function(graph) {
-    l$edgelist <- as_edgelist(instance$graph, names = FALSE)
-    l$size <- length(V(instance$graph))
-    l
+    list(edgelist = as_edgelist(graph, names = FALSE),
+         size = length(V(graph)))
 }
 
 vertex_attr_set <- list(list  = igraph::list.vertex.attributes,
@@ -66,11 +65,11 @@ solver_ctor <- function(classes) {
 solve_mwcsp <- function(solver, instance) {
     check_mwcs_solver(solver)
 
-    if (!igraph:is_igraph(graph)) {
+    if (!igraph::is_igraph(instance)) {
         stop("Not a graph object")
     }
 
-    if(igraph::is_directed(graph)){
+    if(igraph::is_directed(instance)){
         stop("Not an undirected graph")
     }
 
