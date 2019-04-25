@@ -4,12 +4,14 @@
 \alias{solve_mwcsp}
 \title{Solves a MWCS instance}
 \usage{
-solve_mwcsp(solver, instance)
+solve_mwcsp(solver, instance, ...)
 }
 \arguments{
-\item{solver}{a solver object}
+\item{solver}{a solver object.}
 
-\item{instance}{an MWCS instance}
+\item{instance}{an MWCS instance.}
+
+\item{...}{other arguments passed to other methods.}
 }
 \description{
 Solves a MWCS instance

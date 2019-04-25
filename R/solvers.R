@@ -54,8 +54,9 @@ solver_ctor <- function(classes) {
 }
 
 #' Solves a MWCS instance
-#' @param solver a solver object
-#' @param instance an MWCS instance
+#' @param solver a solver object.
+#' @param instance an MWCS instance.
+#' @param ... other arguments passed to other methods.
 #' @export
 solve_mwcsp <- function(solver, instance, ...) {
     check_mwcs_solver(solver)
