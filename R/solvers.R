@@ -9,11 +9,6 @@ instance_from_graph <- function(graph) {
          size = length(V(graph)))
 }
 
-graph_to_list <- function(graph) {
-    list(edgelist = as_edgelist(graph, names = FALSE),
-         size = length(V(graph)))
-}
-
 vertex_attr_set <- list(list  = igraph::list.vertex.attributes,
                         query = igraph::vertex_attr,
                         name  = "vertex")
@@ -62,7 +57,7 @@ solver_ctor <- function(classes) {
 #' @param solver a solver object
 #' @param instance an MWCS instance
 #' @export
-solve_mwcsp <- function(solver, instance) {
+solve_mwcsp <- function(solver, instance, ...) {
     check_mwcs_solver(solver)
 
     if (!igraph::is_igraph(instance)) {

@@ -63,15 +63,15 @@ rmwcs <- function(timelimit = 1800L,
 #' Solves MWCS problem using relax-and-cut approach
 #' @param solver An rmwcs solver object.
 #' @param instance An igraph object.
-#' @param cardinality integer maximum number of vertices in solution
+#' @param max_cardinality integer maximum number of vertices in solution
 #' @param budget numeric maximum budget of solution.
 #' @export
-solve_mwcsp.rmwcs_solver <- function(solver, instance, cardinality = NULL,
+solve_mwcsp.rmwcs_solver <- function(solver, instance, max_cardinality = NULL,
                                      budget = NULL) {
     check_rmwcs_solver(solver)
 
-    if (!is.null(cardinality) && !is.null(budget)) {
-        stop("One of the arguments 'cardinality' and 'budget' must be NULL")
+    if (!is.null(max_cardinality) && !is.null(budget)) {
+        stop("One of the arguments 'max_cardinality' and 'budget' must be NULL")
     }
 
     instance <- igraph::simplify(instance)
@@ -80,22 +80,27 @@ solve_mwcsp.rmwcs_solver <- function(solver, instance, cardinality = NULL,
     solver$subgradient <- pmatch(solver$subgradient, subgradients) - 1
 
     instance_rep <- instance_from_graph(instance)
-    instance_rep$vertex_weights <- vattr_values(instance, "weight")
+    instance_rep$vertex_weights <- attr_values(instance, "weight", "V")
 
     if (!is.null(budget)) {
-        instance_rep$budget <- vattr_values(instance, "budget")
+        instance_rep$budget_cost <- attr_values(instance, "budget_cost", "V")
+        budget <- as.numeric(budget)
+        if (!is.numeric(budget)) {
+            stop("Budget must be numeric value or NULL")
+        }
+        instance_rep$budget <- budget
     }
 
-    if (!is.null(cardinality)) {
-        cardinality <- as.integer(cardinality)
-        stopifnot(cardinality > 0)
-        instance_rep$cardinality <- cardinality
+    if (!is.null(max_cardinality)) {
+        max_cardinality <- as.integer(max_cardinality)
+        stopifnot(max_cardinality > 0)
+        instance_rep$cardinality <- max_cardinality
     }
 
     vs <- rmwcs_solve(instance_rep, solver)
-    instance$solution <- igraph::induced_subgraph(instance$graph, vs$graph)
-    instance$upper_bound <- vs$ub
-    weight <- sum(instance$vertex_weights[vs$graph])
-    instance$solved_to_optimality <- isTRUE(all.equal(weight, vs$ub))
-    instance
+
+    subgraph <- igraph::induced_subgraph(instance, vs$graph)
+    weight <- sum(instance_rep$vertex_weights[vs$graph])
+    opt <- isTRUE(all.equal(weight, vs$ub))
+    solution(subgraph, weight, opt, upper_bound = vs$ub)
 }

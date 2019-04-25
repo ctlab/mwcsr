@@ -56,7 +56,7 @@ solve_mwcsp.simulated_annealing_solver <- function(solver, instance) {
     if (solver$normalization) {
         instance <- normalize_weights(instance)
     }
-    inst_rep <- graph_to_list(instance)
+    inst_rep <- instance_from_graph(instance)
     inst_rep$vertex_weights <- attr_values(instance, "weight", "V")
 
     if (!("weight" %in% igraph::edge.attributes(instance))) {
