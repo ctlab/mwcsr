@@ -20,7 +20,7 @@ params <- function(...) {
 }
 
 #' @export
-print.mwcs_solver_params <- function (x) {
+print.mwcs_solver_params <- function (x, ...) {
     df <- data.frame(name = sapply(x, function(x) x$name))
     df[["type"]] <- sapply(x, function(x) x$type)
     df[["value"]] <- sapply(x, function(x) {

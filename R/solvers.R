@@ -106,7 +106,7 @@ set_parameters <- function(solver, ...) {
 }
 
 #' @export
-print.mwcs_solver <- function(x) {
+print.mwcs_solver <- function(x, ...) {
     check_mwcs_solver(x)
     cat("MWCS Solver: ", class(x)[1], "\n\n")
 

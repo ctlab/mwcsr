@@ -52,7 +52,7 @@ normalize_weights <- function(instance) {
 #' @param instance An igraph instance to work with.
 #' @return An object of class mwcsp_solution.
 #' @export
-solve_mwcsp.simulated_annealing_solver <- function(solver, instance) {
+solve_mwcsp.simulated_annealing_solver <- function(solver, instance, ...) {
     if (solver$normalization) {
         instance <- normalize_weights(instance)
     }

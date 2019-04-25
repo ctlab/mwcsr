@@ -67,7 +67,7 @@ rmwcs <- function(timelimit = 1800L,
 #' @param budget numeric maximum budget of solution.
 #' @export
 solve_mwcsp.rmwcs_solver <- function(solver, instance, max_cardinality = NULL,
-                                     budget = NULL) {
+                                     budget = NULL, ...) {
     check_rmwcs_solver(solver)
 
     if (!is.null(max_cardinality) && !is.null(budget)) {
