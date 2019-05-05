@@ -1,5 +1,5 @@
 parameter <- function(name,
-                      type = c("integer", "float", "logical", "mc", "file"),
+                      type = c("integer", "float", "logical", "mc", "file", "char"),
                       is_null_possible = FALSE,
                       positive = FALSE,
                       nonnegative = FALSE,
@@ -73,6 +73,10 @@ check_parameter.integer_parameter <- function (param, value) {
             stop(paste("Parameter", param$name, "must be non-negative"))
         }
     }
+    value
+}
+
+check_parameter.char_parameter <- function(param, value) {
     value
 }
 

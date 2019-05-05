@@ -125,7 +125,7 @@ print.mwcs_solver <- function(x, ...) {
 
 #' @export
 parameters.default <- function(...) {
-    stop("Object is not an MWCS solver or is an abstract solver")
+    stop("Object is not an MWCS solver or it is an abstract solver")
 }
 
 #' The method returns all parameters supported by specific solver

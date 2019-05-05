@@ -21,5 +21,8 @@ mean square 1.0}
 \item{verbose}{whether be verbose or not}
 }
 \description{
-ctor for annealing solver
+Simulated annealing is a heuristic method of solving optimization problems.
+Typically, it allows to find some good solution in a short time. This
+implementation doesn't compute any upper bound on solution, so there is no
+guarantee of optimality of solution provided.
 }

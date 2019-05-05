@@ -17,6 +17,11 @@ parameters.simulated_annealing_solver <- function(solver) {
 }
 
 #' ctor for annealing solver
+#'
+#' Simulated annealing is a heuristic method of solving optimization problems.
+#' Typically, it allows to find some good solution in a short time. This
+#' implementation doesn't compute any upper bound on solution, so there is no
+#' guarantee of optimality of solution provided.
 #' @param normalization adjust all weights so that all possible changes have
 #' mean square 1.0
 #' @param schedule boltzmann annealing or fast annealing
@@ -42,11 +47,6 @@ normalize_weights <- function(instance) {
 }
 
 #' Solve generalized maximum weight subgraph problem using simulated annealing
-#'
-#' Simulated annealing is a heuristic method of solving optimization problems.
-#' Typically, it allows to find some good solution in a short time. This
-#' implementation doesn't compute any upper bound on solution, so there is no
-#' guarantee of optimality of solution provided.
 #'
 #' @param solver An annealing solver object.
 #' @param instance An igraph instance to work with.

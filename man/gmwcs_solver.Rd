@@ -4,23 +4,25 @@
 \alias{gmwcs_solver}
 \title{Returns a solver object for GMWCS solver}
 \usage{
-gmwcs_solver(cplex_bin, cplex_jar, gmwcs_jar,
-  threads = parallel::detectCores(), timelimit = NULL,
-  verbose = TRUE)
+gmwcs_solver(cplex_bin, cplex_jar, threads = parallel::detectCores(),
+  timelimit = NULL, memory = "2G", verbose = TRUE)
 }
 \arguments{
 \item{cplex_bin}{a path to cplex library file}
 
 \item{cplex_jar}{a path to cplex JNI jar file}
 
-\item{gmwcs_jar}{a path to GMWCS solver jar file}
-
 \item{threads}{number of threads for simultaneous computation}
 
 \item{timelimit}{maximum number of seconds to solve the problem}
 
+\item{memory}{maximum amount of memory(-Xmx flag)}
+
 \item{verbose}{whether or not be verbose}
 }
 \description{
-Returns a solver object for GMWCS solver
+This solver uses reformulation of MWCS problem in terms of mixed integer
+programming. The later problem can be efficiently solved with
+commercial optimization software. This solver uses CPLEX and requires
+it to be installed.
 }

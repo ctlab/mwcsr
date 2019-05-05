@@ -61,9 +61,8 @@ rmwcs <- function(timelimit = 1800L,
 }
 
 #' Solves MWCS problem using relax-and-cut approach
-#' @param solver An rmwcs solver object.
-#' @param instance An igraph object.
-#' @param max_cardinality integer maximum number of vertices in solution
+#' @inheritParams solve_mwcsp
+#' @param max_cardinality integer maximum number of vertices in solution.
 #' @param budget numeric maximum budget of solution.
 #' @export
 solve_mwcsp.rmwcs_solver <- function(solver, instance, max_cardinality = NULL,

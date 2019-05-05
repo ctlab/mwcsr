@@ -14,7 +14,8 @@ Imports:
     igraph,
     Rcpp
 Suggests:
-    testthat
+    testthat,
+    rJava
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
