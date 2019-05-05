@@ -21,9 +21,11 @@ java_init <- function(solver) {
     solver$jar <- system.file("java", "gmwcs-solver.java", package = "mwcsr")
     params <- c(
         paste0("-Xmx", solver$memory),
-        "-Xss16M"
+        "-Xss16M",
+        paste0("-Djava.library.path=", solver$cplex_bin)
     )
-    .jinit(classpath = solver$jar, parameters = params, force.init = TRUE)
+    rJava::.jinit(parameters = params, force.init = TRUE)
+    rJava::.jaddClassPath(solver$cplex_jar)
     solver
 }
 

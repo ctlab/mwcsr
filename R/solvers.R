@@ -115,7 +115,8 @@ print.mwcs_solver <- function(x, ...) {
     get_param_name <- function(x) setNames(x$name, NULL)
     param_names <- sapply(parameters(x), get_param_name)
     params <- data.frame(name = param_names,
-                         value = sapply(param_names, function(y) x[y]),
+                         value = sapply(param_names,
+                            function(y) if(is.null(x[y])) "NULL" else x[y]),
                          row.names = NULL)
     print(params, right = FALSE, row.names = FALSE)
     cat("\n")
