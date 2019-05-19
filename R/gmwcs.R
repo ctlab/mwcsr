@@ -18,14 +18,19 @@ parameters.gmwcs_solver <- function(solver) {
 }
 
 java_init <- function(solver) {
-    solver$jar <- system.file("java", "gmwcs-solver.java", package = "mwcsr")
     params <- c(
         paste0("-Xmx", solver$memory),
-        "-Xss16M",
-        paste0("-Djava.library.path=", solver$cplex_bin)
+        "-Xss64M"
     )
-    rJava::.jinit(parameters = params, force.init = TRUE)
+    rJava::.jpackage("mwcsr")
     rJava::.jaddClassPath(solver$cplex_jar)
+    rJava::J("java.lang.System")$load(solver$cplex_bin)
+    withCallingHandlers(rJava::new(rJava::J("ilog.cplex.IloCplex")),
+                        error = function(e) {
+                            message("CPLEX solver cannot be initilized.")
+                            message("Please check all the paths to CPLEX jar and binary file")
+                            stop(e)
+                        })
     solver
 }
 
@@ -49,10 +54,23 @@ gmwcs_solver <- function (cplex_bin,
                           memory = "2G",
                           verbose = TRUE){
     if (!requireNamespace("rJava", quietly = TRUE)) {
-        stop("Package \"rJava\" needed for this function to work. Please install it.",
+        stop("Package \"rJava\" is required for this function to work. Please install it.",
             call. = FALSE)
     }
     java_init(solver_ctor(c(gmwcs_class, mwcs_solver_class)))
+}
+
+write_files <- function(g, nodes_file, edges_file) {
+    node_weights <- attr_values(g, "weight", "V")
+    edge_weights <- attr_values(g, "weight", "E")
+
+    edges <- igraph::as_edgelist(g, names = FALSE)
+    edges <- cbind(edges, edge_weights)
+    vertices <- cbind(1:length(V(g)), node_weights)
+    utils::write.table(vertices, file = nodes_file, quote = FALSE, sep = "\t",
+                       row.names = FALSE, col.names = FALSE)
+    utils::write.table(edges, file = edges_file, quote = FALSE, sep = "\t",
+                       row.names = FALSE, col.names = FALSE)
 }
 
 #' Solve generalized maximum weight subgraph problem using CPLEX solver
@@ -60,4 +78,23 @@ gmwcs_solver <- function (cplex_bin,
 #' @return An object of class mwcsp_solution.
 #' @export
 solve_mwcsp.gmwcs_solver <- function(solver, instance, ...) {
+    if (!inherits(solver, gmwcs_class)) {
+        stop("Not a gmwcs solver")
+    }
+    java_init(solver)
+    if (!"weight" %in% list.vertex.attributes(instance)) {
+        warning("No `weight` vertex attribute. Setting weights to zero")
+        V(instance)$weight <- 0
+    }
+    if (!"weight" %in% list.edge.attributes(instance)) {
+        warning("No `weight` edge attribute. Setting weights to zero")
+        E(instance)$weight <- 0
+    }
+
+    nodes_file <- tempfile()
+    edges_file <- tempfile()
+    write_files(instance, nodes_file, edges_file)
+    on.exit(file.remove(nodes_file))
+    on.exit(file.remove(edges_file))
+    rJava::J("ru.ifmo.ctddev.gmwcs.Main")$main(rJava::.jarray("-h"))
 }

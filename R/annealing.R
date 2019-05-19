@@ -53,6 +53,9 @@ normalize_weights <- function(instance) {
 #' @return An object of class mwcsp_solution.
 #' @export
 solve_mwcsp.simulated_annealing_solver <- function(solver, instance, ...) {
+    if (!inherits(solver, sa_class)) {
+        stop("Not a simulated annealing solver")
+    }
     if (solver$normalization) {
         instance <- normalize_weights(instance)
     }
