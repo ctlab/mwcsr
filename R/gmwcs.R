@@ -96,5 +96,27 @@ solve_mwcsp.gmwcs_solver <- function(solver, instance, ...) {
     write_files(instance, nodes_file, edges_file)
     on.exit(file.remove(nodes_file))
     on.exit(file.remove(edges_file))
-    rJava::J("ru.ifmo.ctddev.gmwcs.Main")$main(rJava::.jarray("-h"))
+    params <- c("-n", nodes_file, "-e", edges_file, "-m", solver$threads)
+    if (!is.null(solver$timelimit)) {
+        params <- c(params, "-t", solver$timelimit)
+    }
+    rJava::J("ru.ifmo.ctddev.gmwcs.Main")$main(rJava::.jarray(params))
+    nodes <- data.table::fread(paste0(nodes_file, ".out"), header = FALSE,
+                               data.table = FALSE)
+    nodes <- nodes[-nrow(nodes),]
+    suppressWarnings(
+        edges <- data.table::fread(paste0(edges_file, ".out"),
+                                   header = FALSE, data.table = FALSE)
+    )
+    nodes <- nodes[nodes[, 2] != "n/a", ]
+    edges <- edges[edges[, 3] != "n/a", ]
+    weight <- sum(as.numeric(nodes[, 2])) + sum(as.numeric(edges[, 3]))
+    if (nrow(edges) == 0) {
+        solution(igraph::induced_subgraph(instance, as.integer(nodes[, 1])),
+                 weight, FALSE)
+    } else {
+        eids <- apply(edges, 1, function(x) get.edge.ids(instance, x[1:2]))
+        solution(igraph::subgraph.edges(instance, eids),
+                 weight, solved_to_optimality = FALSE)
+    }
 }
