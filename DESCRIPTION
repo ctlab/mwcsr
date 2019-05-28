@@ -12,7 +12,8 @@ Description: The package implements algorithms for solving various Maximum
 Depends: R (>= 3.3)
 Imports:
     igraph,
-    Rcpp
+    Rcpp, 
+    data.table
 Suggests:
     testthat,
     rJava
