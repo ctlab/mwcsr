@@ -2,9 +2,13 @@
 % Please edit documentation in R/gmwcs.R
 \name{gmwcs_solver}
 \alias{gmwcs_solver}
-\title{Returns a solver object for GMWCS solver}
+\alias{sgmwcs_solver}
+\title{Construct a GMWCS solver}
 \usage{
 gmwcs_solver(cplex_bin, cplex_jar, threads = parallel::detectCores(),
+  timelimit = NULL, memory = "2G", verbose = TRUE)
+
+sgmwcs_solver(cplex_bin, cplex_jar, threads = parallel::detectCores(),
   timelimit = NULL, memory = "2G", verbose = TRUE)
 }
 \arguments{
