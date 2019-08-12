@@ -4,7 +4,7 @@
 
 namespace annealing {
 
-    Index::Index(size_t n, RandomEngine& re) : re(re), n(n) {
+    Index::Index(size_t n) :n(n) {
         map.resize(n, 0);
         exists.resize(n, false);
     }
@@ -27,11 +27,11 @@ namespace annealing {
         data.pop_back();
     }
 
-    bool Index::contains(size_t v) {
+    bool Index::contains(size_t v) const {
         return v < n && exists[v];
     }
 
-    size_t Index::random() {
+    size_t Index::random(RandomEngine& re) const {
         if (data.empty()) {
             throw std::logic_error("random element of an index when it is empty");
         }
@@ -39,15 +39,15 @@ namespace annealing {
         return data[unif(re)];
     }
 
-    size_t Index::operator()(size_t v) {
+    size_t Index::operator()(size_t v) const {
         return map.at(v);
     }
 
-    size_t Index::size() {
+    size_t Index::size() const {
         return data.size();
     }
 
-    std::vector<size_t> Index::content() {
+    std::vector<size_t> Index::content() const {
         return data;
     }
 }

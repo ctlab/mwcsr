@@ -10,6 +10,7 @@
 #include "index.h"
 #include "definitions.h"
 #include "module.h"
+#include "subgraph.h"
 
 #include "DynamicGraph.h"
 #include "cooling_schedule.h"
@@ -29,18 +30,10 @@ namespace annealing {
 
     class SimulatedAnnealing {
         RandomEngine& random_engine;
+        const Graph& graph;
         StandardUniformDistribution unif;
 
-        DynamicGraph dynamic_graph;
-        const Graph& graph;
-        Index module_edges;
-        Index boundary;
-        Index module_vertices;
-        vector<size_t> degree;
-
-        double score = 0;
-        size_t size = 0;
-        std::vector<EdgeToken> tokens;
+        Subgraph sub;
         double temperature = 0;
 
         double best_score = 0;
@@ -58,10 +51,6 @@ namespace annealing {
 
         void empty_module_step();
         void edge_step();
-        void add_vertex(size_t v);
-        void add_edge(size_t e);
-        bool remove_edge(size_t e, size_t v, size_t u);
-        void remove_vertex(size_t v);
         bool accepts(double diff);
         size_t uniform(size_t n);
         void add_from_bdr();

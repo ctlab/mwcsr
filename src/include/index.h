@@ -13,17 +13,16 @@ namespace annealing {
         std::vector<size_t> map;
         std::vector<size_t> data;
         std::vector<bool> exists;
-        RandomEngine& re;
         size_t n;
     public:
-        Index(size_t n, RandomEngine& re);
+        explicit Index(size_t n);
         void add(size_t v);
         void remove(size_t v);
-        bool contains(size_t v);
-        size_t random();
-        size_t operator()(size_t);
-        size_t size();
-        std::vector<size_t> content();
+        bool contains(size_t v) const;
+        size_t random(RandomEngine& re) const;
+        size_t operator()(size_t) const;
+        size_t size() const;
+        std::vector<size_t> content() const;
     };
 
 }

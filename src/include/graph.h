@@ -30,6 +30,7 @@ namespace mwcsr {
 
     public:
         Graph();
+        Graph(const Graph& other) = default;
         explicit Graph(size_t n);
         void add_edge(size_t v, size_t u, double weight);
         void set_weight(size_t v, double w);
