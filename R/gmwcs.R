@@ -23,8 +23,7 @@ parameters.gmwcs_solver <- function(solver) {
          parameter("threads", type = "integer", positive = TRUE),
          parameter("timelimit", type = "integer", positive = TRUE,
                    is_null_possible = TRUE),
-         parameter("memory", type = "char"),
-         parameter("verbose", type = "logical"))
+         parameter("memory", type = "char"))
 }
 
 #' @export

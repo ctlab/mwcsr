@@ -1,4 +1,4 @@
-#include "cooling_schedule.h"
+#include "include/cooling_schedule.h"
 
 namespace annealing {
     

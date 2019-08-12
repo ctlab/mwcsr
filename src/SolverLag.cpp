@@ -5,9 +5,9 @@
  *      Author: markus
  */
 
-#include "Parameters.h"
+#include "include/Parameters.h"
 #include <queue>
-#include "SolverLag.h"
+#include "include/SolverLag.h"
 #include <stack>
 #include <chrono>
 

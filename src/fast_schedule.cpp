@@ -1,4 +1,4 @@
-#include "fast_schedule.h"
+#include "include/fast_schedule.h"
 
 namespace annealing {
     FastSchedule::FastSchedule(double t0, double min) : CoolingSchedule(t0, min) {}

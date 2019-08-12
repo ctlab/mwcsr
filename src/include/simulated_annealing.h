@@ -25,7 +25,6 @@ namespace annealing {
         explicit StandardUniformDistribution(RandomEngine& re);
 
         double operator()();
-
     };
 
     class SimulatedAnnealing {

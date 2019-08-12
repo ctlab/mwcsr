@@ -1,10 +1,10 @@
 #include <Rcpp.h>
 #include <random>
 
-#include "utils.h"
-#include "simulated_annealing.h"
-#include "fast_schedule.h"
-#include "boltzmann_schedule.h"
+#include "include/utils.h"
+#include "include/simulated_annealing.h"
+#include "include/fast_schedule.h"
+#include "include/boltzmann_schedule.h"
 
 using namespace Rcpp;
 using namespace mwcsr;

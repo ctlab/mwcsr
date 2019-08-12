@@ -1,9 +1,9 @@
 #include <Rcpp.h>
 #include <memory>
-#include "Instance.h"
-#include "SolverClassic.h"
-#include "SolverCardinality.h"
-#include "SolverBudget.h"
+#include "include/Instance.h"
+#include "include/SolverClassic.h"
+#include "include/SolverCardinality.h"
+#include "include/SolverBudget.h"
 
 // [[Rcpp::export]]
 Rcpp::List rmwcs_solve(Rcpp::List& network, Rcpp::List& params) {

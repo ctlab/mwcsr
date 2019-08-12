@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "boltzmann_schedule.h"
+#include "include/boltzmann_schedule.h"
 
 namespace annealing {
 

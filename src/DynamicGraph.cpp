@@ -1,4 +1,4 @@
-#include "DynamicGraph.h"
+#include "include/DynamicGraph.h"
 
 #include <cmath>
 #include <utility>

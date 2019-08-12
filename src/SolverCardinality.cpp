@@ -5,7 +5,7 @@
  *      Author: markus
  */
 
-#include "SolverCardinality.h"
+#include "include/SolverCardinality.h"
 #include <queue>
 #include <stack>
 

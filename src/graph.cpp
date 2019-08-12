@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <cmath>
 
-#include "graph.h"
+#include "include/graph.h"
 
 namespace mwcsr {
 

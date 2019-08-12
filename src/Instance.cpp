@@ -5,7 +5,7 @@
  *      Author: markus
  */
 
-#include "Instance.h"
+#include "include/Instance.h"
 
 #include <queue>
 
