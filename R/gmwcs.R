@@ -27,6 +27,11 @@ parameters.gmwcs_solver <- function(solver) {
          parameter("verbose", type = "logical"))
 }
 
+#' @export
+parameters.sgmwcs_solver <- function(solver) {
+    parameters.gmwcs_solver(solver)
+}
+
 java_init <- function(solver) {
     params <- c(
         paste0("-Xmx", solver$memory),
@@ -99,26 +104,46 @@ write_files <- function(g, nodes_file, edges_file, signals_file, signals) {
         edges <- cbind(edges, edge_weights)
         vertices <- cbind(1:length(V(g)), node_weights)
     } else {
+        node_signals <- igraph::vertex_attr(g, "signal")
+        edge_signals <- igraph::edge_attr(g, "signal")
+        edges <- cbind(edges, edge_signals)
+        vertices <- cbind(1:length(V(g)), node_signals)
         signals <- data.frame(singal = names(signals), weights = signals)
-        write.tbl(signals, signals_file)
+        write_tbl(signals, signals_file)
     }
-    write.tbl(vertices, nodes_file)
-    write.tbl(edges, edges_file)
+    write_tbl(vertices, nodes_file)
+    write_tbl(edges, edges_file)
 }
 
-check_attr <- function(instance, attr, default) {
-    if (! attr %in% list.vertex.attributes(instance)) {
-        warning(paste0("No `", attr, "` vertex attribute. Setting to ", default))
-        V(instance)[[attr]] <- default
+check_attr <- function(instance, attr, default, hint = NULL) {
+    if (! attr %in% igraph::list.vertex.attributes(instance)) {
+        warning(paste0("No `", attr, "` vertex attribute. Setting to ", default),
+                call. = FALSE)
+        instance <- igraph::set.vertex.attribute(instance, attr, default)
     }
-    if (! attr %in% list.edge.attributes(instance)) {
-        warning(paste0("No `", attr, "` edge attribute. Setting to ", default))
-        E(instance)[[attr]] <- default
+    vertex_values <- igraph::get.vertex.attribute(instance, attr)
+    if (any(is.na(vertex_values))) {
+        warning(paste0("NA values provided for `", attr, "` vertex attribute. Setting to ",
+                       ifelse(is.null(hint), default, hint)), call. = FALSE)
+        vertex_values[is.na(vertex_values)] <- default
+        instance <- igraph::set.vertex.attribute(instance, attr, value = vertex_values)
+    }
+    if (! attr %in% igraph::list.edge.attributes(instance)) {
+        warning(paste0("No `", attr, "` edge attribute. Setting to ", default),
+                call. = FALSE)
+        instance <- igraph::set.edge.attribute(instance, attr, default)
+    }
+    edge_values <- get.vertex.attribute(instance, attr)
+    if (any(is.na(edge_values))) {
+        warning(paste0("NA values provided for `", attr, "` edge attribute. Setting to ",
+                       ifelse(is.null(hint), default, hint)), call. = FALSE)
+        edge_values[is.na(edge_values)] <- default
+        instance <- igraph::set.vertex.attribute(instance, attr, value = edge_values)
     }
     instance
 }
 
-params <- function(solver, nodes_file, edges_file, signals_file = NULL) {
+cli_args <- function(solver, nodes_file, edges_file, signals_file = NULL) {
     params <- c("-n", nodes_file, "-e", edges_file, "-m", solver$threads)
     if (!is.null(solver$timelimit)) {
         params <- c(params, "-t", solver$timelimit)
@@ -140,7 +165,7 @@ run_solver <- function(solver, instance, sgmwcs, signals = NULL) {
         on.exit(file.remove(signals_file))
     }
     write_files(instance, nodes_file, edges_file, signals_file, signals)
-    args <- params(solver, nodes_file, edges_file, signals_file)
+    args <- cli_args(solver, nodes_file, edges_file, signals_file)
     args <- rJava::.jarray(args)
     rJava::J(if (sgmwcs) sgmwcs_java_class else gmwcs_java_class)$main(args)
 
@@ -163,16 +188,54 @@ run_solver <- function(solver, instance, sgmwcs, signals = NULL) {
 #' @rdname solve_mwcsp
 #' @param signals named vector of weights for signals
 #' @export
-solve_mwcsp.sgmwcs_solver <- function(solver, instance, signals, ...) {
+solve_mwcsp.sgmwcs_solver <- function(solver, instance, signals = NULL, ...) {
     if (!inherits(solver, sgmwcs_class)) {
         stop("Not a sgmwcs solver")
     }
-    instance <- check_attr(instance, "signal", NA)
-    # TODO: check the lights
 
-    mwcs <- run_solver(solver, instance)
-    weight <- sum(signals[unique(mwcs$signal)])
-    solution(mwcs, weight, FALSE)
+    original <- instance
+
+    if (is.null(signals)) {
+        instance <- check_attr(instance, "weight", 0)
+        V(instance)$signal <- paste0("V", 1:igraph::vcount(instance))
+        E(instance)$signal <- paste0("E", 1:igraph::ecount(instance))
+        signals <- setNames(c(V(instance)$weight, E(instance)$weight),
+                            c(V(instance)$signal, E(instance)$signal))
+    }
+
+    instance <- check_attr(instance, "signal", NA, hint = "a default signal with zero weight.")
+    observed_signals <- setdiff(union(V(instance)$signal, E(instance)$signal), NA)
+    non_assigned_signals <- setdiff(observed_signals, names(signals))
+    if (length(non_assigned_signals) != 0) {
+        warning(paste0("No weight assigned for the following signals: ",
+                       paste0(non_assigned_signals, collapse = ", ")))
+        V(instance)$signal[V(instance)$signal %in% non_assigned_signals] <- NA
+        E(instance)$signal[E(instance)$signal %in% non_assigned_signals] <- NA
+    }
+
+    #renaming signals to S1..Sn
+    map <- stats::setNames(paste0("S", 1:(length(signals) + 1)),
+                           c(names(signals), "NA"))
+    mapSignal <- function(x) {
+        x <- sapply(x, function(x) ifelse(is.na(x), map[length(map)], map[x]))
+    }
+    V(instance)$signal <- mapSignal(V(instance)$signal)
+    E(instance)$signal <- mapSignal(E(instance)$signal)
+    names(signals) <- mapSignal(names(signals))
+    if (any(is.na(V(instance)$signal)) || any(is.na(E(instance)$signal))) {
+        signals <- c(signals, setNames(0, map[length(map)]))
+    }
+
+    V(instance)$id <- 1:length(V(instance))
+    E(instance)$id <- 1:length(E(instance))
+    mwcs <- run_solver(solver, instance, sgmwcs = TRUE, signals)
+    weight <- sum(signals[unique(union(V(mwcs)$signal, E(mwcs)$signal))])
+    if (length(E(mwcs)) > 0) {
+        ret <- igraph::subgraph.edges(original, E(mwcs)$id)
+    } else {
+        ret <- igraph::induced_subgraph(original, V(mwcs)$id)
+    }
+    solution(ret, weight, FALSE)
 }
 
 #' @rdname solve_mwcsp
@@ -183,8 +246,8 @@ solve_mwcsp.gmwcs_solver <- function(solver, instance, ...) {
     }
     instance <- check_attr(instance, "weight", 0)
 
-    mwcs <- run_solver(solver, instance)
+    mwcs <- run_solver(solver, instance, sgmwcs = FALSE)
 
-    weight <- sum(as.numeric(nodes[, 2])) + sum(as.numeric(edges[, 3]))
+    weight <- sum(V(mwcs)$weight, E(mwcs)$weight)
     solution(mwcs, weight, FALSE)
 }

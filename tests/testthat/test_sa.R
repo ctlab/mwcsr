@@ -1,5 +1,3 @@
-context("simulated annealing solver")
-
 test_that("SA solver works on specific test", {
     solver <- annealing_solver(initial_temperature = 10)
     g <- igraph::make_ring(5)

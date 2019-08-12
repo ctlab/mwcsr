@@ -111,7 +111,7 @@ check_parameter.mc_parameter <- function (param, value) {
 }
 
 check_parameter.file_parameter <- function(param, value) {
-    file <- value
+    file <- normalizePath(value)
     if (!file.exists(file)) {
         stop(paste("File", file, "does not exist"))
     }
