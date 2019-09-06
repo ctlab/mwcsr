@@ -14,6 +14,7 @@ namespace annealing {
                                                  boundary{supergraph.edgeset_size()},
                                                  module_vertices{supergraph.size()},
                                                  vdegree(std::vector<size_t>(supergraph.size(), 0)),
+                                                 signal_utilization{supergraph.num_signals()},
                                                  tokens{supergraph.edgeset_size()}{
 
     }
@@ -35,7 +36,8 @@ namespace annealing {
                 boundary.add(e_id);
             }
         }
-        weight += graph.weight(v);
+        weight += add_vertex_diff(v);
+        signal_utilization[graph.vertex_signal(v)]++;
     }
 
 
@@ -54,7 +56,8 @@ namespace annealing {
             add_vertex(u);
         }
         tokens[e] = std::move(dynamic_graph.add(v, u));
-        weight += edge.weight();
+        weight += add_edge_diff(e);
+        signal_utilization[edge.edge_signal()]++;
     }
 
     bool Subgraph::remove_edge(size_t e) {
@@ -68,7 +71,8 @@ namespace annealing {
             return false;
         }
         module_edges.remove(e);
-        weight -= edge.weight();
+        weight += remove_edge_diff(e);
+        signal_utilization[edge.edge_signal()]--;
 
         --vdegree[v];
         --vdegree[u];
@@ -95,7 +99,8 @@ namespace annealing {
             }
         }
         module_vertices.remove(v);
-        weight -= graph.weight(v);
+        weight += remove_vertex_diff(v);
+        signal_utilization[graph.vertex_signal(v)]--;
     }
 
     size_t Subgraph::boundary_size() const {
@@ -132,5 +137,30 @@ namespace annealing {
 
     size_t Subgraph::number_of_edges() const {
         return module_edges.size();
+    }
+
+    double Subgraph::diff(size_t signal, bool add) const {
+        if (signal_utilization[signal] == 1 && !add) {
+            return -graph.signal_weight(signal);
+        }
+        if (signal_utilization[signal] == 0 && add) {
+            return graph.signal_weight(signal);
+        }
+    }
+
+    double Subgraph::add_vertex_diff(size_t v) const {
+        return diff(graph.vertex_signal(v), true);
+    }
+
+    double Subgraph::remove_vertex_diff(size_t v) const {
+        return diff(graph.vertex_signal(v), false);
+    }
+
+    double Subgraph::add_edge_diff(size_t e) const {
+        return diff(graph.edge(e).edge_signal(), true);
+    }
+
+    double Subgraph::remove_edge_diff(size_t e) const {
+        return diff(graph.edge(e).edge_signal(), false);
     }
 }

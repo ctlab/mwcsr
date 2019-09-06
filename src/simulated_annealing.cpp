@@ -35,7 +35,7 @@ namespace annealing {
 
     void SimulatedAnnealing::empty_module_step() {
         size_t v = uniform(graph.size());
-        if (accepts(graph.weight(v))) {
+        if (accepts(sub.add_vertex_diff(v))) {
             sub.add_vertex(v);
         }
     }
@@ -73,12 +73,12 @@ namespace annealing {
         size_t u = edge.to();
         double diff = 0.0;
         if (!sub.contains_vertex(v)) {
-            diff += graph.weight(v);
+            diff += sub.add_vertex_diff(v);
         }
         if (!sub.contains_vertex(u)) {
-            diff += graph.weight(u);
+            diff += sub.add_vertex_diff(u);
         }
-        diff += edge.weight();
+        diff += sub.add_edge_diff(e);
         if (accepts(diff)) {
             sub.add_edge(e);
         }
@@ -92,14 +92,14 @@ namespace annealing {
 
         size_t e = sub.random_inner_edge(random_engine);
         const Edge& edge = sub.edge(e);
-        double diff = -edge.weight();
+        double diff = sub.remove_edge_diff(e);
         size_t v = edge.from();
         size_t u = edge.to();
         if (sub.degree(v) == 1 && sub.degree(u) == 1) {
             if (unif() > 0.5) {
                 std::swap(v, u);
             }
-            diff -= graph.weight(u);
+            diff += sub.remove_vertex_diff(u);
             if (accepts(diff)) {
                 sub.remove_edge(e);
             }
@@ -111,7 +111,7 @@ namespace annealing {
         }
 
         if (sub.degree(u) == 1) {
-            diff -= graph.weight(u);
+            diff += sub.remove_vertex_diff(u);
             if (accepts(diff)) {
                 sub.remove_edge(e);
             }

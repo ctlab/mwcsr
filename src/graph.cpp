@@ -7,11 +7,7 @@ namespace mwcsr {
 
     using std::vector;
 
-    Edge::Edge(size_t from, size_t to, double weight, size_t num) : v(from), u(to), w(weight), id(num) {}
-
-    double Edge::weight() const {
-        return w;
-    }
+    Edge::Edge(size_t from, size_t to, size_t signal, size_t num) : v(from), u(to), id(num), signal(signal) {}
 
     size_t Edge::opposite(size_t w) const {
         if (w == v) {
@@ -39,13 +35,16 @@ namespace mwcsr {
         return u;
     }
 
-    Graph::Graph(size_t n) :m(0) {
-        vertex_weights.resize(n);
+    size_t Edge::edge_signal() const {
+        return signal;
+    }
+
+    Graph::Graph(size_t n, const std::vector<double>& signal_weights) :m(0), signal_weights(signal_weights) {
         adj.resize(n, vector<Edge>());
     }
 
-    void Graph::add_edge(size_t v, size_t u, double weight) {
-        Edge e(v, u, weight, m++);
+    void Graph::add_edge(size_t v, size_t u, size_t signal) {
+        Edge e(v, u, signal, m++);
         adj[v].push_back(e);
         adj[u].push_back(e);
         edges.push_back(e);
@@ -67,14 +66,23 @@ namespace mwcsr {
         return edges[e];
     }
 
-    double Graph::weight(size_t v) const {
-        return vertex_weights[v];
+    Graph::Graph() :m(0) {}
+
+    void Graph::set_signal(size_t v, size_t signal) {
+        vertex_signals.at(v) = signal;
     }
 
-    Graph::Graph() {}
+    size_t Graph::vertex_signal(size_t v) const {
+        return vertex_signals.at(v);
 
-    void Graph::set_weight(size_t v, double w) {
-        vertex_weights.at(v) = w;
+    }
+
+    size_t Graph::num_signals() const {
+        return signal_weights.size();
+    }
+
+    double Graph::signal_weight(size_t signal) const {
+        return signal_weights.at(signal);
     }
 
 }

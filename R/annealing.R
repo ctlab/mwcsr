@@ -48,25 +48,22 @@ normalize_weights <- function(instance) {
 
 #' Solve generalized maximum weight subgraph problem using simulated annealing
 #'
+#' @inheritParams solve_mwcsp.sgmwcs_solver
 #' @param solver An annealing solver object.
 #' @param instance An igraph instance to work with.
 #' @return An object of class mwcsp_solution.
 #' @export
-solve_mwcsp.simulated_annealing_solver <- function(solver, instance, ...) {
+solve_mwcsp.simulated_annealing_solver <- function(solver, instance,
+                                                   signals = NULL, ...) {
     if (!inherits(solver, sa_class)) {
         stop("Not a simulated annealing solver")
     }
-    if (solver$normalization) {
-        instance <- normalize_weights(instance)
-    }
-    inst_rep <- instance_from_graph(instance)
-    inst_rep$vertex_weights <- attr_values(instance, "weight", "V")
+    instance <- normalize_signals(instance, signals)
 
-    if (!("weight" %in% igraph::edge.attributes(instance))) {
-        inst_rep$edge_weights <- rep(0, length(inst_rep$edgelist))
-    } else {
-        inst_rep$edge_weights <- attr_values(instance, "weight", "E")
-    }
+    inst_rep <- instance_from_graph(instance$graph)
+    inst_rep[["vertex_signals"]] <- as.integer(igraph::V(instance)$signal)
+    inst_rep[["edge_signals"]] <- as.integer(igraph::V(instance)$signal)
+    inst_rep[["signal_weights"]] <- instance$signals
 
     res <- sa_solve(inst_rep, solver)
     if (length(res$edges) == 0) {

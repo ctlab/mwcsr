@@ -18,6 +18,7 @@ namespace annealing {
         Index boundary;
         Index module_vertices;
         vector<size_t> vdegree;
+        vector<size_t> signal_utilization;
 
         double weight = 0;
         size_t n_vertices = 0;
@@ -29,17 +30,26 @@ namespace annealing {
         bool remove_edge(size_t e);
         void remove_vertex(size_t v);
 
-        size_t random_adjacent_edge(RandomEngine& re) const;
-        size_t random_inner_edge(RandomEngine& re) const;
-        size_t any_vertex() const;
+        const mwcsr::Edge& edge(size_t e) const;
+        size_t degree(size_t v) const;
         size_t size() const;
         size_t number_of_edges() const;
         double score() const;
         size_t boundary_size() const;
+
+        size_t any_vertex() const;
+        size_t random_adjacent_edge(RandomEngine& re) const;
+        size_t random_inner_edge(RandomEngine& re) const;
+
+        double add_vertex_diff(size_t v) const;
+        double remove_vertex_diff(size_t v) const;
+        double add_edge_diff(size_t e) const;
+        double remove_edge_diff(size_t e) const;
+
         bool contains_vertex(size_t v) const;
-        const mwcsr::Edge& edge(size_t e) const;
-        size_t degree(size_t v) const;
         Module get_snapshot() const;
+    private:
+        double diff(size_t signal, bool add) const;
     };
 }
 
