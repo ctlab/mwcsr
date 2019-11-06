@@ -14,7 +14,7 @@ namespace annealing {
                                                  boundary{supergraph.edgeset_size()},
                                                  module_vertices{supergraph.size()},
                                                  vdegree(std::vector<size_t>(supergraph.size(), 0)),
-                                                 signal_utilization{supergraph.num_signals()},
+                                                 signal_utilization(supergraph.num_signals(), 0),
                                                  tokens{supergraph.edgeset_size()}{
 
     }
@@ -146,6 +146,7 @@ namespace annealing {
         if (signal_utilization[signal] == 0 && add) {
             return graph.signal_weight(signal);
         }
+        return 0;
     }
 
     double Subgraph::add_vertex_diff(size_t v) const {

@@ -4,7 +4,7 @@ test_that("SA solver works on specific test", {
     V(g)$weight <- 1:-3
     E(g)$weight <- 1
     solution <- solve_mwcsp(solver, g)
-    expect_gte(solution$weight, 0)
+    expect_equal(solution$weight, 2)
 })
 
 test_that("The SA solver does not crush on GAM instances", {

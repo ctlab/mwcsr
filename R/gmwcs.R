@@ -118,7 +118,7 @@ check_attr <- function(instance, attr, default, hint = NULL) {
     if (! attr %in% igraph::list.vertex.attributes(instance)) {
         warning(paste0("No `", attr, "` vertex attribute. Setting to ", default),
                 call. = FALSE)
-        instance <- igraph::set.vertex.attribute(instance, attr, default)
+        instance <- igraph::set.vertex.attribute(instance, attr, value = default)
     }
     vertex_values <- igraph::get.vertex.attribute(instance, attr)
     if (any(is.na(vertex_values))) {
@@ -130,7 +130,7 @@ check_attr <- function(instance, attr, default, hint = NULL) {
     if (! attr %in% igraph::list.edge.attributes(instance)) {
         warning(paste0("No `", attr, "` edge attribute. Setting to ", default),
                 call. = FALSE)
-        instance <- igraph::set.edge.attribute(instance, attr, default)
+        instance <- igraph::set.edge.attribute(instance, attr, value = default)
     }
     edge_values <- get.vertex.attribute(instance, attr)
     if (any(is.na(edge_values))) {

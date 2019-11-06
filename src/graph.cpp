@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include <cmath>
 
 #include "include/graph.h"
 
@@ -40,6 +39,7 @@ namespace mwcsr {
     }
 
     Graph::Graph(size_t n, const std::vector<double>& signal_weights) :m(0), signal_weights(signal_weights) {
+        vertex_signals.resize(n);
         adj.resize(n, vector<Edge>());
     }
 

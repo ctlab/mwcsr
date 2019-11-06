@@ -61,15 +61,15 @@ solve_mwcsp.simulated_annealing_solver <- function(solver, instance,
     instance <- normalize_signals(instance, signals)
 
     inst_rep <- instance_from_graph(instance$graph)
-    inst_rep[["vertex_signals"]] <- as.integer(igraph::V(instance)$signal)
-    inst_rep[["edge_signals"]] <- as.integer(igraph::V(instance)$signal)
+    inst_rep[["vertex_signals"]] <- as.integer(igraph::V(instance$graph)$signal) - 1
+    inst_rep[["edge_signals"]] <- as.integer(igraph::E(instance$graph)$signal) - 1
     inst_rep[["signal_weights"]] <- instance$signals
 
     res <- sa_solve(inst_rep, solver)
     if (length(res$edges) == 0) {
-        g <- igraph::induced_subgraph(instance, vids = res$vertices)
+        g <- igraph::induced_subgraph(instance$graph, vids = res$vertices)
     } else {
-        g <- igraph::subgraph.edges(instance, eids = res$edges)
+        g <- igraph::subgraph.edges(instance$graph, eids = res$edges)
     }
     weight <- sum(V(g)$weight) + sum(E(g)$weight)
     solution(g, weight, solved_to_optimality = NA)
