@@ -4,8 +4,7 @@
 \alias{solve_mwcsp.rmwcs_solver}
 \title{Solves MWCS problem using relax-and-cut approach}
 \usage{
-\method{solve_mwcsp}{rmwcs_solver}(solver, instance,
-  max_cardinality = NULL, budget = NULL, ...)
+\method{solve_mwcsp}{rmwcs_solver}(solver, instance, max_cardinality = NULL, budget = NULL, ...)
 }
 \arguments{
 \item{solver}{a solver object.}

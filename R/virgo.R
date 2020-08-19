@@ -1,0 +1,242 @@
+virgo_java_class = "ru.itmo.ctlab.virgo.Main"
+virgo_class = "virgo_solver"
+
+#' @export
+parameters.virgo_solver <- function(solver) {
+    params(parameter("cplex_bin", type = "file", is_null_possible=TRUE),
+         parameter("cplex_jar", type = "file", is_null_possible=TRUE),
+         parameter("threads", type = "integer", positive = TRUE),
+         parameter("timelimit", type = "integer", positive = TRUE,
+                   is_null_possible = TRUE),
+         parameter("penalty", type = "float", nonnegative = TRUE, is_null_possible=FALSE),
+         parameter("memory", type = "char"),
+         parameter("mst", type = "logical"),
+         parameter("log", type = "integer", is_null_possible=TRUE))
+}
+
+init_solver <- function(solver) {
+    solver_name <- "virgo-solver.jar"
+    solver_jar <- system.file("java", solver_name, package="mwcsr")
+    if (is.null(solver$cplex_bin) || is.null(solver$cplex_jar)) {
+        command <- sprintf("exec java -cp %s %s", solver_jar, virgo_java_class)
+    } else {
+        command <- sprintf("exec java -Djava.library.path=%s -cp %s:%s %s",
+            solver$cplex_bin, solver_jar, solver$cplex_jar, virgo_java_class
+        )
+    }
+    solver$run_main <- function(cli_args) {
+        command <- paste(command, paste(cli_args, collapse = ' '), collapse = ' ')
+        system(command)
+    }
+    solver
+}
+
+find_cplex_jar <- function(cplex_dir) {
+    files <- list.files(cplex_dir, pattern = 'cplex.jar', recursive=T, full.names = TRUE)
+    if (length(files) > 0) {
+        return(files[1])
+    } else {
+        return(NULL)
+    }
+}
+
+find_cplex_bin <- function(cplex_dir) {
+    files <- list.files(cplex_dir, pattern = 'libcplex\\d+.(so|jnilib|dll)', recursive=T, full.names = TRUE)
+    if (length(files) > 0) {
+        return(dirname(files[1]))
+    } else {
+        return(NULL)
+    }
+}
+
+
+#' Construct a virgo solver
+#'
+#' This solver uses reformulation of MWCS problem in terms of mixed integer
+#' programming. The later problem can be efficiently solved with
+#' commercial optimization software. This solver uses CPLEX and requires
+#' it to be installed.
+#' @param cplex_dir a path to dir containing cplex_bin and cplex_jar
+#' @param cplex_bin a path to cplex binary dir
+#' @param cplex_jar a path to cplex jar file
+#' @param threads number of threads for simultaneous computation
+#' @param timelimit maximum number of seconds to solve the problem
+#' @param memory maximum amount of memory(-Xmx flag)
+#' @param verbose whether or not be verbose
+#' @param penalty additional edge penalty for graph edges
+#' @param mst whether to use approximate MST solver
+#' @export
+virgo_solver <- function (cplex_dir,
+                          threads = parallel::detectCores(),
+                          timelimit = NULL,
+                          penalty = 0.0,
+                          memory = "2G",
+                          log = 2,
+                          cplex_bin=NULL,
+                          cplex_jar=NULL,
+                          mst=FALSE) {
+
+    if (missing(cplex_dir)) {
+        if (!mst && (is.null(cplex_bin) || is.null(cplex_jar))) {
+            stop("Either provide `cplex_dir` paramter or both `cplex_bin` and `cplex_jar`")
+        }
+        cplex_dir<-NULL
+    } else {
+        if (is.null(cplex_dir)) {
+            mst <- TRUE
+        }
+    }
+
+
+    if (is.null(cplex_jar) && !mst) {
+        cplex_jar <- find_cplex_jar(cplex_dir)
+        if (is.null(cplex_jar)) {
+            stop(paste0("Could not find `cplex.jar` in ", cplex_dir))
+        }
+    }
+
+    if (is.null(cplex_bin) && !mst) {
+        cplex_bin <- find_cplex_bin(cplex_dir)
+        if (is.null(cplex_bin)) {
+            stop(paste0("Could not find libcplex files in ", cplex_dir))
+        }
+    } else if (!mst && !dir.exists(cplex_bin)) {
+        # cplex_bin should be directory, not the lib-file itself
+        cplex_bin <- dirname(cplex_bin)
+    }
+
+    rm(cplex_dir) # don't need this parameter anymore
+
+    init_solver(solver_ctor(c(virgo_class,mwcs_solver_class)))
+}
+
+write_files <- function(g, nodes_file, edges_file, signals_file, signals) {
+    edges <- igraph::as_edgelist(g, names = FALSE)
+    write_tbl <- function(x, file, rn) {
+        utils::write.table(x, file = file, quote = FALSE, sep = "\t",
+                       row.names = rn, col.names = FALSE)
+    }
+    if (is.null(signals)) {
+        node_weights <- attr_values(g, "weight", "V")
+        if ("weight" %in% list.edge.attributes(g)) {
+            edge_weights <- attr_values(g, "weight", "E")
+        } else {
+            edge_weights <- rep(0, ecount(g))
+        }
+
+        edges <- cbind(edges, edge_weights)
+        vertices <- cbind(seq_along(V(g)), node_weights)
+    } else {
+        node_signals <- igraph::vertex_attr(g, "signal")
+        edge_signals <- igraph::edge_attr(g, "signal")
+        edges <- cbind(edges, edge_signals)
+        vertices <- cbind(seq_along(V(g)), node_signals)
+        write_tbl(signals, signals_file, TRUE)
+    }
+    write_tbl(vertices, nodes_file, FALSE)
+    write_tbl(edges, edges_file, FALSE)
+}
+
+cli_args <- function(solver, nodes.file, edges.file, signals.file = NULL, stats.file = NULL) {
+    params <- c("-n", nodes.file, "-e", edges.file, "-m", solver$threads, "-l", solver$log)
+    if (!is.null(solver$timelimit)) {
+        params <- c(params, "-t", solver$timelimit)
+    }
+    if (!is.null(signals.file)) {
+        params <- c(params, "-s", signals.file)
+        params <- c(params, "-type", "sgmwcs")
+    } else {
+        params <- c(params, "-type", "gmwcs")
+    }
+    if (!is.null(solver$penalty)) {
+        params <- c(params, "-p", solver$penalty)
+    }
+    if (!is.null(stats.file)) {
+        params <- c(params, "-f", stats.file)
+    }
+    if (solver$mst) {
+        params <- c(params, "-mst")
+    }
+    params
+}
+
+run_solver <- function(solver, instance, sgmwcs, signals = NULL) {
+    graph_dir <- tempfile("graph")
+    dir.create(graph_dir, showWarnings=FALSE)
+    edges.file <- file.path(graph_dir, "edges.txt")
+    nodes.file <- file.path(graph_dir, "nodes.txt")
+    signals.file <- if (sgmwcs) file.path(graph_dir, "signals.txt") else NULL
+    stats.file <- file.path(graph_dir, "stats.tsv")
+
+    write_files(instance, nodes.file, edges.file, signals.file, signals)
+    args <- cli_args(solver, nodes.file, edges.file, signals.file, stats.file)
+    solver$run_main(args)
+
+    nodes <- utils::read.table(paste0(nodes.file, ".out"), comment.char = "#")
+    edges <- utils::read.table(paste0(edges.file, ".out"), comment.char = "#")
+
+    if (!sgmwcs) {
+        nodes <- nodes[nodes[, 2] != "n/a", ]
+        edges <- edges[edges[, 3] != "n/a", ]
+    }
+
+    stats <- utils::read.table(stats.file, header = T)
+    mwcs <- (if (nrow(nodes) <= 1) {
+        induced_subgraph(instance, as.integer(nodes[, 1]))
+    } else {
+        eids <- get.edge.ids(instance, t(edges[,1:2]))
+        subgraph.edges(instance, eids, delete.vertices = T)
+    })
+    list(mwcs=mwcs, stats=stats)
+}
+
+#' @rdname solve_mwcsp
+#' @export
+#'
+solve_mwcsp.virgo_solver <- function(solver, instance, ...) {
+    inst_type <- get_instance_type(instance)
+    if (inst_type$type == "SGMWCS" && inst_type$valid) {
+        return(solve_sgmwcs(solver, instance, ...))
+    } else if (inst_type$type %in% c("GMWCS", "MWCS") && inst_type$valid) {
+        return(solve_gmwcs(solver, instance, ...))
+    } else {
+        stop("Not a valid MWCS, GMWCS or SGMWCS instance")
+    }
+}
+
+solve_sgmwcs <- function(solver, instance, ...) {
+    signals <- instance$signals
+
+    neg_signals <- names(which(signals < 0))
+    if (any(table(c(V(instance)$signal, E(instance)$signal))[neg_signals] > 1)) {
+        stop("Instances with repeated negative signals are not supported")
+    }
+
+    V(instance)$index <- seq_len(vcount(instance))
+    E(instance)$index <- seq_len(ecount(instance))
+
+    sol <- run_solver(solver, instance, sgmwcs = TRUE,
+                      data.frame(score=instance$signals))
+    mwcs <- sol$mwcs
+    sigs <- union(V(mwcs)$signal, E(mwcs)$signal)
+    weight <- sum(signals[sigs])
+    if (length(E(mwcs)) > 0) {
+        ret <- igraph::subgraph.edges(instance, E(mwcs)$index)
+    } else {
+        ret <- igraph::induced_subgraph(instance, V(mwcs)$index)
+    }
+    solution(ret, weight, sol$stats$isOpt == 1, stats=sol$stats)
+}
+
+solve_gmwcs <- function(solver, instance, ...) {
+    inst_type <- get_instance_type(instance)
+    if (!inst_type$type %in% c("GMWCS", "MWCS") || !inst_type$valid) {
+        stop("Not a valid GMWCS instance")
+    }
+
+    sol <- run_solver(solver, instance, sgmwcs = FALSE)
+    mwcs <- sol$mwcs
+
+    weight <- sum(V(mwcs)$weight, E(mwcs)$weight)
+    solution(mwcs, weight, sol$stats$isOpt == 1, stats=sol$stats)
+}

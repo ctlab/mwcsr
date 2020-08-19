@@ -4,12 +4,14 @@
 \alias{solve_mwcsp.simulated_annealing_solver}
 \title{Solve generalized maximum weight subgraph problem using simulated annealing}
 \usage{
-\method{solve_mwcsp}{simulated_annealing_solver}(solver, instance, ...)
+\method{solve_mwcsp}{simulated_annealing_solver}(solver, instance, signals = NULL, ...)
 }
 \arguments{
 \item{solver}{An annealing solver object.}
 
 \item{instance}{An igraph instance to work with.}
+
+\item{...}{other arguments passed to other methods.}
 }
 \value{
 An object of class mwcsp_solution.

@@ -33,4 +33,3 @@ suppressWarnings(
 )
 
 use_data(GAM, overwrite = T)
-

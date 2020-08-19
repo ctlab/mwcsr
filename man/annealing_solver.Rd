@@ -4,9 +4,13 @@
 \alias{annealing_solver}
 \title{ctor for annealing solver}
 \usage{
-annealing_solver(normalization = TRUE, schedule = c("fast",
-  "boltzmann"), initial_temperature = 1, final_temperature = 1e-06,
-  verbose = FALSE)
+annealing_solver(
+  normalization = TRUE,
+  schedule = c("fast", "boltzmann"),
+  initial_temperature = 1,
+  final_temperature = 1e-06,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{normalization}{adjust all weights so that all possible changes have

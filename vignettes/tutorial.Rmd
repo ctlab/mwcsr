@@ -1,0 +1,81 @@
+---
+title: "mwcsr-tutorial"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+[![Build
+Status](https://travis-ci.org/ctlab/mwcsr.svg?branch=master)](https://travis-ci.org/ctlab/mwcsr) [![codecov](https://codecov.io/github/ctlab/mwcsr/branch/master/graphs/badge.svg)](https://codecov.io/gh/ctlab/mwcsr/branch/master) 
+
+# mwcsr 
+
+A package for solving maximum-weight connected subgraph problem and its variants.
+The package solves 3 variants of maximum-weight connected subgraph problem. The first one, MWCS, has only
+nodes weighted. That means that the optimal solution can always be reduced to a tree.
+Generalized (GMWCS) version has both nodes and edges weights allowing optimal solution contain cycles. 
+The Signal Generalized (SGMWCS) variant of the problem introduces so-called signals instead of weights on
+both edges and nodes. Each signal can correspond to multiple edges and nodes and each graph element can
+contain multiple signals. In this version we assume that negative signals have 1-to-1 mapping to nodes and
+edges.
+
+Signals and weights depend on subject area. GATOM package, for example, generates signals from distributions
+of corresponding gene sets. 
+
+### Installation
+
+```{r eval=F}
+library(devtools)
+install_github("ctlab/mwcsr")
+```
+
+### Quick start
+Load example graph from `gatom` package.
+```{r}
+library(mwcsr)
+library(igraph)
+data("mwcs_example")
+data("gmwcs_example")
+data("sgmwcs_example")
+print(mwcs_example)
+print(gmwcs_example)
+print(sgmwcs_example)
+```
+
+To run relax-and-cut solver of MWCS problem:
+```{r}
+rmwcs_solver <- rmwcs()
+m <- solve_mwcsp(rmwcs_solver, mwcs_example)
+print(m$graph)
+print(m$weight)
+```
+To run annealing solver of the problem:
+```{r}
+annealing <- annealing_solver()
+m <- solve_mwcsp(annealing, gmwcs_example)
+print(m$graph)
+print(m$weight)
+```
+
+
+### Using CPLEX-based solvers
+SGMWCS and GMWCS solvers are available once you have installed [CPLEX](https://www.ibm.com/products/ilog-cplex-optimization-studio).
+Instantiate sgmwcs solver:
+```{r}
+cplex_dir <- '/Applications/CPLEX_Studio1210/cplex'
+solver <- virgo_solver(cplex_dir=cplex_dir, penalty=NULL, log=1, memory='2G', threads=4)
+
+```
+Run the solver:
+```{r}
+m <- solve_mwcsp(solver, sgmwcs_example)
+print(m$graph)
+get_score(m$graph)
+```
+To run virgo-solver without cplex you can use heuristic-based solver.
+```{r}
+mst_solver <- virgo_solver(cplex_dir=cplex_dir, penalty=NULL, log=1, memory='2G', threads=1, mst=1)
+m <- solve_mwcsp(mst_solver, sgmwcs_example)
+get_score(m$graph)

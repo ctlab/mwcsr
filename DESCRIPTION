@@ -1,26 +1,25 @@
 Package: mwcsr
 Title: Solvers for Various Maximum Weight Connected Subgraph Problems
 Version: 0.0.0.9003
-Authors@R: c(
-    person("Alexander", "Loboda", email = "loboda@rain.ifmo.ru", role = c("aut", "cre")), 
+Authors@R: c(person("Alexander", "Loboda", email = "aleks.loboda@gmail.com", role = "aut"),
+    person("Nikolay", "Poperechnyi", email = "n.poperechnyi@gmail.com", role = "aut"),
     person("Eduardo", "Alvarez-Miranda", email = "ealvarez@utalca.cl", role = "aut"), 
-    person("Markus", "Sinnl", email = "markus.sinnl@univie.ac.at", role = "aut"), 
-    person("Alexey", "Sergushichev", email = "alsergbox@gmail.com", role = "aut"))
+    person("Markus", "Sinnl", email = "markus.sinnl@univie.ac.at", role = "aut"),
+    person("Alexey", "Sergushichev", email = "alsergbox@gmail.com", role = c("aut", "cre")))
 Description: The package implements algorithms for solving various Maximum
     Weight Connected Subgraph Problems, including variants with 
     budget constraints, cardinallity constraints, weighted edges.
-Depends: R (>= 3.3)
+Depends: R (>= 3.5)
 Imports:
     igraph,
     Rcpp, 
     data.table
 Suggests:
-    testthat,
-    rJava
+    testthat
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 URL: https://github.com/ctlab/mwcsr
 BugReports: https://github.com/ctlab/mwcsr/issues
 LinkingTo: Rcpp

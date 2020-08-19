@@ -20,5 +20,6 @@ test_that("The SA solver gives good solution for a GAM instance", {
                                initial_temperature = 2.0, final_temperature = 0.125)
     g <- GAM[[1]]
     solution <- solve_mwcsp(solver, g)
-    expect_gte(solution$weight, 500)
+    expect_gt(solution$weight, 500)
+    # expect_gt(solution$weight, 0)
 })

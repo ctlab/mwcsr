@@ -48,7 +48,7 @@ normalize_weights <- function(instance) {
 
 #' Solve generalized maximum weight subgraph problem using simulated annealing
 #'
-#' @inheritParams solve_mwcsp.sgmwcs_solver
+#' @inheritParams solve_mwcsp.virgo_solver
 #' @param solver An annealing solver object.
 #' @param instance An igraph instance to work with.
 #' @return An object of class mwcsp_solution.
@@ -58,19 +58,37 @@ solve_mwcsp.simulated_annealing_solver <- function(solver, instance,
     if (!inherits(solver, sa_class)) {
         stop("Not a simulated annealing solver")
     }
-    instance <- normalize_signals(instance, signals)
 
-    inst_rep <- instance_from_graph(instance$graph)
-    inst_rep[["vertex_signals"]] <- as.integer(igraph::V(instance$graph)$signal) - 1
-    inst_rep[["edge_signals"]] <- as.integer(igraph::E(instance$graph)$signal) - 1
-    inst_rep[["signal_weights"]] <- instance$signals
+    inst_type <- get_instance_type(instance)
+
+
+    if (inst_type$type == "SGMWCS" && inst_type$valid) {
+        signal_instance <- instance
+    } else if (inst_type$type == "GMWCS" && inst_type$valid) {
+        signal_instance <- normalize_sgmwcs_instance(instance,
+                                                     nodes.group.by = NULL,
+                                                     edges.group.by = NULL)
+    } else if (inst_type$type == "MWCS" && inst_type$valid) {
+        inst2 <- instance
+        E(inst2)$weight <- 0
+        signal_instance <- normalize_sgmwcs_instance(inst2,
+                                                     nodes.group.by = NULL,
+                                                     edges.group.by = NULL)
+    } else {
+        stop("Not a valid MWCS, GMWCS or SGMWCS instance")
+    }
+
+    inst_rep <- instance_from_graph(signal_instance)
+    inst_rep[["vertex_signals"]] <- match(igraph::V(signal_instance)$signal, names(signal_instance$signals)) - 1
+    inst_rep[["edge_signals"]] <- match(igraph::E(signal_instance)$signal, names(signal_instance$signals)) - 1
+    inst_rep[["signal_weights"]] <- signal_instance$signals
 
     res <- sa_solve(inst_rep, solver)
     if (length(res$edges) == 0) {
-        g <- igraph::induced_subgraph(instance$graph, vids = res$vertices)
+        g <- igraph::induced_subgraph(instance, vids = res$vertices)
     } else {
-        g <- igraph::subgraph.edges(instance$graph, eids = res$edges)
+        g <- igraph::subgraph.edges(instance, eids = res$edges)
     }
-    weight <- sum(V(g)$weight) + sum(E(g)$weight)
-    solution(g, weight, solved_to_optimality = NA)
+    weight <- get_weight(g)
+    solution(g, weight, solved_to_optimality = FALSE)
 }

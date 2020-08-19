@@ -1,36 +1,101 @@
-normalize_signals <- function(instance, signals) {
-    if (is.null(signals)) {
-        instance <- check_attr(instance, "weight", 0)
-        V(instance)$signal <- paste0("V", 1:igraph::vcount(instance))
-        E(instance)$signal <- paste0("E", 1:igraph::ecount(instance))
-        signals <- setNames(c(V(instance)$weight, E(instance)$weight),
-                            c(V(instance)$signal, E(instance)$signal))
+#' Helper function to convert a graph into a proper SGMWCS instance
+#' @export
+normalize_sgmwcs_instance <- function(g,
+                                      nodes.weight.column="weight",
+                                      edges.weight.column="weight",
+                                      nodes.group.by="signal",
+                                      edges.group.by="signal",
+                                      group.only.positive=TRUE) {
+    if ("signals" %in% names(graph.attributes(g))) {
+        warning("Input graph alredy looks like SGMWCS instance, doing nothing")
+        return(g)
     }
 
-    instance <- check_attr(instance, "signal", NA, hint = "a default signal with zero weight.")
-    observed_signals <- setdiff(union(V(instance)$signal, E(instance)$signal), NA)
-    non_assigned_signals <- setdiff(observed_signals, names(signals))
-    if (length(non_assigned_signals) != 0) {
-        warning(paste0("No weight assigned for the following signals: ",
-                       paste0(non_assigned_signals, collapse = ", ")))
-        V(instance)$signal[V(instance)$signal %in% non_assigned_signals] <- NA
-        E(instance)$signal[E(instance)$signal %in% non_assigned_signals] <- NA
+    nt <- as_data_frame(g, what="vertices")
+    if (!nodes.weight.column %in% colnames(nt)) {
+        stop(sprintf("No %s node attribute present", nodes.weight.column))
     }
 
-    # Enumerating signals
-    map <- stats::setNames(1:(length(signals) + 1),
-                           c(names(signals), "NA"))
-    mapSignal <- function(x) {
-        sapply(x, function(x) ifelse(is.na(x), map[length(map)], map[x]))
-    }
-    V(instance)$signal <- mapSignal(V(instance)$signal)
-    E(instance)$signal <- mapSignal(E(instance)$signal)
-    names(signals) <- mapSignal(names(signals))
-    if (any(is.na(V(instance)$signal)) || any(is.na(E(instance)$signal))) {
-        signals <- c(signals, setNames(0, map[length(map)]))
+    if (!all(is.finite(nt[[nodes.weight.column]]))) {
+        stop(sprintf("Not all node weights are finite numbers"))
     }
 
-    V(instance)$id <- 1:length(V(instance))
-    E(instance)$id <- 1:length(E(instance))
-    list(graph = instance, signals = signals)
+    if (!is.null(nodes.group.by)) {
+        if (all(nodes.group.by %in% colnames(nt))) {
+            # :ToDo: add logic for NA handling
+            nt$signal <- do.call(paste, c(nt[, nodes.group.by, drop=F], sep="\r"))
+            if (group.only.positive) {
+                nt$signal <- paste(nt$signal, ifelse(nt[[nodes.weight.column]] > 0,
+                                                     "",
+                                                     seq_len(nrow(nt))), sep="\r")
+            }
+        } else {
+            stop(sprintf("Can't collapse nodes, not all fields are present: %s",
+                      paste0(setdiff(nodes.group.by, colnames(nt)), collapse=", ")))
+        }
+
+    } else {
+        nt$signal <- paste0("sn_", seq_len(nrow(nt)))
+    }
+    nt <- nt[, c("signal", nodes.weight.column)]
+    colnames(nt) <- c("signal", "weight")
+
+
+    et <- as_data_frame(g, what="edges")
+    if (!edges.weight.column %in% colnames(et)) {
+        stop(sprintf("No %s edge attribute present", edges.weight.column))
+    }
+
+    if (!all(is.finite(et[[edges.weight.column]]))) {
+        stop(sprintf("Not all edge weights are finite numbers"))
+    }
+
+    if (!is.null(edges.group.by)) {
+        if (all(edges.group.by %in% colnames(et))) {
+            # :ToDo: add logic for NA handling
+            et$signal <- do.call(paste, c(et[, edges.group.by, drop=F], sep="\r"))
+            if (group.only.positive) {
+                et$signal <- paste(et$signal, ifelse(et[[edges.weight.column]] > 0,
+                                                     "",
+                                                     seq_len(nrow(et))), sep="\r")
+            }
+        } else {
+            stop(sprintf("Can't collapse edges, not all fields present: %s",
+                      paste0(setdiff(edges.group.by, colnames(et)), collapse=", ")))
+        }
+
+    } else {
+        et$signal <- paste0("se_", seq_len(nrow(et)))
+
+    }
+
+    et <- et[, c("signal", edges.weight.column)]
+    colnames(et) <- c("signal", "weight")
+
+
+    st <- rbind(nt, et)
+
+    st <- unique(st)
+    if (any(duplicated(st$signal))) {
+        stop(sprintf("Multiple weights are present for signal %s",
+                     st$signal[which(duplicated(st$signal))[1]]))
+    }
+
+
+    # renaming signals
+    old_signals <- st$signal
+    st$signal <- paste0("s", seq_len(nrow(st)))
+    old2new <- setNames(st$signal, old_signals)
+    nt$signal <- old2new[nt$signal]
+    et$signal <- old2new[et$signal]
+
+
+    # rownames(st) <- NULL
+    # colnames(st) <- c("#signal", "score")
+
+    ret <- g
+    ret$signals <- setNames(st$weight, st$signal)
+    V(ret)$signal <- nt$signal
+    E(ret)$signal <- et$signal
+    ret
 }

@@ -1,0 +1,160 @@
+---
+output: github_document
+params:
+   cplex_dir: !r Sys.getenv("CPLEX_HOME")
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+[![Build
+Status](https://travis-ci.org/ctlab/mwcsr.svg?branch=master)](https://travis-ci.org/ctlab/mwcsr) [![codecov](https://codecov.io/github/ctlab/mwcsr/branch/master/graphs/badge.svg)](https://codecov.io/gh/ctlab/mwcsr/branch/master) 
+
+# mwcsr 
+
+A package for solving maximum-weight connected subgraph (MWCS) problem and its variants.
+
+Supported MWCS variants are:
+
+* classic (simple) MWCS, where only vertices are weighted;
+* generalized MWCS (GMWCS), where both vertices and edges are weighted;
+* signal generalized MWCS (SGMWCS), where both vertices and edges are marked with weighted "signals", and a weight of a subgraph is calculated as a sum of weights of its unique signals.
+
+
+## Installation
+
+The package can be installed from GitHub using `devtools`:
+
+```{r eval=F}
+library(devtools)
+install_github("ctlab/mwcsr")
+```
+
+## Quick start
+
+Load `mwcsr`, as well as `igraph` package, which contains function for graph manipulations.
+
+```{r message=FALSE}
+library(mwcsr)
+library(igraph)
+```
+
+Let's load an example instance of MWCS problem. The instance is a simple `igraph` object with `weight` vertex attribute.
+
+```{r}
+data("mwcs_example")
+print(mwcs_example)
+summary(V(mwcs_example)$weight)
+```
+
+Now let us initialize a heuristic relax-and-cut MWCS solver (Alvarez-Miranda and Sinnl, 2017):
+
+```{r}
+rcsolver <- rmwcs()
+```
+
+Now we can use this solver to solve the example instance:
+
+```{r}
+m <- solve_mwcsp(rcsolver, mwcs_example)
+print(m$graph)
+print(m$weight)
+```
+
+## Using exact CPLEX-based Virgo solver
+
+The `mwcsr` package also provide and interface to exact CPLEX-based Virgo solver  
+(https://github.com/ctlab/virgo-solver) which can be used to solve
+MWCS, GMWCS and SGMWCS instances to provable optimality.
+
+To setup this solver CPLEX libraries has to be available. 
+CPLEX can be downloaded from the official web-site:
+https://www.ibm.com/products/ilog-cplex-optimization-studio.
+Free licence can be obtained for academic purposes.
+    
+First, initialize `cplex_dir` variable to contain path to CPLEX libraries (for example, `r params$cplex_dir`). 
+
+    
+```{r eval=FALSE}
+cplex_dir <- '<replace with path to cplex folder>'
+```
+
+```{r echo=FALSE}
+cplex_dir <- params$cplex_dir
+```
+
+Then initialize the solver:
+
+```{r}
+vsolver <- virgo_solver(cplex_dir=cplex_dir)
+```
+
+And run it on the same MWCS instance:
+
+```{r}
+m <- solve_mwcsp(vsolver, mwcs_example)
+print(m$graph)
+```
+
+While the solution is a bit different its weight is the same as found before.
+The solutions differs only in zero-weight vertices. 
+```{r}
+get_weight(m$graph)
+```
+
+Next, consider a GMWCS instance which additionally has edge weights:
+```{r}
+data("gmwcs_example")
+gmwcs_example
+summary(E(gmwcs_example)$weight)
+```
+
+The same solver can be used to solve this instance:
+```{r}
+m <- solve_mwcsp(vsolver, gmwcs_example)
+print(m$graph)
+get_weight(m$graph)
+```
+
+Finally, let consider an SGMWCS instance. The weights of nodes and edges are defined not 
+directly, but through the `signals` attribute:
+
+```{r}
+data("sgmwcs_example")
+sgmwcs_example
+str(V(sgmwcs_example)$signal)
+str(E(sgmwcs_example)$signal)
+head(sgmwcs_example$signals)
+```
+
+Again, we can solve this instance with Virgo solver:
+```{r}
+m <- solve_mwcsp(vsolver, sgmwcs_example)
+print(m$graph)
+get_weight(m$graph)
+```
+
+## Running Virgo heuristics without CPLEX
+
+In case CPLEX is not available, Virgo solver can be run in heuristic mode. 
+Just set `cplex_dir` parameter to `NULL`:
+
+```{r}
+vhsolver <- virgo_solver(cplex_dir=NULL)
+```
+
+While the results are not optimal, sometimes they can be enough for practical applications:
+
+```{r}
+m <- solve_mwcsp(vhsolver, mwcs_example)
+get_weight(m$graph)
+
+m <- solve_mwcsp(vhsolver, gmwcs_example)
+get_weight(m$graph)
+
+m <- solve_mwcsp(vhsolver, sgmwcs_example)
+get_weight(m$graph)
+```
+
+

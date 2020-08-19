@@ -141,3 +141,74 @@ parameters <- function(solver) UseMethod("parameters")
 `timelimit<-` <- function(x, value) {
     set_parameters(x, timelimit = value)
 }
+
+get_instance_type <- function(instance) {
+    res <- list(type="unknown", valid=FALSE, errors=character())
+    if ("signals" %in% names(graph.attributes(instance))) {
+        res$type <- "SGMWCS"
+
+        if (!is.numeric(instance$signals) || !all(is.finite(instance$signals))) {
+            res$errors <- "`signals` attribute is not a vector of finite numbers"
+            return(res)
+        }
+
+        if (!"signal" %in% list.vertex.attributes(instance)) {
+            res$errors <- "No `signal` attribute for nodes"
+            return(res)
+        }
+
+        if (!all(V(instance)$signal %in% names(instance$signals))) {
+            res$errors <- "All node signals should be present in `signals` graph attribute"
+            return(res)
+        }
+
+        if (!"signal" %in% list.edge.attributes(instance)) {
+            res$errors <- "No `signal` attribute for edges"
+            return(res)
+        }
+
+        if (!all(E(instance)$signal %in% names(instance$signals))) {
+            res$errors <- "All edge signals should be present in `signals` graph attribute"
+            return(res)
+        }
+
+        res$valid <- TRUE
+        return(res)
+    }
+
+    if ("weight" %in% list.edge.attributes(instance) &&
+        "weight" %in% list.vertex.attributes(instance)) {
+        res$type <- "GMWCS"
+
+        if (!all(is.finite(V(instance)$weight))) {
+            res$errors <- "Nodes `weight` attribute is not a vector of finite numbers"
+            return(res)
+        }
+
+        if (!all(is.finite(E(instance)$weight))) {
+            res$errors <- "Edges `weight` attribute is not a vector of finite numbers"
+            return(res)
+        }
+
+
+        res$valid <- TRUE
+        return(res)
+    }
+
+    if ("weight" %in% list.vertex.attributes(instance)) {
+        res$type <- "MWCS"
+
+        if (!all(is.finite(V(instance)$weight))) {
+            res$errors <- "Nodes `weight` attribute is not a vector of finite numbers"
+            return(res)
+        }
+
+
+        res$valid <- TRUE
+        return(res)
+    }
+
+    res$errors <- "Can't determine type of the instance"
+    return(res)
+
+}
