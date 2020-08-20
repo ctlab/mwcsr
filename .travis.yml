@@ -4,19 +4,22 @@ cache:  packages
 
 warnings_are_errors: false
 
+dist: bionic
+
+addons:
+  apt:
+    packages:
+        openjdk-11-jre-headless
+
 os:
     - linux
 
-env:
-  - CPLEX_HOME="$HOME/lib"
-  - JDK=openjdk11
-
-
 before_install:
     - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
-    - chmod 600 ~/.netrc
-    - jdk_switcher use $JDK
+    - chmod 600 ~/.netrc    
     - git clone https://github.com/ctlab/private-libraries.git lib
+    - export CPLEX_HOME="$HOME/lib"
+    
 
 
 r_packages:
