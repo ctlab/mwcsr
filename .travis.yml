@@ -6,11 +6,6 @@ warnings_are_errors: false
 
 dist: focal
 
-addons:
-  apt:
-    packages:
-        openjdk-11-jre-headless
-
 os:
     - linux
 
