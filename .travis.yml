@@ -2,11 +2,24 @@ language:   r
 sudo:   false
 cache:  packages
 
+warnings_are_errors: false
+
+dist: focal
+
 os:
     - linux
 
+before_install:
+    - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
+    - chmod 600 ~/.netrc    
+    - export CPLEX_HOME="$HOME/lib"
+    - git clone https://github.com/ctlab/private-libraries.git $CPLEX_HOME    
+    
+
+
 r_packages:
-    - covr
+    - covr   
+  
 
 after_success:
       - Rscript -e 'library(covr); codecov()'
