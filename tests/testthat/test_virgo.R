@@ -85,3 +85,11 @@ test_that("virgo solver does not supported repeated negative signals", {
 
 })
 
+test_that("heuristic virgo_solver works on SGMWCS", {
+    solver <- virgo_solver(cplex_dir=NULL)
+    si <- sgmwcs_instance
+    si$signals <- c(si$signals, "neg"=-1)
+    solution <- solve_mwcsp(solver, si)
+    expect_true(!is.null(solution))
+})
+

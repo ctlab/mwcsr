@@ -208,7 +208,7 @@ solve_sgmwcs <- function(solver, instance, ...) {
     signals <- instance$signals
 
     neg_signals <- names(which(signals < 0))
-    if (any(table(c(V(instance)$signal, E(instance)$signal))[neg_signals] > 1)) {
+    if (any(table(c(V(instance)$signal, E(instance)$signal))[neg_signals] > 1, na.rm=TRUE)) {
         stop("Instances with repeated negative signals are not supported")
     }
 
