@@ -142,6 +142,16 @@ parameters <- function(solver) UseMethod("parameters")
     set_parameters(x, timelimit = value)
 }
 
+
+#' Check the type and the validity of an MWCS instance
+#' @param instance `igraph` object, containing an instance to be checked
+#' @return a list with members `type` containing the type of the instance,
+#' `valid` -- boolean flag indicating whether the instance is valid or not,
+#' `errors` -- a character vector containing the error messages
+#' @examples
+#' data(mwcs_example)
+#' get_instance_type(mwcs_example)
+#' @export
 get_instance_type <- function(instance) {
     res <- list(type="unknown", valid=FALSE, errors=character())
     if ("signals" %in% names(graph.attributes(instance))) {
@@ -202,7 +212,6 @@ get_instance_type <- function(instance) {
             res$errors <- "Nodes `weight` attribute is not a vector of finite numbers"
             return(res)
         }
-
 
         res$valid <- TRUE
         return(res)

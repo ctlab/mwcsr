@@ -44,7 +44,7 @@ parameters.rmwcs_solver <- function(solver) {
 #' @param verbose Whether to print solving progress
 #' @export
 #' @import igraph
-rmwcs <- function(timelimit = 1800L,
+rmwcs_solver <- function(timelimit = 1800L,
                   max_iterations = 1000L,
                   beta_iterations = 50L,
                   separation = "strong",

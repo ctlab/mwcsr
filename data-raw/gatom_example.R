@@ -1,4 +1,5 @@
 library(igraph)
+library(devtools)
 
 load(system.file("inst/gatom_example.rda", package="mwcsr"))
 

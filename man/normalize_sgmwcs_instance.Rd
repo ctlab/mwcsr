@@ -2,7 +2,7 @@
 % Please edit documentation in R/signal_solvers.R
 \name{normalize_sgmwcs_instance}
 \alias{normalize_sgmwcs_instance}
-\title{Helper function to convert a graph into a proper SGMWCS instance}
+\title{Helper function to convert an `igraph` object into a proper SGMWCS instance}
 \usage{
 normalize_sgmwcs_instance(
   g,
@@ -13,6 +13,28 @@ normalize_sgmwcs_instance(
   group.only.positive = TRUE
 )
 }
+\arguments{
+\item{g}{Graph to convert}
+
+\item{nodes.weight.column}{Nodes column name (e.g. weight, score, w) for scoring}
+
+\item{edges.weight.column}{Edges column name for scoring}
+
+\item{nodes.group.by}{Nodes grouping column (e.g. signal, group, class)}
+
+\item{edges.group.by}{Edges grouping column}
+
+\item{group.only.positive}{Whether to group only positive-scored nodes/edges#'}
+}
 \description{
-Helper function to convert a graph into a proper SGMWCS instance
+This function generates new `igraph` object with additional `signals` field added.
+The way the instance is constructed is defined by the function parameters.
+Nodes and edges are grouped separately, grouping columns are defined
+by `nodes.group.by` and `edges.group.by` arguments. `group.only.positive` param specifies
+whether to group only positive-weighted (specified by `nodes/edges.weight.column`) nodes and edges.
+}
+\examples{
+load(system.file("gatom_example.rda", package = "mwcsr"))
+normalize_sgmwcs_instance(gatom_example)
+
 }

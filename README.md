@@ -5,7 +5,7 @@ Status](https://travis-ci.org/ctlab/mwcsr.svg?branch=master)](https://travis-ci.
 
 # mwcsr
 
-A package for solving maximum-weight connected subgraph (MWCS) problem
+A package for solving maximum weight connected subgraph (MWCS) problem
 and its variants.
 
 Supported MWCS variants are:
@@ -28,7 +28,7 @@ install_github("ctlab/mwcsr")
 
 ## Quick start
 
-Load `mwcsr`, as well as `igraph` package, which contains function for
+Load `mwcsr`, as well as `igraph` package, which contains functions for
 graph manipulations.
 
 ``` r
@@ -68,7 +68,7 @@ Now let us initialize a heuristic relax-and-cut MWCS solver
 (Alvarez-Miranda and Sinnl, 2017):
 
 ``` r
-rcsolver <- rmwcs()
+rcsolver <- rmwcs_solver()
 ```
 
 Now we can use this solver to solve the example instance:
@@ -78,9 +78,9 @@ m <- solve_mwcsp(rcsolver, mwcs_example)
 print(m$graph)
 ```
 
-    ## IGRAPH eb236d7 UN-- 162 164 -- 
+    ## IGRAPH 4a99c94 UN-- 162 164 -- 
     ## + attr: name (v/c), label (v/c), weight (v/n)
-    ## + edges from eb236d7 (vertex names):
+    ## + edges from 4a99c94 (vertex names):
     ##  [1] C00022_0--C00024_1  C00022_0--C00041_0  C00022_0--C00074_5 
     ##  [4] C00022_0--C00149_0  C00022_1--C00041_1  C00022_1--C00074_6 
     ##  [7] C00022_1--C00149_2  C00022_2--C00024_0  C00022_2--C00041_2 
@@ -122,16 +122,22 @@ Then initialize the solver:
 vsolver <- virgo_solver(cplex_dir=cplex_dir)
 ```
 
-And run it on the same MWCS instance:
+And run it on the same MWCS
+    instance:
 
 ``` r
 m <- solve_mwcsp(vsolver, mwcs_example)
+```
+
+    ## [1] "java -Djava.library.path=/home/opt/ibm/ILOG/CPLEX_Studio1263/cplex/bin/x86-64_linux -cp /home/alserg/R/x86_64-pc-linux-gnu-library/3.6/mwcsr/java/virgo-solver.jar:/home/opt/ibm/ILOG/CPLEX_Studio1263/cplex/lib/cplex.jar ru.itmo.ctlab.virgo.Main -n /tmp/Rtmpr5DcZk/graph6c293fa4dcf1/nodes.txt -e /tmp/Rtmpr5DcZk/graph6c293fa4dcf1/edges.txt -m 4 -l 2 -type gmwcs -p 0 -f /tmp/Rtmpr5DcZk/graph6c293fa4dcf1/stats.tsv"
+
+``` r
 print(m$graph)
 ```
 
-    ## IGRAPH 0baee71 UN-- 164 166 -- 
+    ## IGRAPH e11e53b UN-- 164 166 -- 
     ## + attr: name (v/c), label (v/c), weight (v/n), label (e/c)
-    ## + edges from 0baee71 (vertex names):
+    ## + edges from e11e53b (vertex names):
     ##  [1] C00022_2--C00024_0  C00022_0--C00024_1  C00025_0--C00026_0 
     ##  [4] C00025_1--C00026_1  C00025_2--C00026_2  C00025_4--C00026_4 
     ##  [7] C00025_7--C00026_7  C00024_1--C00033_0  C00024_0--C00033_1 
@@ -150,6 +156,15 @@ get_weight(m$graph)
 ```
 
     ## [1] 1178.432
+
+However, Virgo guarantees that the result is optimal, unless the solver
+was interrupted on time limit.
+
+``` r
+m$solved_to_optimality
+```
+
+    ## [1] TRUE
 
 Next, consider a GMWCS instance which additionally has edge weights:
 
@@ -178,17 +193,23 @@ summary(E(gmwcs_example)$weight)
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     ## -1.2715 -0.5762 -0.1060  0.5452  1.0458  8.5829
 
-The same solver can be used to solve this instance:
+The same solver can be used to solve this
+    instance:
 
 ``` r
 m <- solve_mwcsp(vsolver, gmwcs_example)
+```
+
+    ## [1] "java -Djava.library.path=/home/opt/ibm/ILOG/CPLEX_Studio1263/cplex/bin/x86-64_linux -cp /home/alserg/R/x86_64-pc-linux-gnu-library/3.6/mwcsr/java/virgo-solver.jar:/home/opt/ibm/ILOG/CPLEX_Studio1263/cplex/lib/cplex.jar ru.itmo.ctlab.virgo.Main -n /tmp/Rtmpr5DcZk/graph6c29223049ab/nodes.txt -e /tmp/Rtmpr5DcZk/graph6c29223049ab/edges.txt -m 4 -l 2 -type gmwcs -p 0 -f /tmp/Rtmpr5DcZk/graph6c29223049ab/stats.tsv"
+
+``` r
 print(m$graph)
 ```
 
-    ## IGRAPH 7f32dbb UNW- 182 181 -- 
+    ## IGRAPH a2e9ba4 UNW- 182 181 -- 
     ## + attr: name (v/c), label (v/c), weight (v/n), label (e/c), weight
     ## | (e/n)
-    ## + edges from 7f32dbb (vertex names):
+    ## + edges from a2e9ba4 (vertex names):
     ##  [1] C00022_2--C00024_0  C00022_0--C00024_1  C00025_0--C00026_0 
     ##  [4] C00025_1--C00026_1  C00025_2--C00026_2  C00025_4--C00026_4 
     ##  [7] C00025_7--C00026_7  C00024_1--C00033_0  C00024_0--C00033_1 
@@ -244,17 +265,23 @@ head(sgmwcs_example$signals)
     ##        s1        s2        s3        s4        s5        s6 
     ##  5.008879 -0.737898 -0.737898 20.112627 19.890279  2.069292
 
-Again, we can solve this instance with Virgo solver:
+Again, we can solve this instance with Virgo
+    solver:
 
 ``` r
 m <- solve_mwcsp(vsolver, sgmwcs_example)
+```
+
+    ## [1] "java -Djava.library.path=/home/opt/ibm/ILOG/CPLEX_Studio1263/cplex/bin/x86-64_linux -cp /home/alserg/R/x86_64-pc-linux-gnu-library/3.6/mwcsr/java/virgo-solver.jar:/home/opt/ibm/ILOG/CPLEX_Studio1263/cplex/lib/cplex.jar ru.itmo.ctlab.virgo.Main -n /tmp/Rtmpr5DcZk/graph6c297dd99a92/nodes.txt -e /tmp/Rtmpr5DcZk/graph6c297dd99a92/edges.txt -m 4 -l 2 -s /tmp/Rtmpr5DcZk/graph6c297dd99a92/signals.txt -type sgmwcs -p 0 -f /tmp/Rtmpr5DcZk/graph6c297dd99a92/stats.tsv"
+
+``` r
 print(m$graph)
 ```
 
-    ## IGRAPH e556d0a UN-- 40 39 -- 
+    ## IGRAPH bfbefdd UN-- 40 39 -- 
     ## + attr: signals (g/n), name (v/c), label (v/c), signal (v/c), index
     ## | (v/n), label (e/c), signal (e/c), index (e/n)
-    ## + edges from e556d0a (vertex names):
+    ## + edges from bfbefdd (vertex names):
     ##  [1] C00022_0--C00024_1  C00025_1--C00026_1  C00024_1--C00033_0 
     ##  [4] C00022_0--C00041_0  C00036_1--C00049_1  C00037_1--C00065_0 
     ##  [7] C00022_0--C00074_5  C00026_1--C00091_0  C00042_2--C00091_0 
@@ -272,7 +299,7 @@ get_weight(m$graph)
 
 ## Running Virgo heuristics without CPLEX
 
-In case CPLEX is not available, Virgo solver can be run in heuristic
+In case CPLEX is not available, Virgo solver can be run in the heuristic
 mode. Just set `cplex_dir` parameter to `NULL`:
 
 ``` r
@@ -280,17 +307,34 @@ vhsolver <- virgo_solver(cplex_dir=NULL)
 ```
 
 While the results are not optimal, sometimes they can be enough for
-practical applications:
+practical
+    applications:
 
 ``` r
 m <- solve_mwcsp(vhsolver, mwcs_example)
+```
+
+    ## [1] "java -cp /home/alserg/R/x86_64-pc-linux-gnu-library/3.6/mwcsr/java/virgo-solver.jar ru.itmo.ctlab.virgo.Main -n /tmp/Rtmpr5DcZk/graph6c294eded9fc/nodes.txt -e /tmp/Rtmpr5DcZk/graph6c294eded9fc/edges.txt -m 4 -l 2 -type gmwcs -p 0 -f /tmp/Rtmpr5DcZk/graph6c294eded9fc/stats.tsv -mst"
+
+``` r
 get_weight(m$graph)
 ```
 
     ## [1] 1174.737
 
 ``` r
+m$solved_to_optimality
+```
+
+    ## [1] FALSE
+
+``` r
 m <- solve_mwcsp(vhsolver, gmwcs_example)
+```
+
+    ## [1] "java -cp /home/alserg/R/x86_64-pc-linux-gnu-library/3.6/mwcsr/java/virgo-solver.jar ru.itmo.ctlab.virgo.Main -n /tmp/Rtmpr5DcZk/graph6c2976f6b313/nodes.txt -e /tmp/Rtmpr5DcZk/graph6c2976f6b313/edges.txt -m 4 -l 2 -type gmwcs -p 0 -f /tmp/Rtmpr5DcZk/graph6c2976f6b313/stats.tsv -mst"
+
+``` r
 get_weight(m$graph)
 ```
 
@@ -298,6 +342,11 @@ get_weight(m$graph)
 
 ``` r
 m <- solve_mwcsp(vhsolver, sgmwcs_example)
+```
+
+    ## [1] "java -cp /home/alserg/R/x86_64-pc-linux-gnu-library/3.6/mwcsr/java/virgo-solver.jar ru.itmo.ctlab.virgo.Main -n /tmp/Rtmpr5DcZk/graph6c2975954ddd/nodes.txt -e /tmp/Rtmpr5DcZk/graph6c2975954ddd/edges.txt -m 4 -l 2 -s /tmp/Rtmpr5DcZk/graph6c2975954ddd/signals.txt -type sgmwcs -p 0 -f /tmp/Rtmpr5DcZk/graph6c2975954ddd/stats.tsv -mst"
+
+``` r
 get_weight(m$graph)
 ```
 

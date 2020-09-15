@@ -8,7 +8,7 @@ solution <- function(graph, weight, solved_to_optimality = FALSE, ...) {
 #' @param solution Either `mwcsp_solution` or `igraph`` object representing the solution
 #' @return weight of the graph
 #' @export
-#'
+#' @importFrom methods is
 get_weight <- function(solution) {
     if (is(solution, "mwcsp_solution")) {
         return(get_weight(solution$graph))

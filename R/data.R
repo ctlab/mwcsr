@@ -22,3 +22,8 @@
 #'
 #' Instance is based on `gatom` package.
 "sgmwcs_example"
+
+
+#' Example MWCS instance obtainet from BioNet package tutorial
+#'
+"bionet_example"

@@ -11,15 +11,19 @@ Description: The package implements algorithms for solving various Maximum
     budget constraints, cardinallity constraints, weighted edges.
 Depends: R (>= 3.5)
 Imports:
+    methods,
     igraph,
-    Rcpp, 
-    data.table
+    Rcpp
 Suggests:
-    testthat
+    knitr,
+    testthat,
+    BioNet, 
+    DLBCL   
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0
+VignetteBuilder: knitr
 URL: https://github.com/ctlab/mwcsr
 BugReports: https://github.com/ctlab/mwcsr/issues
 LinkingTo: Rcpp

@@ -17,7 +17,8 @@ virgo_solver(
 )
 }
 \arguments{
-\item{cplex_dir}{a path to dir containing cplex_bin and cplex_jar}
+\item{cplex_dir}{a path to dir containing cplex_bin and cplex_jar,
+setting this to NULL sets `mst`` param to `TRUE`}
 
 \item{threads}{number of threads for simultaneous computation}
 
@@ -27,17 +28,31 @@ virgo_solver(
 
 \item{memory}{maximum amount of memory(-Xmx flag)}
 
+\item{log}{verbosity level}
+
 \item{cplex_bin}{a path to cplex binary dir}
 
 \item{cplex_jar}{a path to cplex jar file}
 
-\item{mst}{whether to use approximate MST solver}
-
-\item{verbose}{whether or not be verbose}
+\item{mst}{whether to use approximate MST solver, no CPLEX files required with this parameter
+is set to `TRUE`}
 }
 \description{
 This solver uses reformulation of MWCS problem in terms of mixed integer
 programming. The later problem can be efficiently solved with
-commercial optimization software. This solver uses CPLEX and requires
+commercial optimization software. Exact version of solver uses CPLEX and requires
 it to be installed.
+}
+\details{
+You can access solver directly using `run_main` function. See example.
+}
+\examples{
+data("sgmwcs_example")
+approx_vs <- virgo_solver(mst=TRUE)
+approx_vs$run_main("-h")
+sol <- solve_mwcsp(approx_vs, sgmwcs_example)
+\dontrun{
+vs <- virgo_solver(cplex_dir='/path/to/cplex')
+sol <- solve_mwcsp(approx_vs, sgmwcs_example)
+}
 }

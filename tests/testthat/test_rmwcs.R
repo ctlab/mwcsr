@@ -2,21 +2,21 @@ data("GAM")
 set.seed(42L)
 
 test_that("rmwcs solver can be constructed with specific parameters", {
-    solver <- rmwcs()
+    solver <- rmwcs_solver()
     expect_equal(solver$separation, "strong")
     timelimit(solver) <- 20
     expect_equal(solver$timelimit, 20)
 })
 
 test_that("rmwcs solver works on specific test", {
-    solver <- rmwcs()
+    solver <- rmwcs_solver()
     g <- make_ring(5) %>% set.vertex.attribute("weight", value = 1:-3)
     s <- solve_mwcsp(solver, g)
     expect_true(s$solved_to_optimality)
 })
 
 test_that("rmwcs solver doesn't crash on simple graphs", {
-    solver <- rmwcs()
+    solver <- rmwcs_solver()
     size <- 10
     card <- 3
 
@@ -41,7 +41,7 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
 })
 
 test_that("rmwcs solver builds connected solutions on GAM instances", {
-    solver <- rmwcs()
+    solver <- rmwcs_solver()
     for (graph in GAM) {
         sol <- solve_mwcsp(solver, graph)
         expect_true(is.connected(sol$graph))

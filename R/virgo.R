@@ -18,21 +18,22 @@ init_solver <- function(solver) {
     solver_name <- "virgo-solver.jar"
     solver_jar <- system.file("java", solver_name, package="mwcsr")
     if (is.null(solver$cplex_bin) || is.null(solver$cplex_jar)) {
-        command <- sprintf("exec java -cp %s %s", solver_jar, virgo_java_class)
+        command <- c("-cp", solver_jar, virgo_java_class)
     } else {
-        command <- sprintf("exec java -Djava.library.path=%s -cp %s:%s %s",
-            solver$cplex_bin, solver_jar, solver$cplex_jar, virgo_java_class
-        )
+        command <- c(sprintf("-Djava.library.path=%s", solver$cplex_bin),
+                    "-cp", paste(solver_jar, solver$cplex_jar, sep=':'),
+                    virgo_java_class
+                    )
+
     }
     solver$run_main <- function(cli_args) {
-        command <- paste(command, paste(cli_args, collapse = ' '), collapse = ' ')
-        system(command)
+        system2("java", c(command, cli_args), stdout=TRUE)
     }
     solver
 }
 
 find_cplex_jar <- function(cplex_dir) {
-    files <- list.files(cplex_dir, pattern = 'cplex.jar', recursive=T, full.names = TRUE)
+    files <- list.files(cplex_dir, pattern = "cplex.jar", recursive=T, full.names = TRUE)
     if (length(files) > 0) {
         return(files[1])
     } else {
@@ -41,7 +42,7 @@ find_cplex_jar <- function(cplex_dir) {
 }
 
 find_cplex_bin <- function(cplex_dir) {
-    files <- list.files(cplex_dir, pattern = 'libcplex\\d+.(so|jnilib|dll)', recursive=T, full.names = TRUE)
+    files <- list.files(cplex_dir, pattern = "libcplex\\d+.(so|jnilib|dll)", recursive=T, full.names = TRUE)
     if (length(files) > 0) {
         return(dirname(files[1]))
     } else {
@@ -54,18 +55,31 @@ find_cplex_bin <- function(cplex_dir) {
 #'
 #' This solver uses reformulation of MWCS problem in terms of mixed integer
 #' programming. The later problem can be efficiently solved with
-#' commercial optimization software. This solver uses CPLEX and requires
+#' commercial optimization software. Exact version of solver uses CPLEX and requires
 #' it to be installed.
-#' @param cplex_dir a path to dir containing cplex_bin and cplex_jar
+#'
+#' You can access solver directly using `run_main` function. See example.
+#' @param cplex_dir a path to dir containing cplex_bin and cplex_jar,
+#'        setting this to NULL sets `mst`` param to `TRUE`
 #' @param cplex_bin a path to cplex binary dir
 #' @param cplex_jar a path to cplex jar file
 #' @param threads number of threads for simultaneous computation
 #' @param timelimit maximum number of seconds to solve the problem
 #' @param memory maximum amount of memory(-Xmx flag)
-#' @param verbose whether or not be verbose
+#' @param log verbosity level
 #' @param penalty additional edge penalty for graph edges
-#' @param mst whether to use approximate MST solver
+#' @param mst whether to use approximate MST solver, no CPLEX files required with this parameter
+#'            is set to `TRUE`
 #' @export
+#' @examples
+#' data("sgmwcs_example")
+#' approx_vs <- virgo_solver(mst=TRUE)
+#' approx_vs$run_main("-h")
+#' sol <- solve_mwcsp(approx_vs, sgmwcs_example)
+#' \dontrun{
+#' vs <- virgo_solver(cplex_dir='/path/to/cplex')
+#' sol <- solve_mwcsp(approx_vs, sgmwcs_example)
+#' }
 virgo_solver <- function (cplex_dir,
                           threads = parallel::detectCores(),
                           timelimit = NULL,

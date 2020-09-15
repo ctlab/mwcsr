@@ -4,7 +4,7 @@
 \alias{solve_mwcsp.simulated_annealing_solver}
 \title{Solve generalized maximum weight subgraph problem using simulated annealing}
 \usage{
-\method{solve_mwcsp}{simulated_annealing_solver}(solver, instance, signals = NULL, ...)
+\method{solve_mwcsp}{simulated_annealing_solver}(solver, instance, ...)
 }
 \arguments{
 \item{solver}{An annealing solver object.}

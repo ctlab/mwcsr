@@ -1,81 +1,424 @@
 ---
-title: "mwcsr-tutorial"
-output: github_document
+title: "Using mwcsr package"
+output: 
+    rmarkdown::html_vignette:
+        toc: true
+vignette: >
+  %\VignetteIndexEntry{Using mwcsr package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
 ```
 
-[![Build
-Status](https://travis-ci.org/ctlab/mwcsr.svg?branch=master)](https://travis-ci.org/ctlab/mwcsr) [![codecov](https://codecov.io/github/ctlab/mwcsr/branch/master/graphs/badge.svg)](https://codecov.io/gh/ctlab/mwcsr/branch/master) 
 
-# mwcsr 
+`mwcsr` is an R package to solve maximum weight connected subgraph (MWCS) problem and its
+variants. The package implements and provides an interface to several solvers: both exact and heuristic.
 
-A package for solving maximum-weight connected subgraph problem and its variants.
-The package solves 3 variants of maximum-weight connected subgraph problem. The first one, MWCS, has only
-nodes weighted. That means that the optimal solution can always be reduced to a tree.
-Generalized (GMWCS) version has both nodes and edges weights allowing optimal solution contain cycles. 
-The Signal Generalized (SGMWCS) variant of the problem introduces so-called signals instead of weights on
-both edges and nodes. Each signal can correspond to multiple edges and nodes and each graph element can
-contain multiple signals. In this version we assume that negative signals have 1-to-1 mapping to nodes and
-edges.
 
-Signals and weights depend on subject area. GATOM package, for example, generates signals from distributions
-of corresponding gene sets. 
+## Installation
 
-### Installation
+`mwcsr` can be installed from GitHub repository using `devtools` package:
 
 ```{r eval=F}
 library(devtools)
 install_github("ctlab/mwcsr")
 ```
 
-### Quick start
-Load example graph from `gatom` package.
-```{r}
+## Quick start
+
+Load `mwcsr`, as well as `igraph` package, which contains functions for graph manipulations.
+
+```{r message=FALSE}
 library(mwcsr)
 library(igraph)
+```
+
+Let's load an example instance of MWCS problem. The instance is a simple `igraph` object with `weight` vertex attribute.
+
+```{r}
 data("mwcs_example")
-data("gmwcs_example")
-data("sgmwcs_example")
 print(mwcs_example)
-print(gmwcs_example)
-print(sgmwcs_example)
+summary(V(mwcs_example)$weight)
 ```
 
-To run relax-and-cut solver of MWCS problem:
+Now let us initialize a heuristic relax-and-cut MWCS solver (Alvarez-Miranda and Sinnl, 2017):
+
 ```{r}
-rmwcs_solver <- rmwcs()
-m <- solve_mwcsp(rmwcs_solver, mwcs_example)
+rcsolver <- rmwcs_solver()
+```
+
+Now we can use this solver to solve the example instance:
+
+```{r}
+m <- solve_mwcsp(rcsolver, mwcs_example)
 print(m$graph)
 print(m$weight)
 ```
-To run annealing solver of the problem:
+
+
+## Supported problem types
+
+Supported MWCS variants are:
+
+* classic (simple) MWCS, where only vertices are weighted;
+* generalized MWCS (GMWCS), where both vertices and edges are weighted;
+* signal generalized MWCS (SGMWCS), where both vertices and edges are marked with weighted "signals", and a weight of a subgraph is calculated as a sum of weights of its unique signals.
+
+In `mwcsr`, instances of all of the above prolbems are represented by an `igraph` object
+with certain specified attributes.
+The validity and the type of the instance 
+can be checked using `get_instance_type` function, for example:
+
 ```{r}
-annealing <- annealing_solver()
-m <- solve_mwcsp(annealing, gmwcs_example)
-print(m$graph)
+get_instance_type(mwcs_example)
+```
+
+### Simple MWCS
+
+Simple maximum weight connected subgraph (MWCS) problem can be defined as follows.
+Let $G = (V, E)$ be an undirected graph and $\omega : V \rightarrow \mathbb{R}$
+is a weight function defined on the vertices. Then MWCS problem consists in
+finding a connected subgraph $\widetilde{G} = (\widetilde{V}, \widetilde{E})$ 
+witha a maximal total sum of vertex weights:
+
+$$\Omega(\widetilde{G}) = \sum_{v \in \widetilde{V}} \omega(v) \rightarrow max.$$
+
+An important property of MWCS is that solution can always be represented as a tree.
+
+In `mwcsr` an MWCS instance is defined as an `igraph` with `weight` vertex attribute
+(and without `weight` edge attribute).
+
+```{r}
+mwcs_example
+summary(V(mwcs_example)$weight)
+```
+
+
+### Generalized MWCS (GMWCS)
+
+Generalized MWCS (GMWCS) is similar to MWCS, but edges are also weighted.
+More formally, 
+let $G = (V, E)$ be an undirected graph and $\omega : (V \cup E) \rightarrow \mathbb{R}$
+is a weight function defined on the vertices and the edges.
+Then GMWCS problem consists in
+finding a connected subgraph $\widetilde{G} = (\widetilde{V}, \widetilde{E})$ 
+with a a maximal total sum of vertex and edge weights:
+
+$$
+\Omega(\widetilde{G}) = \sum_{v \in \widetilde{V}} \omega(v) + 
+\sum_{e \in \widetilde{E}} \omega(e) \rightarrow max.
+$$
+
+An important consequence of edge weights is that the optimal solution can contain cycles. 
+
+A GMWCS instance is defined as an `igraph` with `weight` attribute defined
+for both vertices and edges.
+
+```{r}
+data(gmwcs_example)
+gmwcs_example
+summary(V(gmwcs_example)$weight)
+summary(E(gmwcs_example)$weight)
+```
+
+
+### Signal generalized MWCS (SGMWCS)
+
+The signal generalized MWCS (SGMWCS) variant continues to generalize MWCS problem
+and introduces a concept of _signals_.
+Insted of specifying vertex and edge weights
+directly, the weights are defined for a set of signals, and vertis and edges are marked
+with these signals.
+The difference from GMWCS is that the signals can be repeated in
+the graph, while the weight of the subgraph is defined as a sum of weights of its
+unique signals.
+
+Formally, let $G = (V, E)$ be an undirected graph, 
+$S$ -- a set of signlas with weights $\omega: S \rightarrow \mathbb{R}$,
+and $\sigma: (V \cup E) \rightarrow 2^S$ -- markings of the vertices and edges 
+with signals.
+An SGMWCS problem consists in finding a connected subgraph,
+with a maximal total sum of its unique signals:
+
+$$
+\Omega(\widetilde{G}) = 
+    \sum_{s \in \sigma(\widetilde{V} \cup \widetilde{E})} \omega(s) \rightarrow max,
+$$
+where $\sigma(\widetilde{V} \cup \widetilde{E}) = 
+\bigcup_{x \in (\widetilde{V} \cup \widetilde{E})} \sigma(x)$.
+
+SGMWCS instances can arise when the data, from which the weights are inferred, map
+to the graph ambigously. 
+For example, when m/z peak from mass-spectrometry data is assigned to multiple
+isomer metabolites, or when the same enzyme catalyze multiple reactions, and so on.
+Practically, it is usually assumed that the signals with negative weights are not repeated.
+
+
+An SGMWCS is represented as an `igraph` object, with `signal` attribute defined
+for both vertices and edges and a `signals` attribute defined for the graph, containing
+the signal weights. Specification of multiple signals per node or edge is not yet supported.
+
+```{r}
+data("sgmwcs_example")
+sgmwcs_example
+str(V(sgmwcs_example)$signal)
+str(E(sgmwcs_example)$signal)
+head(sgmwcs_example$signals)
+```
+
+
+#### Constructing SGMWCS instances
+
+Sometimes, construction of SGMWCS isntances can be simplified using `normalize_sgmwcs_instance` function.
+
+Let consider an example graph obtained from [gatom](https://github.com/ctlab/gatom) package.
+
+```{r}
+load(system.file("gatom_example.rda", package='mwcsr'))
+print(gatom_example)
+```
+
+In this graph, the `signals` graph attributed is absent with weights specified directly
+as vertex or edge attributes along with `signal` attributes, which is a very practical intermediate representation. However, it is recognized as a GMWCS instance:
+
+```{r}
+get_instance_type(gatom_example)
+```
+
+Let convert this represantation into a valid SGMWCS instance using
+`normalize_sgmwcs_instance` function:
+
+```{r}
+gatom_instance <- normalize_sgmwcs_instance(gatom_example)
+get_instance_type(gatom_instance)
+```
+
+And let call the same function with explicit arguments:
+```{r}
+gatom_instance <- normalize_sgmwcs_instance(gatom_example,
+                                            nodes.weight.column = "weight",
+                                            edges.weight.column = "weight",
+                                            nodes.group.by = "signal",
+                                            edges.group.by = "signal", 
+                                            group.only.positive = TRUE)
+```
+
+The function does the following:
+
+1. It extracts signal weights from the specified columns. 
+`NULL` can be specified as a value of `nodes.group.by` or `edges.group.by` if
+there are no corresponding signals in the data, in which case zero signals will be 
+created.
+2. It splits input signals with negative weights into mulpliple unique signals,
+unless `group.only.positive` is set to `FALSE`.
+
+
+## Supported solvers
+
+Currently, three solvers are supported:
+
+* heuristic relax-and-cut solver `rmwcs_solver` for MWCS;
+* heuristic simmulated annealing solver `annealing_solver` for MWCS/GMWCS/SGMWCS;
+* exact (if CPLEX library is available) or heuristic (without CPLEX) solver `virgo_solver` 
+for MWCS/GMWCS/SGMWCS. 
+
+While selecting a particular solver depends on the particular class of instances, 
+the general recommendations are:
+
+* For MWCS use `rmwcs_solver` if small suboptimality can be tolerated.
+It is very fast and usually is able to find optimal or very close to optimal solution. To find exact solution `virgo_solver` can be used if CPLEX library is available.
+* For GMWCS and SGMWCS `virgo_solver` is the recommended solver if CPLEX library is available. 
+Without CPLEX the solutions by `virgo_solver` will be suboptimal. 
+Better solutions in the absense of CPLEX can be achieved by tuning `annealing_solver`.
+
+
+### Relax-and-cut solver
+
+Relax-and-cut solver is a huristic solver able to rapidly find high-quality solutions
+for MWCS problem (Alvarez-Miranda and Sinnl, 2017, https://doi.org/10.1016/j.cor.2017.05.015). 
+The solver does not require any additional libraries.
+
+Relax-and-cut solver can be constructed using `rmwcs_solver` function with the default arguemnts.
+As it is heuristic solver, the solved to optimality flag is always set to `FALSE`.
+
+```{r}
+rcsolver <- rmwcs_solver()
+m <- solve_mwcsp(rcsolver, mwcs_example)
 print(m$weight)
+print(m$solved_to_optimality)
 ```
 
 
-### Using CPLEX-based solvers
-SGMWCS and GMWCS solvers are available once you have installed [CPLEX](https://www.ibm.com/products/ilog-cplex-optimization-studio).
-Instantiate sgmwcs solver:
-```{r}
-cplex_dir <- '/Applications/CPLEX_Studio1210/cplex'
-solver <- virgo_solver(cplex_dir=cplex_dir, penalty=NULL, log=1, memory='2G', threads=4)
+### Simulated annealing solver
 
-```
-Run the solver:
+Another heuristic solver is a simulted annealing based solver.
+The solver is rather generic, but can produce good enogh solutions 
+if parameters are tuned well.
+As it is heuristic solver, the solved to optimality flag is always set to `FALSE`.
+
+
 ```{r}
-m <- solve_mwcsp(solver, sgmwcs_example)
-print(m$graph)
-get_score(m$graph)
+asolver <- annealing_solver()
+m <- solve_mwcsp(asolver, gmwcs_example)
+print(m$weight)
+print(m$solved_to_optimality)
 ```
-To run virgo-solver without cplex you can use heuristic-based solver.
+    
+
+### Java-based Virgo solver
+
+The `mwcsr` package also provide and interface to exact Java-based Virgo solver  
+(https://github.com/ctlab/virgo-solver) which can be used to solve
+MWCS, GMWCS and SGMWCS instances. 
+The solver  requires Java (11+) to be installed on your machine.
+
+There are two modes of execution:
+
+1. Heuristic -- which finds a solutio based on minimal spanning tree heuristic and does not require any additional setup;
+2. Exact -- which uses CPLEX library to solve the instances to provable optimality.
+CPLEX can be downloaded from the official web-site:
+https://www.ibm.com/products/ilog-cplex-optimization-studio.
+Free licence can be obtained for academic purposes.
+
+Heuristic solver can be constructed, by specyfing `cplex_dir=NULL`. 
+As it is heuristic solver, the solved to optimality flag is always set to `FALSE`.
+
 ```{r}
-mst_solver <- virgo_solver(cplex_dir=cplex_dir, penalty=NULL, log=1, memory='2G', threads=1, mst=1)
+mst_solver <- virgo_solver(cplex_dir=NULL)
 m <- solve_mwcsp(mst_solver, sgmwcs_example)
-get_score(m$graph)
+print(m$weight)
+print(m$solved_to_optimality)
+```
+
+Exact solver requires setting `cplex_dir` argument with a path to CPLEX installation.
+The `cplex_dir` requires, that `cplex.jar` file and CPLEX dynamic library
+file (depending on the operating system: `libcplex<version>.dll` for Windows,
+`libcplex<version>.so` for Linux, `libcplex<version>.jnilib` for OS X) 
+can be found there with recursive search.
+Alternatively, `cplex_jar` argument pointing to `cplex.jar` file and `cplex_bin` argument 
+pointing to the directory with CPLEX dynamic library files can be specified.
+Additionally, it is conveniet to put the path to CPLEX into a `CPLEX_HOME`
+environment variale, so that it does not have to be changed from 
+one system to another, when run.
+
+```{r}
+cplex_dir <- Sys.getenv('CPLEX_HOME')
+exact_solver <- virgo_solver(cplex_dir=cplex_dir)
+m <- solve_mwcsp(exact_solver, sgmwcs_example)
+```
+
+As the CPLEX fount the optimal solution, the corresponding flag is set to `TRUE`:
+
+```{r}
+print(m$weight)
+print(m$solved_to_optimality)
+```
+
+Some additional information like the running time, instance files, solver version
+is available as in the `stats` field. 
+Refer to Virgo documentation for the description of the values.
+
+
+```{r}
+print(m$stats)
+```
+
+Computational resources availble for Virgo can be specified with the following parameters:
+
+* `memory` -- maximum amount of memory, more specifically Java heap size, specified via `-Xmx` Java option, default: `2G`.
+* `threads` -- number of threads for simultaneous computation, default: the number of available cores.
+* `timelimit` -- maximum time in seconds to solve the problem, if the solver is interrupted
+due to time limit, the best solution found so far is reported and `solved_to_optimality` flag is set to `FALSE`.
+
+Another useful paramter is `penalty`. The non-zero penalty make the solver run an additional
+pass over the solution, with each edge penalized with the specified value. 
+As there can be multiple solutions, having the same weight, especially in case of SGMWCS,
+this procedure allows to locally minimize the solution size, while preserving the weight.
+
+```{r}
+psolver <- virgo_solver(cplex_dir=cplex_dir, penalty=0.001)
+min_m <- solve_mwcsp(psolver, sgmwcs_example)
+print(min_m$weight)
+print(min_m$stats)
+```
+
+Now the solution, has `r min_m$stats$nodes` nodes instead of `r m$stats$nodes` 
+for the solution that was found before, while having the same total weight
+of `r min_m$weight`.
+
+
+## Integration with BioNet
+
+This part of the turorial shows how `mwcsr` solvers can be combined 
+with `BioNet` package to find an actime module in a protein-protein interaction
+network.
+
+Let start with generating an example scored network, following BioNet tutorial:
+
+```{r message=FALSE}
+library(BioNet)
+library(DLBCL)
+data(dataLym)
+data(interactome)
+pvals <- cbind(t = dataLym$t.pval, s = dataLym$s.pval)
+rownames(pvals) <- dataLym$label
+pval <- aggrPvals(pvals, order = 2, plot = FALSE)
+logFC <- dataLym$diff
+names(logFC) <- dataLym$label
+subnet <- subNetwork(dataLym$label, interactome)
+subnet <- rmSelfLoops(subnet)
+fb <- fitBumModel(pval, plot = FALSE)
+scores <- scoreNodes(subnet, fb, fdr = 0.001)
+```
+
+Here we have network object `subnet` of type `graphNEL` and a vector of node scores `scores`:
+
+```{r}
+subnet
+str(scores)
+```
+
+BioNet comes with a heuristic MWCS FastHeinz solver, that we can use to find the module
+following the BioNet tutorial:
+
+```{r}
+bionet_h <- runFastHeinz(subnet, scores)
+plotModule(bionet_h, scores=scores, diff.expr=logFC)
+sum(scores[nodes(bionet_h)])
+```
+
+We can construct an MWCS instnace by converting `graphNEL` object into
+`igraph` and add node weights: 
+
+```{r}
+bionet_example <- igraph.from.graphNEL(subnet, weight=FALSE) # ignoring edge weights of 1
+V(bionet_example)$weight <- scores[V(bionet_example)]
+get_instance_type(bionet_example)
+```
+
+Now the isntance can be solved with the relax-and-cut solver:
+
+```{r}
+rmwcs <- rmwcs_solver()
+bionet_m <- solve_mwcsp(rmwcs, bionet_example)
+plotModule(bionet_m$graph, scores=scores, diff.expr=logFC)
+```
+
+Note that the weight increased, compared to FastHeinz solution:
+
+```{r}
+print(bionet_m$weight)
+```
+
+Similarly, Virgo can be used to solve the insance to provable optimality, 
+but in this case it produces the same results:
+
+```{r}
+bionet_m_exact <- solve_mwcsp(exact_solver, bionet_example)
+print(bionet_m_exact$weight)
+print(bionet_m_exact$solved_to_optimality)
+```

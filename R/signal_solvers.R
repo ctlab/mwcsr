@@ -1,5 +1,23 @@
-#' Helper function to convert a graph into a proper SGMWCS instance
+#' Helper function to convert an `igraph` object into a proper SGMWCS instance
+#'
+#' This function generates new `igraph` object with additional `signals` field added.
+#' The way the instance is constructed is defined by the function parameters.
+#' Nodes and edges are grouped separately, grouping columns are defined
+#' by `nodes.group.by` and `edges.group.by` arguments. `group.only.positive` param specifies
+#' whether to group only positive-weighted (specified by `nodes/edges.weight.column`) nodes and edges.
+#'
+#' @param g Graph to convert
+#' @param nodes.weight.column Nodes column name (e.g. weight, score, w) for scoring
+#' @param edges.weight.column Edges column name for scoring
+#' @param nodes.group.by Nodes grouping column (e.g. signal, group, class)
+#' @param edges.group.by Edges grouping column
+#' @param group.only.positive Whether to group only positive-scored nodes/edges#'
 #' @export
+#' @examples
+#' load(system.file("gatom_example.rda", package = "mwcsr"))
+#' normalize_sgmwcs_instance(gatom_example)
+#'
+#' @importFrom stats setNames
 normalize_sgmwcs_instance <- function(g,
                                       nodes.weight.column="weight",
                                       edges.weight.column="weight",
@@ -66,12 +84,10 @@ normalize_sgmwcs_instance <- function(g,
 
     } else {
         et$signal <- paste0("se_", seq_len(nrow(et)))
-
     }
 
     et <- et[, c("signal", edges.weight.column)]
     colnames(et) <- c("signal", "weight")
-
 
     st <- rbind(nt, et)
 
@@ -81,17 +97,12 @@ normalize_sgmwcs_instance <- function(g,
                      st$signal[which(duplicated(st$signal))[1]]))
     }
 
-
     # renaming signals
     old_signals <- st$signal
     st$signal <- paste0("s", seq_len(nrow(st)))
     old2new <- setNames(st$signal, old_signals)
     nt$signal <- old2new[nt$signal]
     et$signal <- old2new[et$signal]
-
-
-    # rownames(st) <- NULL
-    # colnames(st) <- c("#signal", "score")
 
     ret <- g
     ret$signals <- setNames(st$weight, st$signal)

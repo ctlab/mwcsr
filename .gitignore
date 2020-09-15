@@ -5,6 +5,7 @@
 .Ruserdata
 .idea
 lib
+vignettes/tutorial_cache
 
 # vim temp files
 *~

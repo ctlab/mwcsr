@@ -4,7 +4,9 @@
 \name{GAM}
 \alias{GAM}
 \title{GAM instances for MWCS problem}
-\format{A vector of named vertex-weighted igraph instances}
+\format{
+A vector of named vertex-weighted igraph instances
+}
 \source{
 \url{http://dimacs11.zib.de/instances/MWCS-GAM.zip}
 }
