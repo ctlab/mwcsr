@@ -178,7 +178,7 @@ Sometimes, construction of SGMWCS isntances can be simplified using `normalize_s
 Let consider an example graph obtained from [gatom](https://github.com/ctlab/gatom) package.
 
 ```{r}
-load(system.file("gatom_example.rda", package='mwcsr'))
+data("gatom_example")
 print(gatom_example)
 ```
 
