@@ -23,13 +23,9 @@ dir <- "inst/extdata/"
 download.file("http://dimacs11.zib.de/instances/MWCS-GAM.zip", "gam.zip")
 unzip("gam.zip", junkpaths = T, exdir = dir)
 
-names <- list.files(dir)
+instance <- list.files(dir)[1]
+path <- paste0(dir, instance)
 
-# Take every 5th instance to reduce size
-names <- names[seq(1, length(names), 5)]
+gam_example <- readSTP(path)
 
-suppressWarnings(
-    GAM <- sapply(names, function (x) readSTP(paste0(dir, x)), simplify = F)
-)
-
-use_data(GAM, overwrite = T)
+use_data(gam_example, overwrite = T)

@@ -6,7 +6,7 @@
 #'
 #' @format A vector of named vertex-weighted igraph instances
 #' @source \url{http://dimacs11.zib.de/instances/MWCS-GAM.zip}
-"GAM"
+"gam_example"
 
 #' Example MWCS instance
 #'
