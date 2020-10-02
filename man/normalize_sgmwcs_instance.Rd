@@ -34,7 +34,7 @@ by `nodes.group.by` and `edges.group.by` arguments. `group.only.positive` param 
 whether to group only positive-weighted (specified by `nodes/edges.weight.column`) nodes and edges.
 }
 \examples{
-load(system.file("gatom_example.rda", package = "mwcsr"))
+data("gatom_example")
 normalize_sgmwcs_instance(gatom_example)
 
 }
