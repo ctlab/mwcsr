@@ -5,11 +5,13 @@
  *      Author: markus
  */
 
-#include "include/Parameters.h"
-#include <queue>
-#include "include/SolverLag.h"
 #include <stack>
 #include <chrono>
+#include <queue>
+#include <utility>
+
+#include "include/Parameters.h"
+#include "include/SolverLag.h"
 
 using std::vector;
 using std::list;
@@ -22,7 +24,7 @@ namespace chrono = std::chrono;
 
 bool cutToRemove(SolverLag::cut x) { return x.toRemove; }
 
-SolverLag::SolverLag(Instance& instance, Parameters& params)
+SolverLag::SolverLag(Instance& instance, Parameters& params, mwcsr::monitor int_monitor)
         : instance(instance), params(params), myCuts{list<cut>()}, myNewCuts{list<cut>()},
           realPrizes{vector<double>(instance.nNodes, 0)},
           currentSolution{vector<double>(instance.nNodes, 0)},
@@ -42,7 +44,7 @@ SolverLag::SolverLag(Instance& instance, Parameters& params)
           worstBoundCFT{std::numeric_limits<double>::lowest()}, counterCFT{0},
           maxIterations{params.maxIter}, iterations{0}, sepIter(params.sepIter),
           sepIterFreeze(params.sepIterFreeze), inRins(false), savedObj(0.0),
-          runtime(0.0) {}
+          runtime(0.0), int_monitor(std::move(int_monitor)) {}
 
 SolverLag::~SolverLag() {}
 
@@ -105,8 +107,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
     // time_t startT;
     // time(&startT);
 
-    chrono::time_point <std::chrono::system_clock> startTime =
-            chrono::system_clock::now();
+    chrono::time_point <std::chrono::system_clock> startTime = chrono::system_clock::now();
     iterations = 0;
     // if(params.outputlag)
     //	Rcout<<"fixed "<<costBasedFixing()<<" variables to zero due to cost in
@@ -265,6 +266,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
     chrono::time_point <std::chrono::system_clock> endTime =
             chrono::system_clock::now();
     chrono::duration<double> elapsedSeconds = endTime - startTime;
+    int_monitor.check();
 
     // time_t endT;
     // time(&endT);

@@ -24,7 +24,7 @@ class SolverBudget : public SolverLag {
     int addInitCuts();
 
 public:
-    SolverBudget(Instance& instance, Parameters& params);
+    SolverBudget(Instance& instance, Parameters& params, mwcsr::monitor monitor);
     // SolverBudget(const SolverBudget&);
     virtual ~SolverBudget();
 };

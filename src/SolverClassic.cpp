@@ -14,8 +14,8 @@ using std::priority_queue;
 
 using Rcpp::Rcout;
 
-SolverClassic::SolverClassic(Instance& instance, Parameters& params)
-        : SolverLag(instance, params) {
+SolverClassic::SolverClassic(Instance& instance, Parameters& params, mwcsr::monitor monitor)
+        : SolverLag(instance, params, monitor) {
 }
 
 SolverClassic::~SolverClassic() {}

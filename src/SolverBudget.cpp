@@ -17,8 +17,8 @@ using std::queue;
 
 using Rcpp::Rcout;
 
-SolverBudget::SolverBudget(Instance& instance, Parameters& params)
-        : SolverLag(instance, params), M{vector<vector<double>>(
+SolverBudget::SolverBudget(Instance& instance, Parameters& params, mwcsr::monitor monitor)
+        : SolverLag(instance, params, monitor), M{vector<vector<double>>(
         instance.nNodes)} {
 
     for (int j = 0; j < instance.nNodes; j++) {

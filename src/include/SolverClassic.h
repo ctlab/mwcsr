@@ -18,7 +18,7 @@ class SolverClassic : public SolverLag {
     int addInitCuts();
 
 public:
-    SolverClassic(Instance& instance, Parameters& params);
+    SolverClassic(Instance& instance, Parameters& params, mwcsr::monitor monitor);
     // SolverClassic(const SolverClassic&);
 
     ~SolverClassic();

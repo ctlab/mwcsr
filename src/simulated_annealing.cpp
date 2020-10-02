@@ -14,8 +14,9 @@ namespace annealing {
                                            unif{random_engine},
                                            sub(graph) {}
 
-    void SimulatedAnnealing::run(CoolingSchedule& schedule) {
+    void SimulatedAnnealing::run(CoolingSchedule& schedule, monitor monitor) {
         while (schedule.is_hot()) {
+            monitor.check();
             temperature = schedule.next();
             strike();
         }

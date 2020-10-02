@@ -7,16 +7,20 @@
 
 // [[Rcpp::export]]
 Rcpp::List rmwcs_solve(Rcpp::List& network, Rcpp::List& params) {
+    constexpr int CHECK_USER_INTERRUPT_MILLIS = 100;
+
     Instance instance(network);
     Parameters parameters(params);
 
+    mwcsr::monitor interruption_monitor(Rcpp::checkUserInterrupt, CHECK_USER_INTERRUPT_MILLIS);
+
     std::unique_ptr<SolverLag> solver;
     if (network.containsElementNamed("budget")) {
-        solver.reset(new SolverBudget(instance, parameters));
+        solver.reset(new SolverBudget(instance, parameters, interruption_monitor));
     } else if (network.containsElementNamed("cardinality")) {
-        solver.reset(new SolverCardinality(instance, parameters));
+        solver.reset(new SolverCardinality(instance, parameters, interruption_monitor));
     } else {
-        solver.reset(new SolverClassic(instance, parameters));
+        solver.reset(new SolverClassic(instance, parameters, interruption_monitor));
     }
 
     if (instance.nNodes > 0) {

@@ -11,6 +11,7 @@
 #include "definitions.h"
 #include "module.h"
 #include "subgraph.h"
+#include "monitor.h"
 
 #include "DynamicGraph.h"
 #include "cooling_schedule.h"
@@ -42,7 +43,7 @@ namespace annealing {
     public:
         explicit SimulatedAnnealing(const Graph& graph, RandomEngine& random_engine);
 
-        void run(CoolingSchedule& schedule);
+        void run(CoolingSchedule& schedule, monitor monitor);
         vector<size_t> vertices();
         vector<Edge> edges();
 

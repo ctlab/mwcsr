@@ -14,8 +14,8 @@ using std::priority_queue;
 
 using Rcpp::Rcout;
 
-SolverCardinality::SolverCardinality(Instance& instance, Parameters& params)
-        : SolverLag(instance, params), weightLast{0.0}, weightOutside{0.0} {}
+SolverCardinality::SolverCardinality(Instance& instance, Parameters& params, mwcsr::monitor monitor)
+        : SolverLag(instance, params, monitor), weightLast{0.0}, weightOutside{0.0} {}
 
 SolverCardinality::~SolverCardinality() {}
 

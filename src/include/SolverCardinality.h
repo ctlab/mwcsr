@@ -20,7 +20,7 @@ class SolverCardinality : public SolverLag {
     double weightOutside;
 
 public:
-    SolverCardinality(Instance& instance, Parameters& params);
+    SolverCardinality(Instance& instance, Parameters& params, mwcsr::monitor monitor);
 
     ~SolverCardinality();
 };

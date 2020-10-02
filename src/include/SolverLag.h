@@ -8,17 +8,20 @@
 #ifndef SOLVERLAG_H_
 #define SOLVERLAG_H_
 
-#include "Instance.h"
 #include <list>
 #include <sstream>
 #include <string>
 #include <unordered_set>
 #include <vector>
 
+#include "Instance.h"
+#include "monitor.h"
+
 class SolverLag {
 protected:
     Instance& instance;
     Parameters& params;
+    mwcsr::monitor int_monitor;
 
 public:
     struct nodevaluepair {
@@ -26,7 +29,6 @@ public:
         double value = 1.0;
 
         bool operator<(const nodevaluepair& other) const {
-            // cout<<"sdsfdsf"<<endl;
             return value < other.value;
         }
 
@@ -45,7 +47,6 @@ public:
         std::vector<int> boundaryIndexedNested;
 
         bool operator<(const CompStruct& other) const {
-            // cout<<"sdsfdsf"<<endl;
             return sumPrize < other.sumPrize;
         }
 
@@ -187,7 +188,7 @@ protected:
     // bool initCuts;
 
 public:
-    SolverLag(Instance& instance, Parameters& params);
+    SolverLag(Instance& instance, Parameters& params, mwcsr::monitor int_monitor);
 
     virtual ~SolverLag();
 
