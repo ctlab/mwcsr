@@ -16,6 +16,7 @@ Imports:
     Rcpp
 Suggests:
     knitr,
+    rmarkdown,
     testthat,
     BioNet, 
     DLBCL   
