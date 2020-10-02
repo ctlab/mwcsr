@@ -3,7 +3,7 @@
 \docType{data}
 \name{bionet_example}
 \alias{bionet_example}
-\title{Example MWCS instance obtainet from BioNet package tutorial}
+\title{Example MWCS instance obtained from BioNet package tutorial}
 \format{
 An object of class \code{igraph} of length 10.
 }
@@ -11,6 +11,6 @@ An object of class \code{igraph} of length 10.
 bionet_example
 }
 \description{
-Example MWCS instance obtainet from BioNet package tutorial
+Example MWCS instance obtained from BioNet package tutorial
 }
 \keyword{datasets}

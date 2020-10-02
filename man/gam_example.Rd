@@ -3,7 +3,7 @@
 \docType{data}
 \name{gam_example}
 \alias{gam_example}
-\title{GAM instances for MWCS problem}
+\title{GAM instance for MWCS problem}
 \format{
 A vector of named vertex-weighted igraph instances
 }

@@ -1,4 +1,4 @@
-#' GAM instances for MWCS problem
+#' GAM instance for MWCS problem
 #'
 #' A dataset containing some real-world instances appeared in network
 #' enrichment analysis tool
@@ -24,6 +24,11 @@
 "sgmwcs_example"
 
 
-#' Example MWCS instance obtainet from BioNet package tutorial
+#' Example MWCS instance obtained from BioNet package tutorial
 #'
 "bionet_example"
+
+#' Example of graph from which an SGMWCS instance can be obtained
+#'
+#' The graph is based on `gatom` package
+"gatom_example"

@@ -14,7 +14,7 @@
 #' @param group.only.positive Whether to group only positive-scored nodes/edges#'
 #' @export
 #' @examples
-#' load(system.file("gatom_example.rda", package = "mwcsr"))
+#' data("gatom_example")
 #' normalize_sgmwcs_instance(gatom_example)
 #'
 #' @importFrom stats setNames
