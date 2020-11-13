@@ -25,7 +25,7 @@ rmwcs_solver(
 
 \item{max_iterations}{Maximum number of subgradient iterations}
 
-\item{beta_iterations}{Number of nonimproving iterations until beta is halfed}
+\item{beta_iterations}{Number of nonimproving iterations until beta is halved}
 
 \item{separation}{Separation: "strong" of "fast"}
 

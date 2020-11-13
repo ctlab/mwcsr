@@ -131,9 +131,9 @@ write_files <- function(g, nodes_file, edges_file, signals_file, signals) {
                        row.names = rn, col.names = FALSE)
     }
     if (is.null(signals)) {
-        node_weights <- attr_values(g, "weight", "V")
+        node_weights <- V(g)$weight
         if ("weight" %in% list.edge.attributes(g)) {
-            edge_weights <- attr_values(g, "weight", "E")
+            edge_weights <- E(g)$weight
         } else {
             edge_weights <- rep(0, ecount(g))
         }

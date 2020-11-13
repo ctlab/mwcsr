@@ -40,7 +40,7 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
     test_graph(make_full_graph)
 })
 
-test_that("rmwcs solver builds connected solutions on the GAM instance", {
+test_that("rmwcs solver builds connected solutions on a GAM instance", {
     solver <- rmwcs_solver()
     sol <- solve_mwcsp(solver, gam_example)
     expect_true(is.connected(sol$graph))

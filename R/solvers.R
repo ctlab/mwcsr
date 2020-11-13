@@ -9,36 +9,31 @@ instance_from_graph <- function(graph) {
          size = length(V(graph)))
 }
 
-vertex_attr_set <- list(list  = igraph::list.vertex.attributes,
-                        query = igraph::vertex_attr,
-                        name  = "vertex")
-
-edge_attr_set <- list(list  = igraph::list.edge.attributes,
+attr_sets <- list(V = list(list  = igraph::list.vertex.attributes,
+                      query = igraph::vertex_attr,
+                      name  = "nodes"),
+                  E = list(list  = igraph::list.edge.attributes,
                       query = igraph::edge_attr,
-                      name  = "edge")
+                      name  = "edges"))
 
-attr_values <- function(graph, attr, type = "V", nonnegative = FALSE) {
-    attr_set <- NULL
-    if (type == "V") {
-        attr_set <- vertex_attr_set
-    } else {
-        attr_set <- edge_attr_set
-    }
+validate_attr_values <- function(graph, attr, type = "V", nonnegative = FALSE) {
+    attr_set <- attr_sets[[type]]
+
     if (!(attr %in% attr_set$list(graph))) {
-        stop(paste0("Can't find ", attr_set$name, " attribute '", attr, "'"))
+        return(paste0("Couldn't find ", attr_set$name, " attribute '", attr, "'"))
     }
     values <- as.numeric(attr_set$query(graph, attr))
-    if (any(is.na(values))) {
-        stop(paste0("NA value found for the ", attr_set$name, " attribute '",
-                    attr, "' or it came from coercion to numeric type"))
+    if (!all(is.finite(values))) {
+        return(paste0("All values of ", attr_set$name, " attribute '", attr,
+                        "' must be finite."))
     }
     if (nonnegative) {
         if (any(values < 0)) {
-            stop(paste0("All values of ", attr_set$name, " attribute '", attr,
-                        "' must be nonnegative"))
+            return(paste0("All values of ", attr_set$name, " attribute '", attr,
+                        "' must be nonnegative."))
         }
     }
-    values
+    NULL
 }
 
 check_mwcs_solver <- function(x) {
@@ -142,6 +137,28 @@ parameters <- function(solver) UseMethod("parameters")
     set_parameters(x, timelimit = value)
 }
 
+check_signals <- function(instance) {
+    if (!is.numeric(instance$signals) || !all(is.finite(instance$signals))) {
+        return("`signals` attribute is not a vector of finite numbers")
+    }
+
+    if (!"signal" %in% list.vertex.attributes(instance)) {
+        return("No `signal` attribute for nodes")
+    }
+
+    if (!all(V(instance)$signal %in% names(instance$signals))) {
+        return("All node signals should be present in `signals` graph attribute")
+    }
+
+    if (!"signal" %in% list.edge.attributes(instance)) {
+        return("No `signal` attribute for edges")
+    }
+
+    if (!all(E(instance)$signal %in% names(instance$signals))) {
+        return("All edge signals should be present in `signals` graph attribute")
+    }
+    NULL
+}
 
 #' Check the type and the validity of an MWCS instance
 #' @param instance `igraph` object, containing an instance to be checked
@@ -153,71 +170,31 @@ parameters <- function(solver) UseMethod("parameters")
 #' get_instance_type(mwcs_example)
 #' @export
 get_instance_type <- function(instance) {
-    res <- list(type="unknown", valid=FALSE, errors=character())
+    res <- list(type="unknown", valid=FALSE, errors=NULL)
     if ("signals" %in% names(graph.attributes(instance))) {
         res$type <- "SGMWCS"
+        res$errors <- check_signals(instance)
+    } else if ("weight" %in% list.edge.attributes(instance) &&
+               "weight" %in% list.vertex.attributes(instance)) {
 
-        if (!is.numeric(instance$signals) || !all(is.finite(instance$signals))) {
-            res$errors <- "`signals` attribute is not a vector of finite numbers"
-            return(res)
-        }
-
-        if (!"signal" %in% list.vertex.attributes(instance)) {
-            res$errors <- "No `signal` attribute for nodes"
-            return(res)
-        }
-
-        if (!all(V(instance)$signal %in% names(instance$signals))) {
-            res$errors <- "All node signals should be present in `signals` graph attribute"
-            return(res)
-        }
-
-        if (!"signal" %in% list.edge.attributes(instance)) {
-            res$errors <- "No `signal` attribute for edges"
-            return(res)
-        }
-
-        if (!all(E(instance)$signal %in% names(instance$signals))) {
-            res$errors <- "All edge signals should be present in `signals` graph attribute"
-            return(res)
-        }
-
-        res$valid <- TRUE
-        return(res)
-    }
-
-    if ("weight" %in% list.edge.attributes(instance) &&
-        "weight" %in% list.vertex.attributes(instance)) {
         res$type <- "GMWCS"
-
-        if (!all(is.finite(V(instance)$weight))) {
-            res$errors <- "Nodes `weight` attribute is not a vector of finite numbers"
-            return(res)
+        res$errors <- c(validate_attr_values(instance, "weight", "V"),
+                        validate_attr_values(instance, "weight", "E"))
+    } else if ("weight" %in% list.vertex.attributes(instance)) {
+        if ("budget_cost" %in% list.vertex.attributes(instance)) {
+            res$type <- "Budget MWCS"
+            res$errors <- validate_attr_values(instance, "budget_cost", "V",
+                                               nonnegative = TRUE)
+        } else {
+            res$type <- "MWCS"
         }
-
-        if (!all(is.finite(E(instance)$weight))) {
-            res$errors <- "Edges `weight` attribute is not a vector of finite numbers"
-            return(res)
-        }
-
-
-        res$valid <- TRUE
-        return(res)
+        res$errors <- c(res$errors, validate_attr_values(instance,
+                                                         "weight", "V"))
+    } else {
+        res$errors <- "Can't determine type of the instance"
     }
 
-    if ("weight" %in% list.vertex.attributes(instance)) {
-        res$type <- "MWCS"
+    res$valid <- is.null(res$errors)
 
-        if (!all(is.finite(V(instance)$weight))) {
-            res$errors <- "Nodes `weight` attribute is not a vector of finite numbers"
-            return(res)
-        }
-
-        res$valid <- TRUE
-        return(res)
-    }
-
-    res$errors <- "Can't determine type of the instance"
-    return(res)
-
+    res
 }

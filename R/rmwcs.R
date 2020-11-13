@@ -31,7 +31,7 @@ parameters.rmwcs_solver <- function(solver) {
 #' Generates a rmwcs solver with corresponding parameters
 #' @param timelimit Timelimit in seconds
 #' @param max_iterations Maximum number of subgradient iterations
-#' @param beta_iterations Number of nonimproving iterations until beta is halfed
+#' @param beta_iterations Number of nonimproving iterations until beta is halved
 #' @param separation Separation: "strong" of "fast"
 #' @param sep_iterations Extending the life of non-violated inequalities
 #' @param start_constraints Whether to add flow-conservation/degree cons at start
@@ -73,20 +73,22 @@ solve_mwcsp.rmwcs_solver <- function(solver, instance, max_cardinality = NULL,
         stop("One of the arguments 'max_cardinality' and 'budget' must be NULL")
     }
 
+    inst_type <- get_instance_type(instance)
+    if (!inst_type$type %in% c("MWCS", "Budget MWCS") && !inst_type$valid) {
+        stop("Instance is not a valid MWCS nor Budget MWCS instance")
+    }
+
     instance <- igraph::simplify(instance)
 
     solver$separation <- pmatch(solver$separation, sep_methods) - 1
     solver$subgradient <- pmatch(solver$subgradient, subgradients) - 1
 
     instance_rep <- instance_from_graph(instance)
-    instance_rep$vertex_weights <- attr_values(instance, "weight", "V")
+    instance_rep$vertex_weights <- V(instance)$weight
 
     if (!is.null(budget)) {
-        instance_rep$budget_cost <- attr_values(instance, "budget_cost", "V")
+        instance_rep$budget_cost <- V(instance)$budget_cost
         budget <- as.numeric(budget)
-        if (!is.numeric(budget)) {
-            stop("Budget must be numeric value or NULL")
-        }
         instance_rep$budget <- budget
     }
 
