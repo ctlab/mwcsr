@@ -189,7 +189,7 @@ as vertex or edge attributes along with `signal` attributes, which is a very pra
 get_instance_type(gatom_example)
 ```
 
-Let convert this represantation into a valid SGMWCS instance using
+Let convert this representation into a valid SGMWCS instance using
 `normalize_sgmwcs_instance` function:
 
 ```{r}
@@ -271,10 +271,10 @@ print(m$solved_to_optimality)
 
 ### Java-based Virgo solver
 
-The `mwcsr` package also provide and interface to exact Java-based Virgo solver  
+The `mwcsr` package provides interface to exact Java-based Virgo solver  
 (https://github.com/ctlab/virgo-solver) which can be used to solve
 MWCS, GMWCS and SGMWCS instances. 
-The solver  requires Java (11+) to be installed on your machine.
+The solver requires Java (11+) to be installed on your machine.
 
 There are two modes of execution:
 
@@ -349,6 +349,21 @@ print(min_m$stats)
 Now the solution, has `r min_m$stats$nodes` nodes instead of `r m$stats$nodes` 
 for the solution that was found before, while having the same total weight
 of `r min_m$weight`.
+
+
+### SCIP-jack solver
+
+You can also use R interface to SCIP-jack solver. To use it you need to download
+SCIP opt suite from \href{https://scipopt.org/#scipoptsuite}{official website}
+and build it alongwith `scipstp` application.
+Quick build instructions:
+```{bash}
+# SCIP
+cmake -Bbuild -H.
+cmake --build build
+# SCIPSTP
+cmake --build build --target scipstp
+```
 
 
 ## Integration with BioNet

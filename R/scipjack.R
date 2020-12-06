@@ -4,9 +4,10 @@ scipjack_class = "scipjack_solver"
 parameters.scipjack_solver <- function(solver) {
     params(
         parameter("scipstp_bin", type="file", is_null_possible=FALSE),
-        parameter("output_dir", type="file", is_null_possible=FALSE))
+        parameter("config_file", type="file", is_null_possible=TRUE))
 }
 
+#' @export
 write_stp <- function(g, stp_file) {
     edges <- igraph::as_edgelist(g, names = FALSE)
     nodes <- cbind("T", seq_along(V(g)), V(g)$weight)
@@ -28,32 +29,46 @@ write_stp <- function(g, stp_file) {
             col.names=FALSE, row.names=FALSE, append=TRUE)
     append("END\nSECTION Terminals")
     append(paste0("Terminals ", n))
-    utils::write.table(nodes, file=stp_file, quote = FALSE,
-            col.names=FALSE, row.names=FALSE, sep = " ", append=TRUE)
+    utils::write.table(nodes, file=stp_file, quote = FALSE, sep = " ",
+            col.names=FALSE, row.names=FALSE, append=TRUE)
     append("END\nEOF")
 }
 
-gen_config_file <- function(config_path, output_file) {
-    write(paste0("stp/logfile=\"", output_file, "\""), file=config_path, append=FALSE)
+append_output_file <- function(config_path, output_file) {
+    write(paste0("stp/logfile=\"", output_file, "\""), file=config_path, append=TRUE)
+}
+
+find_output <- function(config_path) {
+    lines <- readLines(config_path)
+    idx <- grep('stp/logfile=*', lines)
+    if (is.null(idx))
+        path <- NULL
+    else {
+        path <- strsplit(lines[idx], '=')[[1]][2]
+        path <- gsub("^\\s+|\\s+$", "", path)
+    }
+    path
 }
 
 run_scip <- function(solver, instance) {
     graph_dir <- tempfile("graph")
     dir.create(graph_dir, showWarnings=FALSE)
+    default_output_file <- file.path(graph_dir, "out.stp")
 
     graph_file <- file.path(graph_dir, "in.stp")
     write_stp(instance, graph_file)
-
-    config_path <- file.path(graph_dir, "scipconfig.s")
-    output_file <- file.path(graph_dir, "out.stp")
-    gen_config_file(config_path, output_file)
+    config_path <- solver$config_file
+    output_file <- find_output(config_path)
+    config_copy <- file.path(graph_dir, 'scip_config.S')
+    file.copy(config_path, config_copy)
+    if (is.null(output_file)) {
+        append_output_file(config_copy, default_output_file)
+    }
 
     system2(solver$scipstp_bin, c("-f", graph_file, "-s", config_path))
 
     lines <- readLines(output_file)
     nodes <- lines[grepl("^V \\d+", lines)]
-    # edges <- lines[grepl("^E \\d+ \\d+", lines)]
-    # edges <- as.integer(unlist(strsplit(sub("E (\\d+) (\\d+)", '\\1 \\2', edges), ' ')))
     nodes <- as.integer(unlist(sub("V (\\d+)", '\\1', nodes)))
 
     induced_subgraph(instance, nodes)
@@ -72,8 +87,23 @@ run_scip_solver <- function(solver, instance) {
 }
 
 #' @export
+#' This solver uses SCIPSTP extension \href{www.scipopt.org}{SCIP-jack} solver. 
+#'
+#' You can access solver directly using `run_scip` function. See example.
+#' @param scipstp_bin path to `scipstp binary`.
+#' @param config_file scipstp-formatted file. Parameters list is accessible 
+#' at  \href{https://www.scipopt.org/doc-6.0.2/html/PARAMETERS.php}{Official SCIP website}.
+#'
+#' @export
+#' @examples
+#' \dontrun{
+#' data("bionet_example")
+#' scip <- scipjack_solver(scipstp_bin='/path/to/scipoptsuite/build/bin/applications/scipstp')
+#' sol <- solve_mwcsp(scip, bionet_example)
+#' }
+ 
 scipjack_solver <- function(scipstp_bin,
-                            output_dir = NULL) {
+                            config_file=system.file('ext', 'scip_config.s')) {
     output_dir <- tempfile("graph")
     dir.create(output_dir, showWarnings=FALSE)
     solver_ctor((c(scipjack_class, mwcs_solver_class)))
