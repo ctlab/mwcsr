@@ -365,6 +365,19 @@ cmake --build build
 cmake --build build --target scipstp
 ```
 
+For complete build and configuration instructions for this solver 
+visit \href{https://scipopt.org}{SCIP} website.
+
+After installing and ensuring that scipstp application is correctly built,
+you can access `scipjack_solver` class to solve MWCS instances:
+```{r message=FALSE}
+scip <- scipjack_solver(scipstp_bin='/path/to/scipoptsuite/build/bin/applications/scipstp',
+                        config_file=system.file('ext', 'scip_config.s'))
+sol <- solve_mwcsp(scip, mwcs_example)
+```
+
+The optimization parameters are passed using \href{https://www.scipopt.org/doc-6.0.2/html/PARAMETERS.php}{SCIPopt} config file. You can modify bundled file or
+create a new one to fine-tune the solver.
 
 ## Integration with BioNet
 
@@ -437,3 +450,5 @@ bionet_m_exact <- solve_mwcsp(exact_solver, bionet_example)
 print(bionet_m_exact$weight)
 print(bionet_m_exact$solved_to_optimality)
 ```
+
+To run scipjack solver, you need to do install it from 

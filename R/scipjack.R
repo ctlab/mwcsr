@@ -57,10 +57,12 @@ run_scip <- function(solver, instance) {
 
     graph_file <- file.path(graph_dir, "in.stp")
     write_stp(instance, graph_file)
+
     config_path <- solver$config_file
-    output_file <- find_output(config_path)
     config_copy <- file.path(graph_dir, 'scip_config.S')
     file.copy(config_path, config_copy)
+
+    output_file <- find_output(config_path)
     if (is.null(output_file)) {
         append_output_file(config_copy, default_output_file)
     }
@@ -87,7 +89,9 @@ run_scip_solver <- function(solver, instance) {
 }
 
 #' @export
-#' This solver uses SCIPSTP extension \href{www.scipopt.org}{SCIP-jack} solver. 
+#' This solver requires STP extension of \href{https://scipopt.org/#scipoptsuite}{SCIP-jack} solver.
+#' To use this class you first need download and build `SCIP-jack` and
+#' `SCIPSTP` application.
 #'
 #' You can access solver directly using `run_scip` function. See example.
 #' @param scipstp_bin path to `scipstp binary`.
