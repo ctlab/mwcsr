@@ -41,7 +41,7 @@ append_output_file <- function(config_path, output_file) {
 find_output <- function(config_path) {
     lines <- readLines(config_path)
     idx <- grep('stp/logfile=*', lines)
-    if (is.null(idx))
+    if (length(idx) == 0)
         path <- NULL
     else {
         path <- strsplit(lines[idx], '=')[[1]][2]
@@ -65,9 +65,10 @@ run_scip <- function(solver, instance) {
     output_file <- find_output(config_path)
     if (is.null(output_file)) {
         append_output_file(config_copy, default_output_file)
+        output_file <- default_output_file
     }
 
-    system2(solver$scipstp_bin, c("-f", graph_file, "-s", config_path))
+    system2(solver$scipstp_bin, c("-f", graph_file, "-s", config_copy), )
 
     lines <- readLines(output_file)
     nodes <- lines[grepl("^V \\d+", lines)]
@@ -108,6 +109,7 @@ run_scip_solver <- function(solver, instance) {
 
 scipjack_solver <- function(scipstp_bin,
                             config_file=system.file('extdata', 'scip_config.s', package="mwcsr")) {
+    scipstp_bin <- normalizePath(scipstp_bin)
     solver_ctor((c(scipjack_class, mwcs_solver_class)))
 }
 
