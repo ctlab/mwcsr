@@ -354,25 +354,29 @@ of `r min_m$weight`.
 ### SCIP-jack solver
 
 You can also use R interface to SCIP-jack solver. To use it you need to download
-SCIP opt suite from \href{https://scipopt.org/#scipoptsuite}{official website}
-and build it alongwith `scipstp` application.
+SCIPOptSuite from the [official web-site](https://scipopt.org/#scipoptsuite)
+and build `scipstp` application.
+Beware, that `scipstp` is not provided in the pre-built SCIPOptSuite version, so
+you have to build it manually from source.
+
 Quick build instructions:
-```{bash}
-# SCIP
+
+```{bash eval=FALSE}
+# in scipoptsuite source directory
 cmake -Bbuild -H.
-cmake --build build
-# SCIPSTP
 cmake --build build --target scipstp
+# optionally copy scipstp file somewhere to $PATH
+cp build/applications/scipstp /usr/local/bin/
 ```
 
 For complete build and configuration instructions for this solver 
-visit \href{https://scipopt.org}{SCIP} website.
+visit [SCIP](https://www.scipopt.org/doc/html/INSTALL_APPLICATIONS_EXAMPLES.php) website.
 
 After installing and ensuring that scipstp application is correctly built,
 you can access `scipjack_solver` class to solve MWCS instances:
-```{r message=FALSE}
-scip <- scipjack_solver(scipstp_bin='/path/to/scipoptsuite/build/bin/applications/scipstp',
-                        config_file=system.file('ext', 'scip_config.s'))
+```{r message=FALSE,eval=FALSE}
+scip <- scipjack_solver(scipstp_bin=Sys.which("scipstp"),
+                        config_file=system.file('extdata', 'scip_config.s', package = "mwcsr"))
 sol <- solve_mwcsp(scip, mwcs_example)
 ```
 

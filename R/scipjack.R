@@ -17,7 +17,7 @@ write_stp <- function(g, stp_file) {
     }
     write("33D32945 STP File, STP Format Version 1.0\n", file=stp_file,
          append=FALSE)
-    
+
     append("SECTION Comments ")
     append("Problem \"Maximum Node Weight Connected Subgraph\"")
     append("END\n")
@@ -59,7 +59,7 @@ run_scip <- function(solver, instance) {
     write_stp(instance, graph_file)
 
     config_path <- solver$config_file
-    config_copy <- file.path(graph_dir, 'scip_config.S')
+    config_copy <- file.path(graph_dir, 'scip_config.s')
     file.copy(config_path, config_copy)
 
     output_file <- find_output(config_path)
@@ -95,7 +95,7 @@ run_scip_solver <- function(solver, instance) {
 #'
 #' You can access solver directly using `run_scip` function. See example.
 #' @param scipstp_bin path to `scipstp binary`.
-#' @param config_file scipstp-formatted file. Parameters list is accessible 
+#' @param config_file scipstp-formatted file. Parameters list is accessible
 #' at  \href{https://www.scipopt.org/doc-6.0.2/html/PARAMETERS.php}{Official SCIP website}.
 #'
 #' @export
@@ -105,11 +105,9 @@ run_scip_solver <- function(solver, instance) {
 #' scip <- scipjack_solver(scipstp_bin='/path/to/scipoptsuite/build/bin/applications/scipstp')
 #' sol <- solve_mwcsp(scip, bionet_example)
 #' }
- 
+
 scipjack_solver <- function(scipstp_bin,
-                            config_file=system.file('ext', 'scip_config.s')) {
-    output_dir <- tempfile("graph")
-    dir.create(output_dir, showWarnings=FALSE)
+                            config_file=system.file('extdata', 'scip_config.s', package="mwcsr")) {
     solver_ctor((c(scipjack_class, mwcs_solver_class)))
 }
 
