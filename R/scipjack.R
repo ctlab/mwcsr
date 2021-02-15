@@ -60,9 +60,13 @@ run_scip <- function(solver, instance) {
 
     config_path <- solver$config_file
     config_copy <- file.path(graph_dir, 'scip_config.s')
-    file.copy(config_path, config_copy)
+    if (!is.null(config_path)) {
+        file.copy(config_path, config_copy)
+    } else {
+        file.create(config_copy)
+    }
 
-    output_file <- find_output(config_path)
+    output_file <- find_output(config_copy)
     if (is.null(output_file)) {
         append_output_file(config_copy, default_output_file)
         output_file <- default_output_file
@@ -108,7 +112,7 @@ run_scip_solver <- function(solver, instance) {
 #' }
 
 scipjack_solver <- function(scipstp_bin,
-                            config_file=system.file('extdata', 'scip_config.s', package="mwcsr")) {
+                            config_file=NULL) {
     scipstp_bin <- normalizePath(scipstp_bin)
     solver_ctor((c(scipjack_class, mwcs_solver_class)))
 }

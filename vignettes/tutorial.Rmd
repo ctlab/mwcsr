@@ -375,8 +375,7 @@ visit [SCIP](https://www.scipopt.org/doc/html/INSTALL_APPLICATIONS_EXAMPLES.php)
 After installing and ensuring that scipstp application is correctly built,
 you can access `scipjack_solver` class to solve MWCS instances:
 ```{r message=FALSE,eval=FALSE}
-scip <- scipjack_solver(scipstp_bin=Sys.which("scipstp"),
-                        config_file=system.file('extdata', 'scip_config.s', package = "mwcsr"))
+scip <- scipjack_solver(scipstp_bin=Sys.which("scipstp"))
 sol <- solve_mwcsp(scip, mwcs_example)
 ```
 
