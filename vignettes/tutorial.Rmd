@@ -422,7 +422,7 @@ plotModule(bionet_h, scores=scores, diff.expr=logFC)
 sum(scores[nodes(bionet_h)])
 ```
 
-We can construct an MWCS instnace by converting `graphNEL` object into
+We can construct an MWCS instance by converting `graphNEL` object into
 `igraph` and add node weights: 
 
 ```{r}
@@ -431,7 +431,7 @@ V(bionet_example)$weight <- scores[V(bionet_example)]
 get_instance_type(bionet_example)
 ```
 
-Now the isntance can be solved with the relax-and-cut solver:
+Now the instance can be solved with the relax-and-cut solver:
 
 ```{r}
 rmwcs <- rmwcs_solver()
@@ -445,7 +445,7 @@ Note that the weight increased, compared to FastHeinz solution:
 print(bionet_m$weight)
 ```
 
-Similarly, Virgo can be used to solve the insance to provable optimality, 
+Similarly, Virgo can be used to solve the instance to provable optimality, 
 but in this case it produces the same results:
 
 ```{r}
@@ -453,5 +453,3 @@ bionet_m_exact <- solve_mwcsp(exact_solver, bionet_example)
 print(bionet_m_exact$weight)
 print(bionet_m_exact$solved_to_optimality)
 ```
-
-To run scipjack solver, you need to do install it from 
