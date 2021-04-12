@@ -142,6 +142,10 @@ check_signals <- function(instance) {
         return("`signals` attribute is not a vector of finite numbers")
     }
 
+    if (any(duplicated(names(instance$signals)))) {
+        return("Graph `signals` attribute has duplicated names")
+    }
+
     if (!"signal" %in% list.vertex.attributes(instance)) {
         return("No `signal` attribute for nodes")
     }

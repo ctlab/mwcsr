@@ -214,7 +214,15 @@ solve_mwcsp.virgo_solver <- function(solver, instance, ...) {
     } else if (inst_type$type %in% c("GMWCS", "MWCS") && inst_type$valid) {
         return(solve_gmwcs(solver, instance, ...))
     } else {
-        stop("Not a valid MWCS, GMWCS or SGMWCS instance")
+        msg <- "Not a valid MWCS, GMWCS or SGMWCS instance"
+        if (inst_type$type != "unknown") {
+            msg <- paste0(msg, sprintf("\nThe instance looks like %s", inst_type$type))
+            if (!inst_type$valid) {
+                msg <- paste0(msg, ", but there was an error:")
+                msg <- paste0(c(msg, inst_type$errors), collapse = "\n")
+            }
+        }
+        stop(msg)
     }
 }
 
@@ -230,7 +238,7 @@ solve_sgmwcs <- function(solver, instance, ...) {
     E(instance)$index <- seq_len(ecount(instance))
 
     sol <- run_solver(solver, instance, sgmwcs = TRUE,
-                      data.frame(score=instance$signals))
+                      data.frame(score=instance$signals, row.names=names(instance$signals)))
     mwcs <- sol$mwcs
     sigs <- union(V(mwcs)$signal, E(mwcs)$signal)
     weight <- sum(signals[sigs])
