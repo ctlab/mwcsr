@@ -56,7 +56,10 @@ find_cplex_bin <- function(cplex_dir) {
 #' This solver uses reformulation of MWCS problem in terms of mixed integer
 #' programming. The later problem can be efficiently solved with
 #' commercial optimization software. Exact version of solver uses CPLEX and requires
-#' it to be installed.
+#' it to be installed. CPLEX 12.7.1 or higher is required.
+#'
+#' The solver currently does not support repeated negative signals, i.e. every
+#' negative signal should be present only once among all edges and vertices.
 #'
 #' You can access solver directly using `run_main` function. See example.
 #' @param cplex_dir a path to dir containing cplex_bin and cplex_jar,
@@ -70,6 +73,10 @@ find_cplex_bin <- function(cplex_dir) {
 #' @param penalty additional edge penalty for graph edges
 #' @param mst whether to use approximate MST solver, no CPLEX files required with this parameter
 #'            is set to `TRUE`
+#' @references Loboda, A. A., Artyomov, M. N., & Sergushichev, A. A. (2016, August).
+#' Solving generalized maximum-weight connected subgraph problem for network
+#' enrichment analysis. In International Workshop on Algorithms in
+#' Bioinformatics (pp. 210-221). Springer, Cham.
 #' @export
 #' @examples
 #' data("sgmwcs_example")
@@ -85,7 +92,7 @@ virgo_solver <- function (cplex_dir,
                           timelimit = NULL,
                           penalty = 0.0,
                           memory = "2G",
-                          log = 2,
+                          log = 1,
                           cplex_bin=NULL,
                           cplex_jar=NULL,
                           mst=FALSE) {
@@ -205,6 +212,7 @@ run_solver <- function(solver, instance, sgmwcs, signals = NULL) {
 }
 
 #' @rdname solve_mwcsp
+#' @order 2
 #' @export
 #'
 solve_mwcsp.virgo_solver <- function(solver, instance, ...) {

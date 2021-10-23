@@ -1,7 +1,7 @@
 #ifndef ANNEALING_MODULE_H
 #define ANNEALING_MODULE_H
 
-#include "graph.h"
+#include "../../include/graph.h"
 
 using namespace mwcsr;
 

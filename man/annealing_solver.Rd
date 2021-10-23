@@ -5,7 +5,6 @@
 \title{ctor for annealing solver}
 \usage{
 annealing_solver(
-  normalization = TRUE,
   schedule = c("fast", "boltzmann"),
   initial_temperature = 1,
   final_temperature = 1e-06,
@@ -13,9 +12,6 @@ annealing_solver(
 )
 }
 \arguments{
-\item{normalization}{adjust all weights so that all possible changes have
-mean square 1.0}
-
 \item{schedule}{boltzmann annealing or fast annealing}
 
 \item{initial_temperature}{initial value for the temperature}
@@ -29,4 +25,28 @@ Simulated annealing is a heuristic method of solving optimization problems.
 Typically, it allows to find some good solution in a short time. This
 implementation doesn't compute any upper bound on solution, so there is no
 guarantee of optimality of solution provided.
+}
+\details{
+Algorithm maintains connected subgraph staring with empty subgraph.
+Each iteration one random action is considered. It may be a removal of a
+vertex or an edge which does not separate graph or addition of an extra vertex or
+an edge neighboring existing graph. If the subgraph is empty all vertices
+are considered as candidates to form a subgaph. After candidate is chosen two
+subgraph scores are considered: for a new subgraph and for an old one. Simulated
+annealing operates with a notion of temperature. The candidate action is
+accepted with probability: p(S'|S) = exp(-E / T), where E is weight difference
+between subgraphs and T is current temperature.
+
+Temperature is calculated in each iteration. in \code{mwcsr} there are two
+temperature schedules supported. So called Boltmann annealing uses the formula:
+T(k) = T0 / (ln(1 + k)), while in case of fast annealing this one is used:
+T(k) = T0 / k, where k is iteration number.
+
+To tune the algorithm it is useful to realize how typical changes in the goal
+function for single actions are distributed. Calculating the acceptance probabilities
+at initial temperature and final temperatures may help to choose schedule and
+temperatures.
+}
+\seealso{
+\link{rnc_solver} will probably be a better choice with minimal tuning necessary
 }

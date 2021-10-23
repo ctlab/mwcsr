@@ -6,14 +6,14 @@
 #include "DynamicGraph.h"
 #include "index.h"
 #include "definitions.h"
-#include "graph.h"
+#include "../../include/graph.h"
 #include "module.h"
 
 namespace annealing {
 
     class Subgraph {
         dgraph::DynamicGraph dynamic_graph;
-        const mwcsr::Graph graph;
+        mwcsr::Graph graph;
         Index module_edges;
         Index boundary;
         Index module_vertices;
@@ -49,7 +49,9 @@ namespace annealing {
         bool contains_vertex(size_t v) const;
         Module get_snapshot() const;
     private:
-        double diff(size_t signal, bool add) const;
+        double diff(std::vector<size_t> signal, bool add) const;
+        void signals_add(std::vector<size_t> signals);
+        void signals_remove(std::vector<size_t> signals);
     };
 }
 

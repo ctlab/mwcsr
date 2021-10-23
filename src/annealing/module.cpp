@@ -15,7 +15,7 @@ namespace annealing {
     Module::Module(const Graph& g, const std::vector<size_t>& vertices, const std::vector<size_t>& edges) {
         vs = vertices;
         for (size_t edge : edges) {
-            es.push_back(g.edge(edge));
+            es.push_back(g.const_edge(edge));
         }
     }
 }

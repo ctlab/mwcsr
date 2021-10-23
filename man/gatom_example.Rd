@@ -11,6 +11,6 @@ An object of class \code{igraph} of length 10.
 gatom_example
 }
 \description{
-The graph is based on `gatom` package
+The graph is based on \code{gatom} package
 }
 \keyword{datasets}

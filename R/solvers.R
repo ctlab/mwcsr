@@ -48,10 +48,52 @@ solver_ctor <- function(classes) {
     do.call(set_parameters, c(list(solver = x), params))
 }
 
-#' Solves a MWCS instance
-#' @param solver a solver object.
-#' @param instance an MWCS instance.
-#' @param ... other arguments passed to other methods.
+#' Solves a MWCS instance.
+#'
+#' Generic function for solving MWCS instances using solvers collected in the package.
+#'
+#' MWCS instance here is represented as an undirected graph, an `igraph` object.
+#' The package supports four types of instances: Simple MWCS, Generalized MWCS,
+#' Budget MWCS, signal MWCS problems. All the necessary weights and costs are
+#' passed by setting vertex and edge attributes. See [get_instance_type] to check
+#' if the `igraph` object is a correct MWCS instance. For Simple MWCS problem
+#' numeric vertex attribute `weight` must be set. For generalized version `weight`s
+#' can be provided for edges. For budget version of the problem in addition to
+#' vertex weights it is required that `igraph` object would have `budget_cost` vertex
+#' attribute with positive numeric values.
+#'
+#' Signal MWCS instance is quite different. There is no `weight` attribute for
+#' neither vertices nor edges. Instead, vertex and edge attribute `signal` should
+#' be provided with signal names. A numeric vector containing weights for the signals
+#' should be assigned to graph attribute `signals`.
+#'
+#' See vignette for description of the supported problems. See `igraph` package
+#' documentation for more details about getting/setting necesasry attributes.
+#'
+#' @order 1
+#' @examples
+#'
+#' library(igraph)
+#'
+#' # for a MWCS instance
+#'
+#' data(mwcs_example)
+#' head(V(mwcs_example)$weight)
+#'
+#' # for a GMWCS instance
+#' data(gmwcs_example)
+#' head(E(gmwcs_example)$weight)
+#'
+#' # for a SGMWCS instance
+#' data(sgmwcs_example)
+#' head(V(sgmwcs_example)$signal)
+#' head(E(sgmwcs_example)$signal)
+#'
+#' head(sgmwcs_example$signals)
+#'
+#' @param solver a solver object returned by rmwcs_solver, annealing_solver, rnc_solver or virgo_solver.
+#' @param instance an MWCS instance, an igraph object with problem-related vertex, edge and graph attributes. See details.
+#' @param ... other arguments to be passed.
 #' @export
 solve_mwcsp <- function(solver, instance, ...) {
     check_mwcs_solver(solver)
@@ -68,7 +110,7 @@ solve_mwcsp <- function(solver, instance, ...) {
 }
 
 solve_mwcsp.default <- function(solver, instance) {
-    stop("An abstract solver can't solve an instance")
+    stop("A correct solver object should be provided")
 }
 
 #' Sets values of specific parameters

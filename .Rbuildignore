@@ -3,5 +3,8 @@
 ^\.travis\.yml$
 ^data-raw$
 ^.idea$
+^README.Rmd$
+^src/.idea$
+^src/.+\.o$
 ^lib$
 ^vignettes/tutorial_cache$

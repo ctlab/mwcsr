@@ -6,12 +6,12 @@
 #include <functional>
 #include <vector>
 
-#include "graph.h"
+#include "../../include/graph.h"
 #include "index.h"
 #include "definitions.h"
 #include "module.h"
 #include "subgraph.h"
-#include "monitor.h"
+#include "../../include/monitor.h"
 
 #include "DynamicGraph.h"
 #include "cooling_schedule.h"
@@ -30,8 +30,8 @@ namespace annealing {
     };
 
     class SimulatedAnnealing {
-        RandomEngine& random_engine;
-        const Graph& graph;
+        RandomEngine random_engine;
+        const Graph graph;
         StandardUniformDistribution unif;
 
         Subgraph sub;
@@ -47,6 +47,10 @@ namespace annealing {
         vector<size_t> vertices();
         vector<Edge> edges();
 
+        void add_vertex(int v);
+        void add_edge(int eid);
+
+        double score() const;
     private:
         void strike();
 

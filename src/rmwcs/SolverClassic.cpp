@@ -7,7 +7,6 @@
 
 #include "include/SolverClassic.h"
 #include <queue>
-#include <stack>
 
 using std::vector;
 using std::priority_queue;
@@ -22,7 +21,6 @@ SolverClassic::~SolverClassic() {}
 
 int SolverClassic::addInitCuts() {
     int nCuts = 0;
-    // return 0;
     for (int i = 0; i < instance.nNodes; ++i) {
         cut myCut;
         myCut.lambda = 0;
@@ -38,35 +36,22 @@ int SolverClassic::addInitCuts() {
         myCut.rhs.push_back(n);
 
         myCut.lhs = vector<nodevaluepair>();
-        // double minRhs=999;
         bool allpositive = true;
 
         for (int j : instance.adjList[i]) {
             nodevaluepair n;
             n.id = j;
             n.value = 1.0;
-            // if(instance.myPrizes[j]<minRhs)
-            //	minRhs=instance.myPrizes[j];
             if (instance.myPrizes[j] < 0)
                 allpositive = false;
 
             myCut.lhs.push_back(n);
         }
-        // if(minRhs<0 && instance.realTerminals[i])
-        //	myCut.lambda=-minRhs;
-
-        // if(minRhs<0 && !instance.realTerminals[i])
-        //	myCut.lambda=-2*minRhs;
-        // myCut.myHash=myCut.myHasher(myCut.lhs);
-        // Rcout<<myCut.myHash<<"\n";
 
         if (!allpositive) {
             sort(myCut.lhs.begin(), myCut.lhs.end());
-            // myCut.lambda=1e-5;
-            // myCut.frozen=false;
             myCuts.push_back(myCut);
-            myCut.myHash =
-                    myCut.myHasher(myCut.lhs, myCut.rhs, instance.nNodes);
+            myCut.myHash = myCut.myHasher(myCut.lhs, myCut.rhs, instance.nNodes);
             myCutHash.insert(myCut.myHash);
         }
         nCuts++;
@@ -76,13 +61,8 @@ int SolverClassic::addInitCuts() {
 }
 
 bool SolverClassic::primalHeuristic() {
-
     bool improved = false;
-
     unsigned iter = 1;
-
-    // if(myComponents.size()==1)
-    //	Rcout<<"component size 1!!!"<<"\n";
 
     vector<int> myHeurTerminals;
     vector<bool> myHeurTerminalsBool = vector<bool>(instance.nNodes, false);
@@ -151,8 +131,6 @@ bool SolverClassic::primalHeuristic() {
         obj += instance.myPrizes[startID];
         myPQueue.push(n);
 
-        // Rcout<<obj<<"\n";
-
         double best = obj;
         int numTerms = 0;
         int numBest = 0;
@@ -171,19 +149,13 @@ bool SolverClassic::primalHeuristic() {
 
             extracted[k] = true;
 
-            // Rcout<<"k "<<k<<" "<<distance[k]<<"
-            // "<<myHeurTerminalsBool[k]<<"\n";
-
             if (!myHeurTerminalsBool[k] || inComponentBool[k]) {
                 double toAdd = -instance.myPrizes[k] * (1 - lpValue[k]);
                 if (toAdd <= 0)
                     toAdd = epsOpt;
-                // Rcout<<toAdd<<"\n";
 
                 for (int l : instance.adjList[k]) {
                     if (distance[l] > distance[k] + toAdd + epsOpt) {
-                        // cerr<<distance[l]<<" "<<distance[k] +
-                        // (realPrizes[l]>0?realPrizes[l]:0)<<"\n";
 
                         distance[l] = distance[k] + toAdd;
                         pred[l] = k;
@@ -193,9 +165,6 @@ bool SolverClassic::primalHeuristic() {
                         lNv.id = l;
                         lNv.value = distance[l];
                         myPQueue.push(lNv);
-                        // Rcout<<l<<" "<<k<<" "<<distance[l]<<"
-                        // "<<distance[k]<<" "<<currentSolution[l]<<"
-                        // "<<lNv.value<<"\n";
                     }
 
                     if (distance[l] < 0) {
@@ -207,12 +176,9 @@ bool SolverClassic::primalHeuristic() {
                 }
             } else {
                 int currentNode = k;
-                // Rcout<<k<<" "<<myHeurTerminalsBool[k]<<"
-                // "<<instance.myPrizes[k]<<" "<<distance[k]<<"\n";
                 revInHeurTerms -= instance.myPrizes[k];
 
                 while (!inComponentBool[currentNode]) {
-                    // cerr<<currentNode<<"\n";
                     inComponentBool[currentNode] = true;
                     myBestSol[currentNode] = numTerms;
                     distance[currentNode] = 0;
@@ -223,14 +189,11 @@ bool SolverClassic::primalHeuristic() {
                     myPQueue.push(nv);
                     obj += instance.myPrizes[currentNode];
                     currentNode = pred[currentNode];
-                    // Rcout<<"pushed"<<"\n";
                 }
                 numTerms++;
                 if (obj > best) {
                     best = obj;
                     numBest = numTerms;
-                    // myBestSol=inComponentBool;
-                    // Rcout<<"inbetween"<<instance.transformInternalValue(obj)<<"\n";
                 }
             }
         }
@@ -240,23 +203,18 @@ bool SolverClassic::primalHeuristic() {
             inComponentBool[i] = 0;
             if (myBestSol[i] < numBest)
                 inComponentBool[i] = 1;
-            // Rcout<<myBestSol[i]<<" "<<numBest<<"\n";
         }
-        // inComponentBool=myBestSol;
         obj = best;
         vector<int> toAdd;
 
         do {
             toAdd.clear();
             for (int n = 0; n < instance.nNodes; ++n) {
-                // adjList[n]=vector<int>();
                 if (!inComponentBool[n])
                     continue;
                 for (int j : instance.adjList[n]) {
-                    // Rcout<<j<<" ";
                     if (!inComponentBool[j] && instance.myPrizes[j] > 0) {
                         toAdd.push_back(j);
-                        // Rcout<<instance.myPrizes[j]<<"\n";
                     }
                 }
             }
@@ -276,15 +234,11 @@ bool SolverClassic::primalHeuristic() {
             double test = 0.0;
             for (int i = 0; i < instance.nNodes; ++i) {
                 incumbent[i] = inComponentBool[i];
-                // if(incumbent[i])Rcout<<i<<"\n";
                 test += instance.myPrizes[i] * incumbent[i];
             }
-            // Rcout<<test<<"\n";
             if (fabs(obj - test) > 1e-6) {
                 Rf_error("Assertion failed on test incumbent solution");
             }
-
-            // Rcout<<"improved "<<obj<<"\n";
         }
     }
     return improved;
@@ -293,7 +247,6 @@ bool SolverClassic::primalHeuristic() {
 int SolverClassic::lagrangianPegging() {
     int nFixed = 0;
     double boundPegging = 0;
-    // Rcout<<"pegging"<<"\n";
 
     vector<int> fixToZero;
     vector<int> fixToOne;
@@ -302,25 +255,16 @@ int SolverClassic::lagrangianPegging() {
         if (fixedToZero[i] || fixedToOne[i])
             continue;
 
-        //	Rcout<<i<<" "<<fixedToZero[i]<<" "<<fixedToOne[i]<<"\n";
-
         if (!currentSolution[i]) {
             boundPegging = currentBound + realPrizes[i];
-            // Rcout<<"boundPegging"<<boundPegging<<" "<<incumbentObj<<"
-            // "<<realPrizes[i]<<" "<<currentSolution[i]<<" "<<i<<"\n";
 
             if (boundPegging + epsInt < incumbentObj) {
-                // Rcout<<"ZERO"<<i<<" "<<boundPegging<<" "<<incumbentObj<<"
-                // "<<realPrizes[i] <<" "<<currentBound<<"\n";
                 fixToZero.push_back(i);
                 nFixed++;
             }
         } else if (currentSolution[i]) {
             boundPegging = currentBound - realPrizes[i];
             if (boundPegging + epsInt < incumbentObj) {
-                // Rcout<<"ONE"<<i<<" "<<boundPegging<<" "<<incumbentObj<<"
-                // "<<realPrizes[i] <<" "<<currentBound<<"\n";
-
                 fixToOne.push_back(i);
                 nFixed++;
             }
@@ -338,13 +282,11 @@ int SolverClassic::lagrangianPegging() {
             instance.adjList[j].erase(instance.adjList[j].begin() + k);
         }
         instance.adjList[i].clear();
-        // Rcout<<i<<"\n";
     }
 
     for (int i : fixToOne) {
         fixedToOne[i] = true;
         instance.nFixedOne++;
-        // Rcout<<i<<"\n";
     }
 
     return nFixed;

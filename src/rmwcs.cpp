@@ -1,9 +1,9 @@
 #include <Rcpp.h>
 #include <memory>
-#include "include/Instance.h"
-#include "include/SolverClassic.h"
-#include "include/SolverCardinality.h"
-#include "include/SolverBudget.h"
+#include "rmwcs/include/Instance.h"
+#include "rmwcs/include/SolverClassic.h"
+#include "rmwcs/include/SolverCardinality.h"
+#include "rmwcs/include/SolverBudget.h"
 
 // [[Rcpp::export]]
 Rcpp::List rmwcs_solve(Rcpp::List& network, Rcpp::List& params) {
@@ -31,14 +31,17 @@ Rcpp::List rmwcs_solve(Rcpp::List& network, Rcpp::List& params) {
     auto solution = instance.incumbent;
     std::vector<unsigned> vertices;
 
-    for (unsigned i = 0; i < n; i++) {
-        if (solution[i]) {
-            vertices.push_back(i + 1);
+    if (instance.incumbentFound) {
+        for (unsigned i = 0; i < n; i++) {
+            if (solution[i]) {
+                vertices.push_back(i + 1);
+            }
         }
     }
 
     Rcpp::List ret;
     ret["graph"] = Rcpp::IntegerVector(vertices.begin(), vertices.end());
+    ret["lb"] = Rcpp::NumericVector::create(instance.incumbentObjLag);
     ret["ub"] = Rcpp::NumericVector::create(instance.bestBoundLag);
     return ret;
 }

@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "Instance.h"
-#include "monitor.h"
+#include "../../include/monitor.h"
 
 class SolverLag {
 protected:
@@ -116,8 +116,6 @@ protected:
 
     int solveSubgradient(int maxIterations);
 
-    int RINS(int maxIterations);
-
     virtual double calculateCurrentSolution(bool save) = 0;
 
     virtual bool primalHeuristic() = 0;
@@ -161,7 +159,6 @@ protected:
     int sepIter;
     int sepIterFreeze;
 
-    bool inRins;
     double savedObj = 0.0;
 
     double runtime;

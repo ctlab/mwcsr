@@ -129,7 +129,19 @@ namespace annealing {
         return best.edges();
     }
 
-    StandardUniformDistribution::StandardUniformDistribution(RandomEngine &re) :re(re) {}
+void SimulatedAnnealing::add_vertex(int v) {
+    sub.add_vertex(v);
+}
+
+void SimulatedAnnealing::add_edge(int eid) {
+    sub.add_edge(eid);
+}
+
+double SimulatedAnnealing::score() const {
+    return sub.score();
+}
+
+StandardUniformDistribution::StandardUniformDistribution(RandomEngine &re) :re(re) {}
 
     double StandardUniformDistribution::operator()(){
         return unif(re);

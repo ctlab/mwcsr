@@ -84,11 +84,12 @@ public:
     int nFixedOne = 0;
     int iterationsLag = -1;
     double runtimeLag = -1;
-    double bestBoundLag = -999999999999;
-    double incumbentObjLag = 999999999999;
+    double bestBoundLag = std::numeric_limits<double>::infinity();
+    double incumbentObjLag = 0;
     double gapLag = -1;
     int solSize = 0;
 
+    void findSimpleSolution();
 };
 
 #endif /* INSTANCE_INSTANCE_H_ */

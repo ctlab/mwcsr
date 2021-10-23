@@ -1,5 +1,4 @@
 #include "include/subgraph.h"
-#include "include/graph.h"
 
 namespace {
     using mwcsr::Graph;
@@ -37,7 +36,7 @@ namespace annealing {
             }
         }
         weight += add_vertex_diff(v);
-        signal_utilization[graph.vertex_signal(v)]++;
+        signals_add(graph.vertex_signals(v));
     }
 
 
@@ -57,7 +56,7 @@ namespace annealing {
         }
         tokens[e] = std::move(dynamic_graph.add(v, u));
         weight += add_edge_diff(e);
-        signal_utilization[edge.edge_signal()]++;
+        signals_add(edge.edge_signals());
     }
 
     bool Subgraph::remove_edge(size_t e) {
@@ -72,7 +71,7 @@ namespace annealing {
         }
         module_edges.remove(e);
         weight += remove_edge_diff(e);
-        signal_utilization[edge.edge_signal()]--;
+        signals_remove(edge.edge_signals());
 
         --vdegree[v];
         --vdegree[u];
@@ -100,7 +99,7 @@ namespace annealing {
         }
         module_vertices.remove(v);
         weight += remove_vertex_diff(v);
-        signal_utilization[graph.vertex_signal(v)]--;
+        signals_remove(graph.vertex_signals(v));
     }
 
     size_t Subgraph::boundary_size() const {
@@ -120,7 +119,7 @@ namespace annealing {
     }
 
     const mwcsr::Edge& Subgraph::edge(size_t e) const {
-        return graph.edge(e);
+        return graph.const_edge(e);
     }
 
     bool Subgraph::contains_vertex(size_t v) const {
@@ -139,29 +138,43 @@ namespace annealing {
         return module_edges.size();
     }
 
-    double Subgraph::diff(size_t signal, bool add) const {
-        if (signal_utilization[signal] == 1 && !add) {
-            return -graph.signal_weight(signal);
-        }
-        if (signal_utilization[signal] == 0 && add) {
-            return graph.signal_weight(signal);
+    double Subgraph::diff(std::vector<size_t> signals, bool add) const {
+        for (size_t signal: signals) {
+            if (signal_utilization[signal] == 1 && !add) {
+                return -graph.signal_weight(signal);
+            }
+            if (signal_utilization[signal] == 0 && add) {
+                return graph.signal_weight(signal);
+            }
         }
         return 0;
     }
 
     double Subgraph::add_vertex_diff(size_t v) const {
-        return diff(graph.vertex_signal(v), true);
+        return diff(graph.vertex_signals(v), true);
     }
 
     double Subgraph::remove_vertex_diff(size_t v) const {
-        return diff(graph.vertex_signal(v), false);
+        return diff(graph.vertex_signals(v), false);
     }
 
     double Subgraph::add_edge_diff(size_t e) const {
-        return diff(graph.edge(e).edge_signal(), true);
+        return diff(graph.const_edge(e).edge_signals(), true);
     }
 
     double Subgraph::remove_edge_diff(size_t e) const {
-        return diff(graph.edge(e).edge_signal(), false);
+        return diff(graph.const_edge(e).edge_signals(), false);
     }
+
+void Subgraph::signals_add(std::vector<size_t> signals) {
+    for (size_t s: signals) {
+        signal_utilization[s]++;
+    }
+}
+
+void Subgraph::signals_remove(std::vector<size_t> signals) {
+    for (size_t s: signals) {
+        signal_utilization[s]--;
+    }
+}
 }

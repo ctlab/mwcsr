@@ -22,7 +22,7 @@ Instance::Instance(List& network)
         : components{vector<vector<int>>()},
           maxRevenueInComponent{vector<double>()}, nComponents{0}, maxPrize{0},
           minWeight{std::numeric_limits<double>::max()}, sumPrizes{0},
-          nRealTerminals{0} {
+          nRealTerminals{0}, budget(std::numeric_limits<double>::infinity()) {
 
     readInstance(network);
 
@@ -31,6 +31,7 @@ Instance::Instance(List& network)
 
     nComponents = calculateComponents();
 
+    findSimpleSolution();
     preprocessing();
     rebuildDatastructures();
     nComponents = calculateComponents();
@@ -91,13 +92,9 @@ void Instance::rebuildDatastructures() {
     nTerminals = myTerminals.size();
 
     trueTerminals = vector<bool>(nNodes, false);
-
-    // componentArray.init(G);
 }
 
 int Instance::preprocessing() {
-    // return 0;
-
     int numberRemoved = 0;
     numberRemoved += uselessComponentsTest();
     numberRemoved += degreeOneTest();
@@ -110,7 +107,6 @@ int Instance::uselessComponentsTest() {
     int numberRemoved = 0;
 
     for (int i = 0; i < nComponents; ++i) {
-        // cerr<<maxRevenueInComponent[i]<<" "<<maxPrize<<"\n";
         if (maxRevenueInComponent[i] < maxPrize) {
             numberRemoved += components[i].size();
             for (unsigned j = 0; j < components[i].size(); ++j) {
@@ -133,15 +129,6 @@ int Instance::degreeOneTest() {
             if ((adjList[n].size() == 1 && !realTerminals[n])) {
                 toRemove.push_back(n);
             }
-            /*if((adjList[n].size()==1 && realTerminals[n]) &&
-            params.problem==0)
-            {
-                    toRemove.push_back(n);
-                    int adjacentNode=adjList[n][0];
-                    myPrizes[adjacentNode]+=myPrizes[n];
-                    if(myPrizes[adjacentNode]>0)
-                            realTerminals[adjacentNode]=true;
-            }*/
         }
 
         for (unsigned i = 0; i < toRemove.size(); ++i) {
@@ -159,8 +146,6 @@ int Instance::degreeOneTest() {
                     break;
                 }
             }
-            // Rcout<<j<<" "<<adjList[adjacentNode].size()<<"\n";
-            // Rcout<<node<<" "<<adjList[adjacentNode][j]<<"\n";
             adjList[adjacentNode].erase(adjList[adjacentNode].begin() + j);
         }
 
@@ -191,19 +176,15 @@ int Instance::calculateComponents() {
 
     for (int n = 0; n < nNodes; n++) {
         if (componentArray[n] == 0) {
-            // cerr<<n<<"\n";
             vector<int> componentHelper;
             double revInComp = 0.0;
             numberOfComponents++;
             componentArray[n] = numberOfComponents;
-            // Rcout<<n<<"\n";
-            // Rcout<<myPrizes[n]<<"\n";
             if (myPrizes[n] > 0)
                 revInComp += myPrizes[n];
             componentHelper.push_back(n);
             queue<int> myQueue;
             myQueue.push(n);
-            // cerr<<"component "<<n<<" "<<myCurrentLabel<<"\n";
             while (!myQueue.empty()) {
                 int m = myQueue.front();
                 myQueue.pop();
@@ -222,13 +203,6 @@ int Instance::calculateComponents() {
             componentFixed.push_back(0);
         }
     }
-
-    /*Rcout<<"number of components "<<numberOfComponents<<"\n";
-    for(int i=0;i<numberOfComponents;++i)
-    {
-            Rcout<<"size: \t"<<components[i].size()<<"\t
-    "<<maxRevenueInComponent[i]<<"\n";
-    }*/
 
     return numberOfComponents;
 }
@@ -313,4 +287,16 @@ void Instance::readInstance(List& instance) {
 
     readEdges(edges);
     nEdges *= 2;
+}
+
+void Instance::findSimpleSolution() {
+    for (size_t i = 0; i < nNodes; i++) {
+        if (myPrizes[i] > 0 && myBudgetCost[i] < budget) {
+            solSize = 1;
+            incumbent = std::vector<bool>(nNodes, false);
+            incumbent[i] = true;
+            incumbentObjLag = myPrizes[i];
+            incumbentFound = true;
+        }
+    }
 }

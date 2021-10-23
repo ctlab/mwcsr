@@ -5,6 +5,10 @@ sa_solve <- function(instance, solver) {
     .Call('_mwcsr_sa_solve', PACKAGE = 'mwcsr', instance, solver)
 }
 
+sgmwcs_solve <- function(instance, solver_params) {
+    .Call('_mwcsr_sgmwcs_solve', PACKAGE = 'mwcsr', instance, solver_params)
+}
+
 rmwcs_solve <- function(network, params) {
     .Call('_mwcsr_rmwcs_solve', PACKAGE = 'mwcsr', network, params)
 }

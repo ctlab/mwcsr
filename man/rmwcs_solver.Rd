@@ -2,19 +2,19 @@
 % Please edit documentation in R/rmwcs.R
 \name{rmwcs_solver}
 \alias{rmwcs_solver}
-\title{Generates a rmwcs solver with corresponding parameters}
+\title{Generate a rmwcs solver}
 \usage{
 rmwcs_solver(
   timelimit = 1800L,
   max_iterations = 1000L,
-  beta_iterations = 50L,
+  beta_iterations = 5L,
   separation = "strong",
   start_constraints = TRUE,
   pegging = TRUE,
-  max_age = 3,
-  sep_iterations = 1L,
-  sep_iter_freeze = 1L,
-  heur_iterations = 1L,
+  max_age = 10,
+  sep_iterations = 10L,
+  sep_iter_freeze = 50L,
+  heur_iterations = 10L,
   subgradient = "classic",
   beta = 2,
   verbose = FALSE
@@ -23,30 +23,68 @@ rmwcs_solver(
 \arguments{
 \item{timelimit}{Timelimit in seconds}
 
-\item{max_iterations}{Maximum number of subgradient iterations}
+\item{max_iterations}{Maximum number of iterations}
 
 \item{beta_iterations}{Number of nonimproving iterations until beta is halved}
 
-\item{separation}{Separation: "strong" of "fast"}
+\item{separation}{Separation: "strong" or "fast"}
 
-\item{start_constraints}{Whether to add flow-conservation/degree cons at start}
+\item{start_constraints}{Whether to add flow-conservation/degree constraints at start}
 
-\item{pegging}{Pegging (variable fixing)}
+\item{pegging}{variable fixing}
 
-\item{max_age}{extending the life of non-violated inequalities}
+\item{max_age}{number of iterations in aging procedure for non-violated  cuts}
 
-\item{sep_iterations}{Extending the life of non-violated inequalities}
+\item{sep_iterations}{Frequency of separating cuts (in iterations)}
 
-\item{sep_iter_freeze}{After how many iterations we are checking added ineqs}
+\item{sep_iter_freeze}{Number of iterations when a newly separated cut is anaffected by subgradient algorithm.}
 
-\item{heur_iterations}{After how many iterations we are doing heuristics}
+\item{heur_iterations}{Frequency of calling heuristic method (in iterations)}
 
 \item{subgradient}{Subgradient: "classic", "average", "cft"}
 
-\item{beta}{Beta for subgradient}
+\item{beta}{Initial step size of subgradient algorithm}
 
-\item{verbose}{Whether to print solving progress}
+\item{verbose}{Should the solving progress and stats be printed?}
 }
 \description{
-Generates a rmwcs solver with corresponding parameters
+The method is based on relax-and-cut approach and allows to solve
+Maximum Weight Subgraph Probleam and its budget and cardinality variants.
+By constructing lagrangian
+relaxation of MWCS problem necessary graph connectivity constraints are introduced
+in the objective function giving upper bound on the weight of the optimal
+solution. On the other side, primal heuristic uses individul contribution
+of the variables to lagrangian relaxation to find possible solution of the initial
+problem. The relaxation is then optimized by using iterative subgradient method.
+}
+\details{
+One iteration of algorithm includes solving lagrangian relaxation and updating
+lagrange multipliers. It may also contain cuts (or connectivity constraints) separation process, run of
+heuristic method, variable fixing routine. The initial step size for
+subgradient method can be passed as \code{beta} argument. If there is no improvement in
+upper bound in consequtive \code{beta_iterations} iterations the step size is
+halved. There are three possible strategies for updating multipliers. See the references
+section for the article where differences are discussed.
+
+Some initial cuts are added at the start of the algorithm if \code{start_constraints}
+is set to \code{TRUE}. Other constraints are separated on the fly and are
+unaffected in the next \code{sep_iter_freeze} iterations of the subgradient mehod.
+Then the corresponding lagrange mutipliers are updated from iteration to iteration.
+Aging procedure for cuts is incorporated in the algorithm meaning constraint multipliers
+are updated for non-violated cuts for up to \code{max_age} iterations from
+the point where a cut was violated last time. There are two separation methods
+implemented: fast and strong, where tha latter is supposed to minimize number of
+variables used in generated constraint while in the former case there is no need to explore
+whole graph to construct a constraint.
+
+A variant of MST approximation of PCSTP is used as Primal Heuristic.
+See references for more details.
+
+The frequences
+of running separation process and heuristic are specified in
+\code{sep_iterations} and \code{heur_iterations}.
+}
+\references{
+Álvarez-Miranda, E., & Sinnl, M. (2017). A Relax-and-Cut framework
+for large-scale maximum weight connected subgraph problems. Computers & Operations Research, 87, 63-82.
 }

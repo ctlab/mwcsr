@@ -14,8 +14,12 @@ class monitor {
     clock_t::time_point last_check;
     std::chrono::milliseconds interval;
     std::function<void()> callable;
+    bool stab;
 public:
     monitor(std::function<void()> callable, int millis_interval);
+    monitor(const monitor&) = default;
+    monitor();
+
     void check();
 };
 
