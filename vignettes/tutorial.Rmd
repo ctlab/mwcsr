@@ -158,8 +158,8 @@ summary(E(gmwcs_example)$weight)
 
 The signal generalized MWCS (SGMWCS) variant continues to generalize MWCS problem
 and introduces a concept of _signals_.
-Insted of specifying vertex and edge weights
-directly, the weights are defined for a set of signals, and vertis and edges are marked
+Instead of specifying vertex and edge weights
+directly, the weights are defined for a set of signals, and vertices and edges are marked
 with these signals.
 The difference from GMWCS is that the signals can be repeated in
 the graph, while the weight of the subgraph is defined as a sum of weights of its
@@ -330,8 +330,7 @@ And for SGMWCS instance:
 ### Simulated annealing solver
 
 Another heuristic solver is a simulated annealing based solver.
-The solver is rather generic, but can produce good enough solutions  
-if parameters are tuned well.
+The solver is rather generic, but can produce good enough solutions if parameters are tuned well.
 As it is heuristic solver with no estimate on upper bound of the objective function
 the solved to optimality flag is always set to `FALSE`.
 
