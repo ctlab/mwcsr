@@ -1,11 +1,11 @@
 Package: mwcsr
 Title: Solvers for Maximum Weight Connected Subgraph Problem and its variants
 Version: 0.1.0
-Authors@R: c(person("Alexander", "Loboda", email = "aleks.loboda@gmail.com", role = "aut"),
+Authors@R: c(person("Alexander", "Loboda", email = "aleks.loboda@gmail.com", role = c("aut", "cre")),
     person("Nikolay", "Poperechnyi", email = "n.poperechnyi@gmail.com", role = "aut"),
     person("Eduardo", "Alvarez-Miranda", email = "ealvarez@utalca.cl", role = "aut"), 
     person("Markus", "Sinnl", email = "markus.sinnl@univie.ac.at", role = "aut"),
-    person("Alexey", "Sergushichev", email = "alsergbox@gmail.com", role = c("aut", "cre")),
+    person("Alexey", "Sergushichev", email = "alsergbox@gmail.com", role = "aut"),
     person("Paul", "Hosler Jr.", role = "cph", comment = "Bundled JOpt Simple package"),
     person("www.hamcrest.org", role = "cph", comment = "Bundled hamcrest package"),
     person("Barak Naveh and Contributors", role = "cph", comment = "Bundled JGraphT package"),
