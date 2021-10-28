@@ -207,7 +207,7 @@ void Solver::probing(double bound) {
 
     std::vector<Component> components = Component::get_components(g, edges.all_active());
     for (auto& c: components) {
-        if (c.get_revenue() < lb) {
+        if (c.get_revenue() + EPS < lb) {
             for (size_t edge: c.component_edges()) {
                 edge_variables.at(edge).fix_value(0);
             }
