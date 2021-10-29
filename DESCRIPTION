@@ -26,6 +26,7 @@ Suggests:
     BioNet, 
     roxygen2, 
     DLBCL   
+SystemRequirements: C++11
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
