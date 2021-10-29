@@ -391,7 +391,7 @@ Additionally, it is convenient to put the path to CPLEX into a `CPLEX_HOME`
 environment variable, so that it does not have to be changed from 
 one system to another, when run.
 
-```{r}
+```{r, purl = FALSE}
 cplex_dir <- Sys.getenv('CPLEX_HOME')
 exact_solver <- virgo_solver(cplex_dir=cplex_dir)
 m <- solve_mwcsp(exact_solver, sgmwcs_example)
@@ -399,7 +399,7 @@ m <- solve_mwcsp(exact_solver, sgmwcs_example)
 
 As the CPLEX found the optimal solution, the corresponding flag is set to `TRUE`:
 
-```{r}
+```{r, purl = TRUE}
 print(m$weight)
 print(m$solved_to_optimality)
 ```
@@ -409,7 +409,7 @@ is available as in the `stats` field.
 Refer to Virgo documentation for the description of the values.
 
 
-```{r}
+```{r, purl = TRUE}
 print(m$stats)
 ```
 
@@ -425,7 +425,7 @@ pass over the solution, with each edge penalized with the specified value.
 As there can be multiple solutions, having the same weight, especially in case of SGMWCS,
 this procedure allows to locally minimize the solution size, while preserving the weight.
 
-```{r}
+```{r, purl = TRUE}
 psolver <- virgo_solver(cplex_dir=cplex_dir, penalty=0.001)
 min_m <- solve_mwcsp(psolver, sgmwcs_example)
 print(min_m$weight)
