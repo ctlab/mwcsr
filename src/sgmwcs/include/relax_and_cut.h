@@ -17,7 +17,7 @@ namespace relax {
 
 struct Parameters {
     double alpha = 2.0;
-    int beta_iterations = 5;
+    unsigned beta_iterations = 5;
     unsigned iterations = 1000;
     unsigned heur_period = 10;
     unsigned sep_period = 10;

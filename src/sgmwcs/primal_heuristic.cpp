@@ -109,12 +109,11 @@ void PrimalHeuristic::run_from_point(size_t e) {
         visit[edge] = iteration;
 
         // exploring all the neighbours
-        size_t p = previous[edge];
+        int p = previous[edge];
 
         auto explore_neighbours = [this, edge, &q](size_t v) {
             for (auto& other: g.neighbours(v)) {
-
-                if (other.num() == edge) continue;
+                if ((int)other.num() == edge) continue;
                 double raise = std::max(1e-5, -weight(other.num()));
                 double new_dist = shortest_distance[edge] + raise;
                 if (new_dist < shortest_distance[other.num()]) {
@@ -141,11 +140,11 @@ void PrimalHeuristic::run_from_point(size_t e) {
 }
 
 double PrimalHeuristic::wei(size_t e) {
-    double weight = 0.0;
+    double local_wei = 0.0;
     for (auto s: g.edge(e).edge_signals()) {
-        weight += g.signal_weight(s);
+        local_wei += g.signal_weight(s);
     }
-    return weight;
+    return local_wei;
 }
 
 }

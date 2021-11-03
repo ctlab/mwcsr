@@ -22,7 +22,7 @@ SolverCardinality::~SolverCardinality() {}
 int SolverCardinality::addInitCuts() {
     int nCuts = 0;
     // return 0;
-    for (int i = 0; i < instance.nNodes; ++i) {
+    for (unsigned i = 0; i < instance.nNodes; ++i) {
         cut myCut;
         myCut.lambda = 0;
         myCut.rhs = vector<nodevaluepair>();
@@ -74,7 +74,7 @@ bool SolverCardinality::primalHeuristic() {
 
     vector<double> lpValue;
 
-    for (int i = 0; i < instance.nNodes; ++i) {
+    for (unsigned i = 0; i < instance.nNodes; ++i) {
         // Rcout<<(double)sumSolution[i]/iterations<<"\n";
         // lpValue.push_back((double)sumSolution[i]/iterations);
 
@@ -109,7 +109,7 @@ bool SolverCardinality::primalHeuristic() {
             if (myIter > 0)
                 break;
 
-            for (int i = 0; i < instance.nNodes; ++i) {
+            for (unsigned i = 0; i < instance.nNodes; ++i) {
                 int c = i;
                 if (myHeurTerminalsBool[c] && realPrizes[c] > bestVal) {
                     startID = c;
@@ -381,7 +381,7 @@ bool SolverCardinality::primalHeuristic() {
         }
 
         // post-processing
-        for (int i = 0; i < instance.nNodes; ++i) {
+        for (unsigned i = 0; i < instance.nNodes; ++i) {
             inComponentBool[i] = 0;
             if (myBestSol[i] < numBest)
                 inComponentBool[i] = 1;
@@ -396,7 +396,7 @@ bool SolverCardinality::primalHeuristic() {
             toAdd.clear();
             // Rcout<<"before postprocessing "<<obj<<" "<<currentSize<<"\n";
 
-            for (int n = 0; n < instance.nNodes; ++n) {
+            for (unsigned n = 0; n < instance.nNodes; ++n) {
                 if (currentSize >= instance.cardCons)
                     break;
                 if (!inComponentBool[n])
@@ -435,7 +435,7 @@ bool SolverCardinality::primalHeuristic() {
         if (obj > incumbentObj) {
             incumbentObj = obj;
             improved = true;
-            for (int i = 0; i < instance.nNodes; ++i) {
+            for (unsigned i = 0; i < instance.nNodes; ++i) {
                 incumbent[i] = inComponentBool[i];
             }
 
@@ -453,7 +453,7 @@ int SolverCardinality::lagrangianPegging() {
     vector<int> fixToZero;
     vector<int> fixToOne;
 
-    for (int i = 0; i < instance.nNodes; ++i) {
+    for (unsigned i = 0; i < instance.nNodes; ++i) {
         if (fixedToZero[i] || fixedToOne[i] ||
             fabs(realPrizes[i] - epsOpt) < epsOpt)
             continue;
@@ -514,7 +514,7 @@ double SolverCardinality::calculateCurrentSolution(bool save) {
     int solutionSize = 0;
 
     int nFixed = 0;
-    for (int i = 0; i < instance.nNodes; ++i) {
+    for (unsigned i = 0; i < instance.nNodes; ++i) {
         currentSolution[i] = 0;
 
         if (fixedToOne[i]) {

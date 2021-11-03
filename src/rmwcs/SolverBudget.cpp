@@ -21,7 +21,7 @@ SolverBudget::SolverBudget(Instance& instance, Parameters& params, mwcsr::monito
         : SolverLag(instance, params, monitor), M{vector<vector<double>>(
         instance.nNodes)} {
 
-    for (int j = 0; j < instance.nNodes; j++) {
+    for (unsigned j = 0; j < instance.nNodes; j++) {
         if (instance.trueTerminals[j]) {
             //	Rcout<<j<<"\n";
             fixedToOne[j] = true;
@@ -32,7 +32,7 @@ SolverBudget::SolverBudget(Instance& instance, Parameters& params, mwcsr::monito
         }
     }
 
-    for (int j = 0; j < instance.nNodes; j++) {
+    for (unsigned j = 0; j < instance.nNodes; j++) {
         M[j] = vector<double>(instance.budget + 1, 0);
     }
 }
@@ -42,7 +42,7 @@ SolverBudget::~SolverBudget() {}
 int SolverBudget::addInitCuts() {
     int nCuts = 0;
     // return 0;
-    for (int i = 0; i < instance.nNodes; ++i) {
+    for (unsigned i = 0; i < instance.nNodes; ++i) {
         cut myCut;
         // myCut.rhsConst=0;
         myCut.lambda = 0;
@@ -104,7 +104,7 @@ double SolverBudget::calculateCurrentSolution(bool saveSol) {
     vector<int> jf = vector<int>(instance.nNodes, -1);
 
     int jc = 0;
-    for (int j = 0; j < instance.nNodes; j++) {
+    for (unsigned j = 0; j < instance.nNodes; j++) {
         // fill(M[j].begin(),M[j].end(),0.0);
         // if(saveSol)
         currentSolution[j] = 0;
@@ -259,7 +259,7 @@ int SolverBudget::lagrangianPegging() {
 
     double objHeur = 0.0;
 
-    for (int i = 0; i < instance.nNodes; ++i) {
+    for (unsigned i = 0; i < instance.nNodes; ++i) {
         // fill(M[j].begin(),M[j].end(),0.0);
         // if(saveSol)
         // Rcout<<lagrangePrizes.cost[n] <<"\n";
@@ -310,7 +310,7 @@ int SolverBudget::lagrangianPegging() {
     //	Rcout<<budgetIn<<"\n";
     // Rcout<<objHeur<<" "<<objKnapsack<<" "<<objSpanning<<"
     // "<<currentBound<<"\n";
-    for (int n = 0; n < instance.nNodes; ++n) {
+    for (unsigned n = 0; n < instance.nNodes; ++n) {
         if (inItems[n] > 0)
             continue;
 
@@ -382,7 +382,7 @@ bool SolverBudget::primalHeuristic() {
 
     vector<double> lpSolution;
 
-    for (int i = 0; i < instance.nNodes; ++i) {
+    for (unsigned i = 0; i < instance.nNodes; ++i) {
         if (currentSolution[i]) {
             lpSolution.push_back(1);
             if (instance.realTerminals[i]) {
@@ -413,7 +413,7 @@ bool SolverBudget::primalHeuristic() {
                 }
             }
         } else {
-            for (int i = 0; i < instance.nNodes; ++i) {
+            for (unsigned i = 0; i < instance.nNodes; ++i) {
                 int c = i;
                 if (myHeurTerminalsBool[c] && realPrizes[c] > bestVal) {
                     root = c;
@@ -565,7 +565,7 @@ bool SolverBudget::primalHeuristic() {
 
         // Rcout<<best<<" "<<incObj<<" "<<numBest<<" "<<bestBudget<<"\n";
 
-        for (int i = 0; i < instance.nNodes; ++i) {
+        for (unsigned i = 0; i < instance.nNodes; ++i) {
             inComponentBool[i] = 0;
             if (myBestSol[i] < numBest)
                 inComponentBool[i] = 1;
@@ -582,7 +582,7 @@ bool SolverBudget::primalHeuristic() {
 
             // Rcout<<"before postprocessing "<<obj<<" "<<currentSize<<"\n";
 
-            for (int n = 0; n < instance.nNodes; ++n) {
+            for (unsigned n = 0; n < instance.nNodes; ++n) {
                 if (budget >= instance.budget)
                     break;
                 if (!inComponentBool[n])
@@ -632,7 +632,7 @@ bool SolverBudget::primalHeuristic() {
 
         if (incObj > incumbentObj && foundAll) {
             incumbentObj = incObj;
-            for (int i = 0; i < instance.nNodes; ++i) {
+            for (unsigned i = 0; i < instance.nNodes; ++i) {
                 incumbent[i] = inComponentBool[i];
                 //if (incumbent[i])
                 //   Rcout << i << "\n";

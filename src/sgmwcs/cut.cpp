@@ -72,11 +72,11 @@ bool operator==(const Cut& lhs, const Cut& rhs) {
     return lhs.left == rhs.left && lhs.right == rhs.right;
 }
 
-Cut::Cut(std::initializer_list<Variable> lhs, std::initializer_list<Variable> rhs) : left(lhs), right(rhs),
-                                                                                     age(0), subgradient(0.), lambda(0.) {}
+Cut::Cut(std::initializer_list<Variable> lhs, std::initializer_list<Variable> rhs) : age(0), lambda(0.),
+                                                                                     subgradient(0.), left(lhs), right(rhs) {}
 
-Cut::Cut(Cut&& other) noexcept :left(std::move(other.left)), right(std::move(other.right)),
-                                age(other.age), subgradient(other.subgradient), lambda(other.lambda) {}
+Cut::Cut(Cut&& other) noexcept :age(other.age), lambda(other.lambda),
+                                subgradient(other.subgradient), left(std::move(other.left)), right(std::move(other.right)) {}
 
 void Cut::calculate_variable_weights() const {
     if (lambda < EPS) {
@@ -174,7 +174,7 @@ Cut& Cut::operator=(const Cut& other) {
     return *this;
 }
 
-const double Cut::mutliplier() const {
+double Cut::mutliplier() const {
     return lambda;
 }
 

@@ -10,7 +10,7 @@
 
 namespace relax {
 
-ActivePool::ActivePool(size_t n) :active(n), positions(n) {
+ActivePool::ActivePool(size_t n) :positions(n), active(n) {
     std::iota(active.begin(), active.end(), 0);
     std::iota(positions.begin(), positions.end(), 0);
 }

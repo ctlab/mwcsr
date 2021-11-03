@@ -25,26 +25,26 @@ namespace chrono = std::chrono;
 bool cutToRemove(SolverLag::cut x) { return x.toRemove; }
 
 SolverLag::SolverLag(Instance& instance, Parameters& params, mwcsr::monitor int_monitor)
-        : instance(instance), params(params), myCuts{list<cut>()}, myNewCuts{list<cut>()},
+        : instance(instance), params(params), int_monitor(std::move(int_monitor)), myCuts{list<cut>()},
+          myNewCuts{list<cut>()},
           realPrizes{vector<double>(instance.nNodes, 0)},
           currentSolution{vector<double>(instance.nNodes, 0)},
-          previousSolution{vector<double>(instance.nNodes, 0)},
-          sumSolution{vector<int>(instance.nNodes, 0)}, incumbent{vector<bool>(
-                instance.nNodes, 0)},
-          dualIncumbent{vector<int>(instance.nNodes, 0)}, labels{vector<int>(
-                instance.nNodes, 0)},
-          fixedToZero{vector<int>(instance.nNodes, 0)}, fixedToOne{vector<int>(
-                instance.nNodes, 0)},
-          incumbentObj{instance.incumbentObjLag}, subgradientSquared{1}, subgradientNorm{0},
-          directionPrevSquared{0}, alpha{params.beta}, noImprov{0},
-          numberOfComponents{0}, bestBound{std::numeric_limits<double>::max()},
+          previousSolution{vector<double>(instance.nNodes, 0)}, sumSolution{vector<int>(instance.nNodes, 0)},
+          incumbent{vector<bool>(
+                instance.nNodes, 0)}, dualIncumbent{vector<int>(instance.nNodes, 0)},
+          labels{vector<int>(
+                instance.nNodes, 0)}, fixedToZero{vector<int>(instance.nNodes, 0)},
+          fixedToOne{vector<int>(
+                instance.nNodes, 0)}, incumbentObj{instance.incumbentObjLag}, subgradientSquared{1},
+          subgradientNorm{0}, directionPrevSquared{0}, alpha{params.beta},
+          noImprov{0}, numberOfComponents{0},
+          bestBound{std::numeric_limits<double>::max()},
           currentBound{std::numeric_limits<double>::max()},
           previousBound{std::numeric_limits<double>::max()},
-          bestBoundCFT{std::numeric_limits<double>::max()},
-          worstBoundCFT{std::numeric_limits<double>::lowest()}, counterCFT{0},
-          maxIterations{params.maxIter}, iterations{0}, sepIter(params.sepIter),
-          sepIterFreeze(params.sepIterFreeze), savedObj(0.0),
-          runtime(0.0), int_monitor(std::move(int_monitor)) {}
+          bestBoundCFT{std::numeric_limits<double>::max()}, worstBoundCFT{std::numeric_limits<double>::lowest()},
+          counterCFT{0}, maxIterations{params.maxIter}, iterations{0},
+          sepIter(params.sepIter), sepIterFreeze(params.sepIterFreeze),
+          savedObj(0.0), runtime(0.0) {}
 
 SolverLag::~SolverLag() {}
 
@@ -80,7 +80,7 @@ int SolverLag::writeCutsToInstance() {
 
 int SolverLag::writeFixingToInstance() {
 
-    for (int i = 0; i < instance.nNodes; ++i) {
+    for (unsigned i = 0; i < instance.nNodes; ++i) {
         instance.fixedToOne[i] = fixedToOne[i];
         instance.fixedToZero[i] = fixedToZero[i];
     }
@@ -91,7 +91,7 @@ int SolverLag::writeFixingToInstance() {
 int SolverLag::writeSolutionToInstance() {
     instance.incumbent = vector<bool>(instance.nNodes, false);
 
-    for (int i = 0; i < instance.nNodes; ++i) {
+    for (unsigned i = 0; i < instance.nNodes; ++i) {
         instance.incumbent[i] = incumbent[i];
     }
     instance.incumbentFound = true;
@@ -133,7 +133,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
                 noImprov = 0;
                 bestBound = currentBound;
 
-                for (int i = 0; i < instance.nNodes; ++i) {
+                for (unsigned i = 0; i < instance.nNodes; ++i) {
                     dualIncumbent[i] = currentSolution[i];
                 }
             } else
@@ -204,7 +204,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
                     std::remove_if(myCuts.begin(), myCuts.end(), cutToRemove),
                     myCuts.end());
         upgradeMultipliers();
-        for (int i = 0; i < instance.nNodes; ++i) {
+        for (unsigned i = 0; i < instance.nNodes; ++i) {
             previousSolution[i] = currentSolution[i];
         }
 
@@ -231,7 +231,7 @@ int SolverLag::solveSubgradient(int maxIterations) {
 
 double SolverLag::calculateReducedCosts() {
     double obj = 0.0;
-    for (int n = 0; n < instance.nNodes; ++n) {
+    for (unsigned n = 0; n < instance.nNodes; ++n) {
         realPrizes[n] = instance.myPrizes[n];
     }
 
@@ -261,7 +261,7 @@ void SolverLag::writeStatistics() {
 
     instance.incumbent = vector<bool>(instance.nTrueNodes, false);
     instance.solSize = 0;
-    for (int i = 0; i < instance.nNodes; ++i) {
+    for (unsigned i = 0; i < instance.nNodes; ++i) {
         if (incumbent[i]) {
             instance.solSize++;
             instance.incumbent[instance.map[i]] = true;
@@ -295,7 +295,7 @@ void SolverLag::updateMultipliersSherali() {
         noImprov = 0;
         alpha /= 2;
         currentBound = bestBound;;
-        for (int n = 0; n < instance.nNodes; ++n) {
+        for (unsigned n = 0; n < instance.nNodes; ++n) {
             currentSolution[n] = dualIncumbent[n];
         }
         subgradientSquared = 0;
@@ -537,7 +537,7 @@ int SolverLag::separateCuts() {
     std::fill(labels.begin(), labels.end(), 0);
     myComponents.clear();
 
-    for (int n = 0; n < instance.nNodes; ++n) {
+    for (unsigned n = 0; n < instance.nNodes; ++n) {
         if (currentSolution[n] == 1 && instance.realTerminals[n] &&
             labels[n] == 0) {
 
@@ -681,7 +681,7 @@ int SolverLag::separateCuts() {
                     inComponent[myComponents[i].components[j]] = true;
                 }
 
-                for (int n = 0; n < instance.nNodes; n++) {
+                for (unsigned n = 0; n < instance.nNodes; n++) {
                     if (inComponent[n])
                         continue;
 

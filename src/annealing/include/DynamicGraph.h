@@ -74,8 +74,8 @@ namespace dgraph {
     class List {
         Edge* edge;
         unsigned u;
-        List* next;
         List* prev;
+        List* next;
         List(unsigned, Edge*, List*, List*);
     public:
         List();

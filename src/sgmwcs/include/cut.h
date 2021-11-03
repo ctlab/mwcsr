@@ -61,7 +61,7 @@ public:
     void step(double d);
 
     bool try_fix() const;
-    const double mutliplier() const;
+    double mutliplier() const;
 
     friend void swap(relax::Cut& lhs, relax::Cut& rhs) noexcept;
     friend std::ostream& operator<<(std::ostream& os, const Cut&);

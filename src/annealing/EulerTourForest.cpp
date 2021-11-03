@@ -163,7 +163,7 @@ namespace dgraph {
     EulerTourForest::~EulerTourForest() {
         std::vector<bool> vis(n, false);
         std::list<Entry*> entries;
-        for (unsigned i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             if (vis[i]) {
                 continue;
             }
@@ -253,7 +253,7 @@ namespace dgraph {
     }
 
     bool EulerTourForest::is_connected() {
-        return any_root != nullptr && any_root->size == 2 * (n - 1);
+        return any_root != nullptr && (int)any_root->size == 2 * (n - 1);
     }
 
     bool EulerTourForest::is_connected(unsigned v, unsigned u) {
@@ -315,7 +315,7 @@ namespace dgraph {
     std::string EulerTourForest::str() {
         std::string str;
         std::vector<bool> vis(n, false);
-        for (unsigned i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             Entry* curr = find_root(any[i]);
             if(!vis[curr->vertex()]){
                 vis[curr->vertex()] = true;
@@ -323,7 +323,7 @@ namespace dgraph {
             }
         }
         str += "edges: \n";
-        for (unsigned i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             str += std::to_string(any[i]->edges) + " ";
         }
         str += "\n";

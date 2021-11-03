@@ -22,7 +22,7 @@ Instance::Instance(List& network)
         : components{vector<vector<int>>()},
           maxRevenueInComponent{vector<double>()}, nComponents{0}, maxPrize{0},
           minWeight{std::numeric_limits<double>::max()}, sumPrizes{0},
-          nRealTerminals{0}, budget(std::numeric_limits<double>::infinity()) {
+          budget(std::numeric_limits<double>::infinity()), nRealTerminals{0} {
 
     readInstance(network);
 
@@ -52,7 +52,7 @@ void Instance::rebuildDatastructures() {
 
     int newNNodes = 0;
 
-    for (int i = 0; i < nNodes; ++i) {
+    for (unsigned i = 0; i < nNodes; ++i) {
         if (!nodesToRemove[i]) {
             backMap[i] = newNNodes;
             map.push_back(i);
@@ -67,7 +67,7 @@ void Instance::rebuildDatastructures() {
     }
 
     int newNEdges = 0;
-    for (int i = 0; i < nNodes; ++i) {
+    for (unsigned i = 0; i < nNodes; ++i) {
         if (!nodesToRemove[i]) {
             for (unsigned j = 0; j < adjList[i].size(); ++j) {
                 if (!nodesToRemove[adjList[i][j]]) {
@@ -125,7 +125,7 @@ int Instance::degreeOneTest() {
     do {
         toRemove.clear();
 
-        for (int n = 0; n < nNodes; ++n) {
+        for (unsigned n = 0; n < nNodes; ++n) {
             if ((adjList[n].size() == 1 && !realTerminals[n])) {
                 toRemove.push_back(n);
             }
@@ -158,7 +158,7 @@ int Instance::degreeOneTest() {
 int Instance::degreeZeroTest() {
     int numberRemoved = 0;
 
-    for (int n = 0; n < nNodes; ++n) {
+    for (unsigned n = 0; n < nNodes; ++n) {
         if (adjList[n].size() == 0 && !nodesToRemove[n]) {
             nodesToRemove[n] = true;
             numberRemoved++;
@@ -174,7 +174,7 @@ int Instance::calculateComponents() {
     components.clear();
     maxRevenueInComponent.clear();
 
-    for (int n = 0; n < nNodes; n++) {
+    for (unsigned n = 0; n < nNodes; n++) {
         if (componentArray[n] == 0) {
             vector<int> componentHelper;
             double revInComp = 0.0;
@@ -232,11 +232,11 @@ void Instance::addEdge(unsigned v, unsigned u) {
 }
 
 void Instance::readEdges(IntegerMatrix& edges) {
-    nEdges = static_cast<unsigned>(edges.nrow());
+    nEdges = edges.nrow();
     bool edge_problem = edges.ncol() == 3;
 
     if (edge_problem) {
-        for (unsigned i = 0; i < nEdges; i++) {
+        for (int i = 0; i < nEdges; i++) {
             int from = edges(i, 0) - 1;
             int to = edges(i, 1) - 1;
             double weight = edges(i, 2);
@@ -247,7 +247,7 @@ void Instance::readEdges(IntegerMatrix& edges) {
         nNodes += nEdges;
         nEdges *= 2;
     } else {
-        for (unsigned i = 0; i < nEdges; i++) {
+        for (int i = 0; i < nEdges; i++) {
             int from = edges(i, 0) - 1;
             int to = edges(i, 1) - 1;
             addEdge(from, to);

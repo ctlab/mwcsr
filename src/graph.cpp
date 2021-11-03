@@ -54,7 +54,7 @@ void Edge::set_signals(const std::vector<size_t>& signals) {
     ptr->signals = signals;
 }
 
-Graph::Graph(size_t n, const std::vector<double>& signal_weights) :m(0), signal_weights(signal_weights) {
+Graph::Graph(size_t n, const std::vector<double>& signal_weights) :signal_weights(signal_weights), m(0) {
     v_signals.resize(n);
     adj.resize(n, vector<Edge>());
 }

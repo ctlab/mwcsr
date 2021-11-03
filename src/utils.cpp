@@ -23,14 +23,14 @@ mwcsr::Graph read_graph(List& instance) {
     size_t n = as<IntegerVector>(instance["size"])[0];
     mwcsr::Graph g(n, signal_weights);
 
-    for (size_t i = 0; i < edges.nrow(); i++) {
+    for (size_t i = 0; i < (size_t)edges.nrow(); i++) {
         size_t v = edges(i, 0) - 1;
         size_t u = edges(i, 1) - 1;
         size_t signal = edge_signals[i];
         g.add_edge(v, u, {(size_t)signal});
     }
 
-    for (size_t i = 0; i < vertex_signals.size(); i++) {
+    for (size_t i = 0; i < (size_t)vertex_signals.size(); i++) {
         g.set_signals(i, {(size_t) vertex_signals[i]});
     }
     return g;

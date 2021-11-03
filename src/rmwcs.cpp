@@ -32,7 +32,7 @@ Rcpp::List rmwcs_solve(Rcpp::List& network, Rcpp::List& params) {
     std::vector<unsigned> vertices;
 
     if (instance.incumbentFound) {
-        for (unsigned i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             if (solution[i]) {
                 vertices.push_back(i + 1);
             }

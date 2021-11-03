@@ -25,20 +25,21 @@ std::string string_format( const std::string& format, Args ... args )
 namespace relax {
 
 Solver::Solver(const mwcsr::Graph& graph, const Parameters& params, std::ostream& os)
-                                                                    : g(graph), edges(g.edgeset_size()), parameters(params),
+                                                                    : lb(0.0), ub(std::numeric_limits<double>::infinity()),
+                                                                      subgradient_norm(0.0),
+                                                                      no_improvement(0),
+                                                                      g(graph),
+                                                                      edges(g.edgeset_size()),
                                                                       active_variables(g.edgeset_size() + g.num_signals()),
-                                                                      lb(0.0),
-                                                                      ub(std::numeric_limits<double>::infinity()),
-                                                                      subgradient_norm(0.0), no_improvement(0),
+                                                                      parameters(params),
                                                                       os(os) {
-    // TODO check variables and graph components
     g.absorb_vertex_signals();
 
-    for (int i = 0; i < g.num_signals(); i++) {
+    for (unsigned i = 0; i < g.num_signals(); i++) {
         signal_variables.push_back(variable_factory.take(g.signal_weight(i), "s" + std::to_string(i)));
     }
 
-    for (int i = 0; i < g.edgeset_size(); i++) {
+    for (unsigned i = 0; i < g.edgeset_size(); i++) {
         edge_variables.push_back(variable_factory.take(0.0, "e" + std::to_string(i)));
     }
 

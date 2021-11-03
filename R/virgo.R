@@ -27,7 +27,7 @@ init_solver <- function(solver) {
 
     }
     solver$run_main <- function(cli_args) {
-        system2("java", c(command, cli_args), stdout=TRUE)
+        system2("java", c(command, cli_args))
     }
     solver
 }
@@ -206,7 +206,7 @@ run_solver <- function(solver, instance, sgmwcs, signals = NULL) {
         induced_subgraph(instance, as.integer(nodes[, 1]))
     } else {
         eids <- get.edge.ids(instance, t(edges[,1:2]))
-        subgraph.edges(instance, eids, delete.vertices = T)
+        subgraph.edges(instance, eids)
     })
     list(mwcs=mwcs, stats=stats)
 }

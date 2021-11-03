@@ -170,7 +170,7 @@ namespace dgraph {
         prev->next = next;
     }
 
-    List::List(unsigned u, Edge* edge, List* prev, List* next) :u(u), edge(edge), prev(prev), next(next){}
+    List::List(unsigned u, Edge* edge, List* prev, List* next) :edge(edge), u(u), prev(prev), next(next){}
 
     List::List() :edge(nullptr) {
         next = this;
