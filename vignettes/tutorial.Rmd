@@ -391,7 +391,7 @@ Additionally, it is convenient to put the path to CPLEX into a `CPLEX_HOME`
 environment variable, so that it does not have to be changed from 
 one system to another, when run.
 
-```{r, purl = FALSE}
+```{r, purl = FALSE, error = TRUE}
 cplex_dir <- Sys.getenv('CPLEX_HOME')
 exact_solver <- virgo_solver(cplex_dir=cplex_dir)
 m <- solve_mwcsp(exact_solver, sgmwcs_example)
@@ -399,7 +399,7 @@ m <- solve_mwcsp(exact_solver, sgmwcs_example)
 
 As the CPLEX found the optimal solution, the corresponding flag is set to `TRUE`:
 
-```{r, purl = TRUE}
+```{r, purl = FALSE, error = TRUE}
 print(m$weight)
 print(m$solved_to_optimality)
 ```
@@ -409,7 +409,7 @@ is available as in the `stats` field.
 Refer to Virgo documentation for the description of the values.
 
 
-```{r, purl = TRUE}
+```{r, purl = FALSE, error = TRUE}
 print(m$stats)
 ```
 
@@ -425,16 +425,16 @@ pass over the solution, with each edge penalized with the specified value.
 As there can be multiple solutions, having the same weight, especially in case of SGMWCS,
 this procedure allows to locally minimize the solution size, while preserving the weight.
 
-```{r, purl = TRUE}
+```{r, purl = FALSE, error = TRUE}
 psolver <- virgo_solver(cplex_dir=cplex_dir, penalty=0.001)
 min_m <- solve_mwcsp(psolver, sgmwcs_example)
 print(min_m$weight)
 print(min_m$stats)
 ```
 
-Now the solution, has `r min_m$stats$nodes` nodes instead of `r m$stats$nodes` 
+Now the solution, has `min_m$stats$nodes` nodes instead of `m$stats$nodes` 
 for the solution that was found before, while having the same total weight
-of `r min_m$weight`.
+of `min_m$weight`.
 
 
 ## Integration with BioNet
@@ -503,7 +503,7 @@ print(bionet_m$weight)
 Similarly, Virgo can be used to solve the instance to provable optimality, 
 but in this case it produces the same results:
 
-```{r}
+```{r, purl = FALSE, error = TRUE}
 bionet_m_exact <- solve_mwcsp(exact_solver, bionet_example)
 print(bionet_m_exact$weight)
 print(bionet_m_exact$solved_to_optimality)

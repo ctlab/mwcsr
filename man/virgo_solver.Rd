@@ -10,7 +10,7 @@ virgo_solver(
   timelimit = NULL,
   penalty = 0,
   memory = "2G",
-  log = 1,
+  log = 0,
   cplex_bin = NULL,
   cplex_jar = NULL,
   mst = FALSE
