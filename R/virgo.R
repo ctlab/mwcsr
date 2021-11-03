@@ -27,10 +27,14 @@ init_solver <- function(solver) {
 
     }
     solver$run_main <- function(cli_args) {
+        exit_code <- NULL
         if (solver$log == 0) {
-            system2("java", c(command, cli_args), stdout = FALSE)
+            exit_code <- system2("java", c(command, cli_args), stdout = FALSE)
         } else {
-            system2("java", c(command, cli_args))
+            exit_code <- system2("java", c(command, cli_args))
+        }
+        if (exit_code != 0) {
+            stop("Failed to run java-based solver.")
         }
     }
     solver
