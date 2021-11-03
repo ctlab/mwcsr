@@ -27,7 +27,11 @@ init_solver <- function(solver) {
 
     }
     solver$run_main <- function(cli_args) {
-        system2("java", c(command, cli_args))
+        if (solver$log == 0) {
+            system2("java", c(command, cli_args), stdout = FALSE)
+        } else {
+            system2("java", c(command, cli_args))
+        }
     }
     solver
 }
@@ -159,7 +163,8 @@ write_files <- function(g, nodes_file, edges_file, signals_file, signals) {
 }
 
 cli_args <- function(solver, nodes.file, edges.file, signals.file = NULL, stats.file = NULL) {
-    params <- c("-n", nodes.file, "-e", edges.file, "-m", solver$threads, "-l", solver$log)
+    loglevel <- max(1, solver$log)
+    params <- c("-n", nodes.file, "-e", edges.file, "-m", solver$threads, "-l", loglevel)
     if (!is.null(solver$timelimit)) {
         params <- c(params, "-t", solver$timelimit)
     }
