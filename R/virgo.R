@@ -100,7 +100,7 @@ virgo_solver <- function (cplex_dir,
                           timelimit = NULL,
                           penalty = 0.0,
                           memory = "2G",
-                          log = 1,
+                          log = 0,
                           cplex_bin=NULL,
                           cplex_jar=NULL,
                           mst=FALSE) {
