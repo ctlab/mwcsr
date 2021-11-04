@@ -88,7 +88,7 @@ find_cplex_bin <- function(cplex_dir) {
 #' @export
 #' @examples
 #' data("sgmwcs_example")
-#' approx_vs <- virgo_solver(mst=TRUE)
+#' approx_vs <- virgo_solver(mst=TRUE, threads = 1)
 #' approx_vs$run_main("-h")
 #' sol <- solve_mwcsp(approx_vs, sgmwcs_example)
 #' \dontrun{
