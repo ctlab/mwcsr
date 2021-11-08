@@ -26,9 +26,9 @@ init_solver <- function(solver) {
                     )
 
     }
-    solver$run_main <- function(cli_args) {
+    solver$run_main <- function(cli_args, loglevel = 2) {
         exit_code <- NULL
-        if (solver$log == 0) {
+        if (loglevel == 0) {
             exit_code <- system2("java", c(command, cli_args), stdout = FALSE)
         } else {
             exit_code <- system2("java", c(command, cli_args))
@@ -200,7 +200,7 @@ run_solver <- function(solver, instance, sgmwcs, signals = NULL) {
 
     write_files(instance, nodes.file, edges.file, signals.file, signals)
     args <- cli_args(solver, nodes.file, edges.file, signals.file, stats.file)
-    solver$run_main(args)
+    solver$run_main(args, solver$log)
 
     nodes <- utils::read.table(paste0(nodes.file, ".out"), comment.char = "#")
     edges <- utils::read.table(paste0(edges.file, ".out"), comment.char = "#")
