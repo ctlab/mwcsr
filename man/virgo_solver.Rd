@@ -50,10 +50,10 @@ negative signal should be present only once among all edges and vertices.
 You can access solver directly using \code{run_main} function. See example.
 }
 \examples{
-data("sgmwcs_example")
-approx_vs <- virgo_solver(mst=TRUE)
+data("sgmwcs_small_instance")
+approx_vs <- virgo_solver(mst=TRUE, threads = 1)
 approx_vs$run_main("-h")
-sol <- solve_mwcsp(approx_vs, sgmwcs_example)
+sol <- solve_mwcsp(approx_vs, sgmwcs_small_instance)
 \dontrun{
 vs <- virgo_solver(cplex_dir='/path/to/cplex')
 sol <- solve_mwcsp(approx_vs, sgmwcs_example)

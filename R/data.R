@@ -32,3 +32,12 @@
 #'
 #' The graph is based on `gatom` package
 "gatom_example"
+
+#' Small example of MWCS instance for demonstration purposes.
+"mwcs_small_instance"
+
+#' Small example of GMWCS instance for demonstration purposes.
+"gmwcs_small_instance"
+
+#' Small example of SGMWCS instance for demonstration purposes.
+"sgmwcs_small_instance"
