@@ -24,6 +24,7 @@ parameters.rnc_solver <- function(solver) {
 #' problems, while due to differences in primal heuristic it may be a good pratice
 #' to run both solvers on the same problem.
 #' @inheritParams rmwcs_solver
+#' @return An object of class `mwcs_solver`
 #' @seealso [rmwcs_solver]
 #' @export
 rnc_solver <- function(max_iterations = 1000L,
@@ -39,6 +40,10 @@ rnc_solver <- function(max_iterations = 1000L,
 #' @export
 solve_mwcsp.rnc_solver <- function(solver, instance, ...) {
     check_rnc_solver(solver)
+    inst_type <- get_instance_type(instance)$type
+    if (!(inst_type %in% c("MWCS", "GMWCS", "SGMWCS"))) {
+        stop("Rnc solver supports only MWCS, GMWCS, SGMWCS problem instances")
+    }
 
     signal_instance <- to_signal_instance(instance)
 

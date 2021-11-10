@@ -94,6 +94,8 @@ solver_ctor <- function(classes) {
 #' @param solver a solver object returned by rmwcs_solver, annealing_solver, rnc_solver or virgo_solver.
 #' @param instance an MWCS instance, an igraph object with problem-related vertex, edge and graph attributes. See details.
 #' @param ... other arguments to be passed.
+#' @return An object of class `mwcsp_solution` consisting of resulting subgraph,
+#' its weight and other information about solution provided.
 #' @export
 solve_mwcsp <- function(solver, instance, ...) {
     check_mwcs_solver(solver)
@@ -116,6 +118,7 @@ solve_mwcsp.default <- function(solver, instance) {
 #' Sets values of specific parameters
 #' @param solver a solver
 #' @param ... listed parameter names and values assigned to them
+#' @return The solver with parameters changed.
 #' @export
 set_parameters <- function(solver, ...) {
     params <- parameters(solver)
@@ -168,12 +171,14 @@ parameters.default <- function(...) {
 
 #' The method returns all parameters supported by specific solver
 #' @param solver a solver object
+#' @return A table containing parameter names and possible values for each parameter.
 #' @export
 parameters <- function(solver) UseMethod("parameters")
 
 #' Sets time limitation for a solver
 #' @param x a variable name.
 #' @param value a value to be assigned to x.
+#' @return The solver with new timelimit set.
 #' @export
 `timelimit<-` <- function(x, value) {
     set_parameters(x, timelimit = value)
@@ -208,14 +213,22 @@ check_signals <- function(instance) {
 
 #' Check the type and the validity of an MWCS instance
 #' @param instance `igraph` object, containing an instance to be checked
-#' @return a list with members `type` containing the type of the instance,
+#' @return A list with members `type` containing the type of the instance,
 #' `valid` -- boolean flag indicating whether the instance is valid or not,
 #' `errors` -- a character vector containing the error messages
 #' @examples
 #' data(mwcs_example)
 #' get_instance_type(mwcs_example)
+#' @return A list with two fields: the type of the instance with which it will
+#' be treated by solve_mwcsp function and boolean showing validness of the instance.
 #' @export
 get_instance_type <- function(instance) {
+    if (!inherits(instance, "igraph")) {
+        stop("Not an igraph object")
+    }
+    if (igraph::any_multiple(instance)) {
+        stop("Multiple edges (edges connecting the same vertices) are not supported")
+    }
     res <- list(type="unknown", valid=FALSE, errors=NULL)
     if ("signals" %in% names(graph.attributes(instance))) {
         res$type <- "SGMWCS"

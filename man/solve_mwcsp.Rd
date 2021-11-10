@@ -32,6 +32,10 @@ solve_mwcsp(solver, instance, ...)
 
 \item{warm_start}{warm start solution, an object of the class mwcsp_solution.}
 }
+\value{
+An object of class \code{mwcsp_solution} consisting of resulting subgraph,
+its weight and other information about solution provided.
+}
 \description{
 Generic function for solving MWCS instances using solvers collected in the package.
 }

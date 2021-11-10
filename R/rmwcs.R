@@ -78,8 +78,10 @@ parameters.rmwcs_solver <- function(solver) {
 #' @param subgradient Subgradient: "classic", "average", "cft"
 #' @param beta Initial step size of subgradient algorithm
 #' @param verbose Should the solving progress and stats be printed?
-#' @references Álvarez-Miranda, E., & Sinnl, M. (2017). A Relax-and-Cut framework
-#' for large-scale maximum weight connected subgraph problems. Computers & Operations Research, 87, 63-82.
+#' @return An object of class `mwcs_solver`.
+#' @references Álvarez-Miranda, Eduardo, and Markus Sinnl (2017)
+#' "A Relax-and-Cut framework for large-scale maximum weight connected subgraph problems"
+#' doi:https://doi.org/10.1016/j.cor.2017.05.015
 #' @export
 #' @import igraph
 rmwcs_solver <- function(timelimit = 1800L,
@@ -106,6 +108,10 @@ rmwcs_solver <- function(timelimit = 1800L,
 solve_mwcsp.rmwcs_solver <- function(solver, instance, max_cardinality = NULL,
                                      budget = NULL, ...) {
     check_rmwcs_solver(solver)
+    inst_type <- get_instance_type(instance)$type
+    if (!(inst_type %in% c("MWCS", "Budget MWCS"))) {
+        stop("Rmwcs solver supports only MWCS and Budget MWCS problem instances")
+    }
 
     if (!is.null(max_cardinality) && !is.null(budget)) {
         stop("One of the arguments 'max_cardinality' and 'budget' must be NULL")

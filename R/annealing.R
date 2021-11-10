@@ -47,6 +47,7 @@ parameters.simulated_annealing_solver <- function(solver) {
 #' @param initial_temperature initial value for the temperature
 #' @param final_temperature final value for the temperature
 #' @param verbose whether be verbose or not
+#' @return An object of class `mwcs_solver`
 #' @export
 annealing_solver <- function(schedule = c("fast", "boltzmann"),
                              initial_temperature = 1.0,
@@ -62,6 +63,10 @@ annealing_solver <- function(schedule = c("fast", "boltzmann"),
 solve_mwcsp.simulated_annealing_solver <- function(solver, instance, warm_start, ...) {
     if (!inherits(solver, sa_class)) {
         stop("Not a simulated annealing solver")
+    }
+
+    if (!(get_instance_type(instance)$type %in% c("MWCS", "GMWCS", "SGMWCS"))) {
+        stop("Annealing solver supports only MWCS, GMWCS, SGMWCS problem instances")
     }
 
     signal_instance <- to_signal_instance(instance)

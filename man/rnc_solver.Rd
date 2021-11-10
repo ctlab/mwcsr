@@ -23,6 +23,9 @@ rnc_solver(
 
 \item{verbose}{Should the solving progress and stats be printed?}
 }
+\value{
+An object of class \code{mwcs_solver}
+}
 \description{
 The solver is based on the same approach as rmwcs solver. Modifications to
 the original scheme are introduced to tackle problems arising with introduction

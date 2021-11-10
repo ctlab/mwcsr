@@ -9,6 +9,9 @@ parameters(solver)
 \arguments{
 \item{solver}{a solver object}
 }
+\value{
+A table containing parameter names and possible values for each parameter.
+}
 \description{
 The method returns all parameters supported by specific solver
 }

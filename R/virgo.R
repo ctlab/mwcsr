@@ -17,10 +17,11 @@ parameters.virgo_solver <- function(solver) {
 init_solver <- function(solver) {
     solver_name <- "virgo-solver.jar"
     solver_jar <- system.file("java", solver_name, package="mwcsr")
+    command <- paste0("-XX:ActiveProcessorCount=", solver$threads)
     if (is.null(solver$cplex_bin) || is.null(solver$cplex_jar)) {
-        command <- c("-cp", solver_jar, virgo_java_class)
+        command <- c(command, "-cp", solver_jar, virgo_java_class)
     } else {
-        command <- c(sprintf("-Djava.library.path=%s", solver$cplex_bin),
+        command <- c(command, sprintf("-Djava.library.path=%s", solver$cplex_bin),
                     "-cp", paste(solver_jar, solver$cplex_jar, sep=':'),
                     virgo_java_class
                     )
@@ -81,10 +82,10 @@ find_cplex_bin <- function(cplex_dir) {
 #' @param penalty additional edge penalty for graph edges
 #' @param mst whether to use approximate MST solver, no CPLEX files required with this parameter
 #'            is set to `TRUE`
-#' @references Loboda, A. A., Artyomov, M. N., & Sergushichev, A. A. (2016, August).
-#' Solving generalized maximum-weight connected subgraph problem for network
-#' enrichment analysis. In International Workshop on Algorithms in
-#' Bioinformatics (pp. 210-221). Springer, Cham.
+#' @return An object of class `mwcs_solver`.
+#' @references Loboda A. Alexander, Maxim N. Artyomov, and Alexey A. Sergushichev (2016)
+#' "Solving generalized maximum-weight connected subgraph problem for network enrichment analysis"
+#'  doi:https://doi.org/10.1007/978-3-319-43681-4_17
 #' @export
 #' @examples
 #' data("sgmwcs_small_instance")

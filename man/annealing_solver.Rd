@@ -20,6 +20,9 @@ annealing_solver(
 
 \item{verbose}{whether be verbose or not}
 }
+\value{
+An object of class \code{mwcs_solver}
+}
 \description{
 Simulated annealing is a heuristic method of solving optimization problems.
 Typically, it allows to find some good solution in a short time. This

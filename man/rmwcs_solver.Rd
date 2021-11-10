@@ -47,6 +47,9 @@ rmwcs_solver(
 
 \item{verbose}{Should the solving progress and stats be printed?}
 }
+\value{
+An object of class \code{mwcs_solver}.
+}
 \description{
 The method is based on relax-and-cut approach and allows to solve
 Maximum Weight Subgraph Probleam and its budget and cardinality variants.
@@ -85,6 +88,7 @@ of running separation process and heuristic are specified in
 \code{sep_iterations} and \code{heur_iterations}.
 }
 \references{
-Álvarez-Miranda, E., & Sinnl, M. (2017). A Relax-and-Cut framework
-for large-scale maximum weight connected subgraph problems. Computers & Operations Research, 87, 63-82.
+Álvarez-Miranda, Eduardo, and Markus Sinnl (2017)
+"A Relax-and-Cut framework for large-scale maximum weight connected subgraph problems"
+doi:https://doi.org/10.1016/j.cor.2017.05.015
 }

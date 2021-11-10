@@ -26,6 +26,9 @@ normalize_sgmwcs_instance(
 
 \item{group.only.positive}{Whether to group only positive-scored nodes/edges#'}
 }
+\value{
+An \code{igraph} object with proper attributes set.
+}
 \description{
 This function generates new \code{igraph} object with additional \code{signals} field added.
 The way the instance is constructed is defined by the function parameters.

@@ -7,7 +7,7 @@ solution <- function(graph, weight, solved_to_optimality = FALSE, ...) {
 
 #' Calculate weight of the solution. MWCS, GMWCS and SGMWCS instances are supported
 #' @param solution Either `mwcsp_solution` or `igraph`` object representing the solution
-#' @return weight of the graph
+#' @return Weight of the subgraph
 #' @export
 #' @importFrom methods is
 get_weight <- function(solution) {

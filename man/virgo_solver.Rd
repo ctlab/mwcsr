@@ -37,6 +37,9 @@ setting this to NULL sets \verb{mst`` param to }TRUE`}
 \item{mst}{whether to use approximate MST solver, no CPLEX files required with this parameter
 is set to \code{TRUE}}
 }
+\value{
+An object of class \code{mwcs_solver}.
+}
 \description{
 This solver uses reformulation of MWCS problem in terms of mixed integer
 programming. The later problem can be efficiently solved with
@@ -60,8 +63,7 @@ sol <- solve_mwcsp(approx_vs, sgmwcs_example)
 }
 }
 \references{
-Loboda, A. A., Artyomov, M. N., & Sergushichev, A. A. (2016, August).
-Solving generalized maximum-weight connected subgraph problem for network
-enrichment analysis. In International Workshop on Algorithms in
-Bioinformatics (pp. 210-221). Springer, Cham.
+Loboda A. Alexander, Maxim N. Artyomov, and Alexey A. Sergushichev (2016)
+"Solving generalized maximum-weight connected subgraph problem for network enrichment analysis"
+doi:https://doi.org/10.1007/978-3-319-43681-4_17
 }

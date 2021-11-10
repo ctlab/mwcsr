@@ -10,9 +10,12 @@ get_instance_type(instance)
 \item{instance}{\code{igraph} object, containing an instance to be checked}
 }
 \value{
-a list with members \code{type} containing the type of the instance,
+A list with members \code{type} containing the type of the instance,
 \code{valid} -- boolean flag indicating whether the instance is valid or not,
 \code{errors} -- a character vector containing the error messages
+
+A list with two fields: the type of the instance with which it will
+be treated by solve_mwcsp function and boolean showing validness of the instance.
 }
 \description{
 Check the type and the validity of an MWCS instance

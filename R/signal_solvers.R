@@ -35,6 +35,7 @@ to_signal_instance <- function(instance) {
 #' @param nodes.group.by Nodes grouping column (e.g. signal, group, class)
 #' @param edges.group.by Edges grouping column
 #' @param group.only.positive Whether to group only positive-scored nodes/edges#'
+#' @return An `igraph` object with proper attributes set.
 #' @export
 #' @examples
 #' data("gatom_example")
