@@ -83,9 +83,9 @@ find_cplex_bin <- function(cplex_dir) {
 #' @param mst whether to use approximate MST solver, no CPLEX files required with this parameter
 #'            is set to `TRUE`
 #' @return An object of class `mwcs_solver`.
-#' @references Loboda A. Alexander, Maxim N. Artyomov, and Alexey A. Sergushichev (2016)
+#' @references Loboda A., Artyomov M., and Sergushichev A. (2016)
 #' "Solving generalized maximum-weight connected subgraph problem for network enrichment analysis"
-#'  doi:https://doi.org/10.1007/978-3-319-43681-4_17
+#'  doi:10.1007/978-3-319-43681-4_17
 #' @export
 #' @examples
 #' data("sgmwcs_small_instance")

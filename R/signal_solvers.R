@@ -48,6 +48,7 @@ normalize_sgmwcs_instance <- function(g,
                                       nodes.group.by="signal",
                                       edges.group.by="signal",
                                       group.only.positive=TRUE) {
+    check_graph(g)
     if ("signals" %in% names(graph.attributes(g))) {
         warning("Input graph alredy looks like SGMWCS instance, doing nothing")
         return(g)

@@ -42,6 +42,18 @@ check_mwcs_solver <- function(x) {
     }
 }
 
+check_graph <- function(g) {
+    if (!igraph::is.igraph(g)) {
+        stop("Not a graph object")
+    }
+    if (igraph::is_directed(g)) {
+        stop("Not an undirected graph")
+    }
+    if (igraph::any_multiple(g)) {
+        stop("Multiple edges (edges connecting the same vertices) are not supported")
+    }
+}
+
 solver_ctor <- function(classes) {
     params <- as.list(parent.frame(1L))
     x <- structure(list(), class = classes)
@@ -99,13 +111,10 @@ solver_ctor <- function(classes) {
 #' @export
 solve_mwcsp <- function(solver, instance, ...) {
     check_mwcs_solver(solver)
-
-    if (!igraph::is_igraph(instance)) {
-        stop("Not a graph object")
-    }
-
-    if(igraph::is_directed(instance)){
-        stop("Not an undirected graph")
+    check_graph(instance)
+    inst_type <- get_instance_type(instance)
+    if (!inst_type$valid) {
+        stop(paste("Not a valid instance, call get_instance_type() to see errors"))
     }
 
     UseMethod("solve_mwcsp")
@@ -223,12 +232,7 @@ check_signals <- function(instance) {
 #' be treated by solve_mwcsp function and boolean showing validness of the instance.
 #' @export
 get_instance_type <- function(instance) {
-    if (!inherits(instance, "igraph")) {
-        stop("Not an igraph object")
-    }
-    if (igraph::any_multiple(instance)) {
-        stop("Multiple edges (edges connecting the same vertices) are not supported")
-    }
+    check_graph(instance)
     res <- list(type="unknown", valid=FALSE, errors=NULL)
     if ("signals" %in% names(graph.attributes(instance))) {
         res$type <- "SGMWCS"

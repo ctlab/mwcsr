@@ -88,7 +88,7 @@ of running separation process and heuristic are specified in
 \code{sep_iterations} and \code{heur_iterations}.
 }
 \references{
-Álvarez-Miranda, Eduardo, and Markus Sinnl (2017)
+Álvarez-Miranda E., Sinnl M. (2017)
 "A Relax-and-Cut framework for large-scale maximum weight connected subgraph problems"
-doi:https://doi.org/10.1016/j.cor.2017.05.015
+doi:10.1016/j.cor.2017.05.015
 }

@@ -63,7 +63,7 @@ sol <- solve_mwcsp(approx_vs, sgmwcs_example)
 }
 }
 \references{
-Loboda A. Alexander, Maxim N. Artyomov, and Alexey A. Sergushichev (2016)
+Loboda A., Artyomov M., and Sergushichev A. (2016)
 "Solving generalized maximum-weight connected subgraph problem for network enrichment analysis"
-doi:https://doi.org/10.1007/978-3-319-43681-4_17
+doi:10.1007/978-3-319-43681-4_17
 }
