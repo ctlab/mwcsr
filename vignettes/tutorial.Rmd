@@ -441,7 +441,12 @@ of `min_m$weight`.
 
 This part of the tutorial shows how `mwcsr` solvers can be combined 
 with `BioNet` package to find an active module in a protein-protein interaction
-network.
+network. You need `BioNet` and `DLBCL` packages from Bioconductor to be 
+installed in order to run following code examples.
+
+```{r, eval = FALSE, echo = FALSE} 
+if (requireNamespace("BioNet", quietly = TRUE)) {
+```
 
 Let start with generating an example scored network, following BioNet tutorial:
 
@@ -507,4 +512,8 @@ but in this case it produces the same results:
 bionet_m_exact <- solve_mwcsp(exact_solver, bionet_example)
 print(bionet_m_exact$weight)
 print(bionet_m_exact$solved_to_optimality)
+```
+
+```{r, eval = FALSE, echo = FALSE} 
+}
 ```
