@@ -21,8 +21,12 @@ class Cut;
 
 }
 
+namespace std {
+
 template<>
-struct std::hash<relax::Cut>;
+struct hash<relax::Cut>;
+
+}
 
 namespace relax {
 

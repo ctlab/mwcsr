@@ -54,7 +54,7 @@ namespace annealing {
         if (!module_vertices.contains(u)) {
             add_vertex(u);
         }
-        tokens[e] = std::move(dynamic_graph.add(v, u));
+        tokens[e] = dynamic_graph.add(v, u);
         weight += add_edge_diff(e);
         signals_add(edge.edge_signals());
     }
