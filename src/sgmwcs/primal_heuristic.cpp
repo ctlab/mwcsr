@@ -48,8 +48,8 @@ PrimalHeuristic::PrimalHeuristic(mwcsr::Graph g, std::function<double(size_t)> w
 
 Solution PrimalHeuristic::run_heuristic() {
     std::sort(active.begin(), active.end(), [this](size_t l, size_t r) {
-        if (current[l] != current[r]) {
-            return current[l] > current[r];
+        if (current.at(l) != current.at(r)) {
+            return current.at(l) > current.at(r);
         }
         return wei(l) > wei(r);
     });

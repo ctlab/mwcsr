@@ -246,9 +246,9 @@ Solution Solver::primal_heuristic() {
         return edge_variables.at(e).weight();
     };
     auto active = edges.all_active();
-    std::vector<bool> current;
-    std::transform(active.begin(), active.end(), std::back_inserter(current), [this](size_t e) {
-        return edge_variables.at(e).instant_value() == 1;
+    std::vector<bool> current(g.edgeset_size(), false);
+    std::for_each(active.begin(), active.end(), [this, &current](size_t e) {
+        current[e] = edge_variables.at(e).instant_value() == 1;
     });
     PrimalHeuristic ph(g, f, active, current);
     return ph.run_heuristic();
