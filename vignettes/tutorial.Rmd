@@ -444,76 +444,89 @@ with `BioNet` package to find an active module in a protein-protein interaction
 network. You need `BioNet` and `DLBCL` packages from Bioconductor to be 
 installed in order to run following code examples.
 
-```{r, eval = FALSE, echo = FALSE} 
-if (requireNamespace("BioNet", quietly = TRUE)) {
+```{r, message=FALSE} 
+BioNetAvailable <- FALSE
+if (requireNamespace("BioNet") && requireNamespace("DLBCL")) {
+    BioNetAvailable <- TRUE    
+}
 ```
 
 Let start with generating an example scored network, following BioNet tutorial:
 
 ```{r message=FALSE}
-library(BioNet)
-library(DLBCL)
-data(dataLym)
-data(interactome)
-pvals <- cbind(t = dataLym$t.pval, s = dataLym$s.pval)
-rownames(pvals) <- dataLym$label
-pval <- aggrPvals(pvals, order = 2, plot = FALSE)
-logFC <- dataLym$diff
-names(logFC) <- dataLym$label
-subnet <- subNetwork(dataLym$label, interactome)
-subnet <- rmSelfLoops(subnet)
-fb <- fitBumModel(pval, plot = FALSE)
-scores <- scoreNodes(subnet, fb, fdr = 0.001)
+if (BioNetAvailable) {
+    library("BioNet")
+    library("DLBCL")
+    data(dataLym)
+    data(interactome)
+    pvals <- cbind(t = dataLym$t.pval, s = dataLym$s.pval)
+    rownames(pvals) <- dataLym$label
+    pval <- aggrPvals(pvals, order = 2, plot = FALSE)
+    logFC <- dataLym$diff
+    names(logFC) <- dataLym$label
+    subnet <- subNetwork(dataLym$label, interactome)
+    subnet <- rmSelfLoops(subnet)
+    fb <- fitBumModel(pval, plot = FALSE)
+    scores <- scoreNodes(subnet, fb, fdr = 0.001)
+}
 ```
 
 Here we have network object `subnet` of type `graphNEL` and a vector of node scores `scores`:
 
 ```{r}
-subnet
-str(scores)
+if (BioNetAvailable) {
+    subnet
+    str(scores)
+}
 ```
 
 BioNet comes with a heuristic MWCS FastHeinz solver, that we can use to find the module
 following the BioNet tutorial:
 
 ```{r}
-bionet_h <- runFastHeinz(subnet, scores)
-plotModule(bionet_h, scores=scores, diff.expr=logFC)
-sum(scores[nodes(bionet_h)])
+if (BioNetAvailable) {
+    bionet_h <- runFastHeinz(subnet, scores)
+    plotModule(bionet_h, scores=scores, diff.expr=logFC)
+    sum(scores[nodes(bionet_h)])
+}
 ```
 
 We can construct an MWCS instance by converting `graphNEL` object into
 `igraph` and add node weights: 
 
 ```{r}
-bionet_example <- igraph.from.graphNEL(subnet, weight=FALSE) # ignoring edge weights of 1
-V(bionet_example)$weight <- scores[V(bionet_example)]
-get_instance_type(bionet_example)
+if (BioNetAvailable) { 
+    bionet_example <- igraph.from.graphNEL(subnet, weight=FALSE) # ignoring edge weights of 1
+    V(bionet_example)$weight <- scores[V(bionet_example)]
+    get_instance_type(bionet_example)
+}
 ```
 
 Now the instance can be solved with the relax-and-cut solver:
 
 ```{r}
-rmwcs <- rmwcs_solver()
-bionet_m <- solve_mwcsp(rmwcs, bionet_example)
-plotModule(bionet_m$graph, scores=scores, diff.expr=logFC)
+if (BioNetAvailable) {
+    rmwcs <- rmwcs_solver()
+    bionet_m <- solve_mwcsp(rmwcs, bionet_example)
+    plotModule(bionet_m$graph, scores=scores, diff.expr=logFC)
+}
 ```
 
 Note that the weight increased, compared to FastHeinz solution:
 
 ```{r}
-print(bionet_m$weight)
+if (BioNetAvailable) {
+    print(bionet_m$weight)
+}
 ```
 
 Similarly, Virgo can be used to solve the instance to provable optimality, 
 but in this case it produces the same results:
 
 ```{r, purl = FALSE, error = TRUE}
-bionet_m_exact <- solve_mwcsp(exact_solver, bionet_example)
-print(bionet_m_exact$weight)
-print(bionet_m_exact$solved_to_optimality)
-```
-
-```{r, eval = FALSE, echo = FALSE} 
+if (BioNetAvailable) {
+    bionet_m_exact <- solve_mwcsp(exact_solver, bionet_example)
+    print(bionet_m_exact$weight)
+    print(bionet_m_exact$solved_to_optimality)
 }
 ```
