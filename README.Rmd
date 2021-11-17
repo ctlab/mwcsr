@@ -18,8 +18,17 @@ A package for solving maximum weight connected subgraph (MWCS) problem and its v
 Supported MWCS variants are:
 
 * classic (simple) MWCS, where only vertices are weighted;
+* budget MWCS, where vertices are parametrized by costs and overall budget is limited; 
 * generalized MWCS (GMWCS), where both vertices and edges are weighted;
 * signal generalized MWCS (SGMWCS), where both vertices and edges are marked with weighted "signals", and a weight of a subgraph is calculated as a sum of weights of its unique signals.
+
+Currently, four solvers are supported:
+
+* heuristic relax-and-cut solver `rmwcs_solver` for MWCS and Budget MWCS;
+* heuristic relax-and-cut solver `rnc_solver` for MWCS/GMWCS/SGMWCS;
+* heuristic simulated annealing solver `annealing_solver` for MWCS/GMWCS/SGMWCS;
+* exact (if CPLEX library is available) or heuristic (without CPLEX) solver `virgo_solver` 
+for MWCS/GMWCS/SGMWCS. 
 
 
 ## Installation

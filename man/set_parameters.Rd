@@ -11,6 +11,9 @@ set_parameters(solver, ...)
 
 \item{...}{listed parameter names and values assigned to them}
 }
+\value{
+The solver with parameters changed.
+}
 \description{
 Sets values of specific parameters
 }

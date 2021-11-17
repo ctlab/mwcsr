@@ -7,10 +7,10 @@
 get_weight(solution)
 }
 \arguments{
-\item{solution}{Either `mwcsp_solution` or `igraph`` object representing the solution}
+\item{solution}{Either \code{mwcsp_solution} or `igraph`` object representing the solution}
 }
 \value{
-weight of the graph
+Weight of the subgraph
 }
 \description{
 Calculate weight of the solution. MWCS, GMWCS and SGMWCS instances are supported

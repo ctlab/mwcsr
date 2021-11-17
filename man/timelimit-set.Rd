@@ -11,6 +11,9 @@ timelimit(x) <- value
 
 \item{value}{a value to be assigned to x.}
 }
+\value{
+The solver with new timelimit set.
+}
 \description{
 Sets time limitation for a solver
 }

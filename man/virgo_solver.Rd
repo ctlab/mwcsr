@@ -10,7 +10,7 @@ virgo_solver(
   timelimit = NULL,
   penalty = 0,
   memory = "2G",
-  log = 2,
+  log = 0,
   cplex_bin = NULL,
   cplex_jar = NULL,
   mst = FALSE
@@ -18,7 +18,7 @@ virgo_solver(
 }
 \arguments{
 \item{cplex_dir}{a path to dir containing cplex_bin and cplex_jar,
-setting this to NULL sets `mst`` param to `TRUE`}
+setting this to NULL sets \verb{mst`` param to }TRUE`}
 
 \item{threads}{number of threads for simultaneous computation}
 
@@ -35,24 +35,35 @@ setting this to NULL sets `mst`` param to `TRUE`}
 \item{cplex_jar}{a path to cplex jar file}
 
 \item{mst}{whether to use approximate MST solver, no CPLEX files required with this parameter
-is set to `TRUE`}
+is set to \code{TRUE}}
+}
+\value{
+An object of class \code{mwcs_solver}.
 }
 \description{
 This solver uses reformulation of MWCS problem in terms of mixed integer
 programming. The later problem can be efficiently solved with
 commercial optimization software. Exact version of solver uses CPLEX and requires
-it to be installed.
+it to be installed. CPLEX 12.7.1 or higher is required.
 }
 \details{
-You can access solver directly using `run_main` function. See example.
+The solver currently does not support repeated negative signals, i.e. every
+negative signal should be present only once among all edges and vertices.
+
+You can access solver directly using \code{run_main} function. See example.
 }
 \examples{
-data("sgmwcs_example")
-approx_vs <- virgo_solver(mst=TRUE)
+data("sgmwcs_small_instance")
+approx_vs <- virgo_solver(mst=TRUE, threads = 1)
 approx_vs$run_main("-h")
-sol <- solve_mwcsp(approx_vs, sgmwcs_example)
+sol <- solve_mwcsp(approx_vs, sgmwcs_small_instance)
 \dontrun{
 vs <- virgo_solver(cplex_dir='/path/to/cplex')
 sol <- solve_mwcsp(approx_vs, sgmwcs_example)
 }
+}
+\references{
+Loboda A., Artyomov M., and Sergushichev A. (2016)
+"Solving generalized maximum-weight connected subgraph problem for network enrichment analysis"
+doi:10.1007/978-3-319-43681-4_17
 }

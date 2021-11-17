@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // sa_solve
 List sa_solve(List& instance, List& solver);
 RcppExport SEXP _mwcsr_sa_solve(SEXP instanceSEXP, SEXP solverSEXP) {
@@ -14,6 +19,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List& >::type instance(instanceSEXP);
     Rcpp::traits::input_parameter< List& >::type solver(solverSEXP);
     rcpp_result_gen = Rcpp::wrap(sa_solve(instance, solver));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sgmwcs_solve
+List sgmwcs_solve(List& instance, List& solver_params);
+RcppExport SEXP _mwcsr_sgmwcs_solve(SEXP instanceSEXP, SEXP solver_paramsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List& >::type instance(instanceSEXP);
+    Rcpp::traits::input_parameter< List& >::type solver_params(solver_paramsSEXP);
+    rcpp_result_gen = Rcpp::wrap(sgmwcs_solve(instance, solver_params));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -32,6 +49,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_mwcsr_sa_solve", (DL_FUNC) &_mwcsr_sa_solve, 2},
+    {"_mwcsr_sgmwcs_solve", (DL_FUNC) &_mwcsr_sgmwcs_solve, 2},
     {"_mwcsr_rmwcs_solve", (DL_FUNC) &_mwcsr_rmwcs_solve, 2},
     {NULL, NULL, 0}
 };

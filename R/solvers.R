@@ -9,41 +9,48 @@ instance_from_graph <- function(graph) {
          size = length(V(graph)))
 }
 
-vertex_attr_set <- list(list  = igraph::list.vertex.attributes,
-                        query = igraph::vertex_attr,
-                        name  = "vertex")
-
-edge_attr_set <- list(list  = igraph::list.edge.attributes,
+attr_sets <- list(V = list(list  = igraph::list.vertex.attributes,
+                      query = igraph::vertex_attr,
+                      name  = "nodes"),
+                  E = list(list  = igraph::list.edge.attributes,
                       query = igraph::edge_attr,
-                      name  = "edge")
+                      name  = "edges"))
 
-attr_values <- function(graph, attr, type = "V", nonnegative = FALSE) {
-    attr_set <- NULL
-    if (type == "V") {
-        attr_set <- vertex_attr_set
-    } else {
-        attr_set <- edge_attr_set
-    }
+validate_attr_values <- function(graph, attr, type = "V", nonnegative = FALSE) {
+    attr_set <- attr_sets[[type]]
+
     if (!(attr %in% attr_set$list(graph))) {
-        stop(paste0("Can't find ", attr_set$name, " attribute '", attr, "'"))
+        return(paste0("Couldn't find ", attr_set$name, " attribute '", attr, "'"))
     }
     values <- as.numeric(attr_set$query(graph, attr))
-    if (any(is.na(values))) {
-        stop(paste0("NA value found for the ", attr_set$name, " attribute '",
-                    attr, "' or it came from coercion to numeric type"))
+    if (!all(is.finite(values))) {
+        return(paste0("All values of ", attr_set$name, " attribute '", attr,
+                        "' must be finite."))
     }
     if (nonnegative) {
         if (any(values < 0)) {
-            stop(paste0("All values of ", attr_set$name, " attribute '", attr,
-                        "' must be nonnegative"))
+            return(paste0("All values of ", attr_set$name, " attribute '", attr,
+                        "' must be nonnegative."))
         }
     }
-    values
+    NULL
 }
 
 check_mwcs_solver <- function(x) {
     if (!inherits(x, mwcs_solver_class)) {
         stop("Not a MWCS solver")
+    }
+}
+
+check_graph <- function(g) {
+    if (!igraph::is.igraph(g)) {
+        stop("Not a graph object")
+    }
+    if (igraph::is_directed(g)) {
+        stop("Not an undirected graph")
+    }
+    if (igraph::any_multiple(g)) {
+        stop("Multiple edges (edges connecting the same vertices) are not supported")
     }
 }
 
@@ -53,32 +60,74 @@ solver_ctor <- function(classes) {
     do.call(set_parameters, c(list(solver = x), params))
 }
 
-#' Solves a MWCS instance
-#' @param solver a solver object.
-#' @param instance an MWCS instance.
-#' @param ... other arguments passed to other methods.
+#' Solves a MWCS instance.
+#'
+#' Generic function for solving MWCS instances using solvers collected in the package.
+#'
+#' MWCS instance here is represented as an undirected graph, an `igraph` object.
+#' The package supports four types of instances: Simple MWCS, Generalized MWCS,
+#' Budget MWCS, signal MWCS problems. All the necessary weights and costs are
+#' passed by setting vertex and edge attributes. See [get_instance_type] to check
+#' if the `igraph` object is a correct MWCS instance. For Simple MWCS problem
+#' numeric vertex attribute `weight` must be set. For generalized version `weight`s
+#' can be provided for edges. For budget version of the problem in addition to
+#' vertex weights it is required that `igraph` object would have `budget_cost` vertex
+#' attribute with positive numeric values.
+#'
+#' Signal MWCS instance is quite different. There is no `weight` attribute for
+#' neither vertices nor edges. Instead, vertex and edge attribute `signal` should
+#' be provided with signal names. A numeric vector containing weights for the signals
+#' should be assigned to graph attribute `signals`.
+#'
+#' See vignette for description of the supported problems. See `igraph` package
+#' documentation for more details about getting/setting necesasry attributes.
+#'
+#' @order 1
+#' @examples
+#'
+#' library(igraph)
+#'
+#' # for a MWCS instance
+#'
+#' data(mwcs_example)
+#' head(V(mwcs_example)$weight)
+#'
+#' # for a GMWCS instance
+#' data(gmwcs_example)
+#' head(E(gmwcs_example)$weight)
+#'
+#' # for a SGMWCS instance
+#' data(sgmwcs_example)
+#' head(V(sgmwcs_example)$signal)
+#' head(E(sgmwcs_example)$signal)
+#'
+#' head(sgmwcs_example$signals)
+#'
+#' @param solver a solver object returned by rmwcs_solver, annealing_solver, rnc_solver or virgo_solver.
+#' @param instance an MWCS instance, an igraph object with problem-related vertex, edge and graph attributes. See details.
+#' @param ... other arguments to be passed.
+#' @return An object of class `mwcsp_solution` consisting of resulting subgraph,
+#' its weight and other information about solution provided.
 #' @export
 solve_mwcsp <- function(solver, instance, ...) {
     check_mwcs_solver(solver)
-
-    if (!igraph::is_igraph(instance)) {
-        stop("Not a graph object")
-    }
-
-    if(igraph::is_directed(instance)){
-        stop("Not an undirected graph")
+    check_graph(instance)
+    inst_type <- get_instance_type(instance)
+    if (!inst_type$valid) {
+        stop(paste("Not a valid instance, call get_instance_type() to see errors"))
     }
 
     UseMethod("solve_mwcsp")
 }
 
 solve_mwcsp.default <- function(solver, instance) {
-    stop("An abstract solver can't solve an instance")
+    stop("A correct solver object should be provided")
 }
 
 #' Sets values of specific parameters
 #' @param solver a solver
 #' @param ... listed parameter names and values assigned to them
+#' @return The solver with parameters changed.
 #' @export
 set_parameters <- function(solver, ...) {
     params <- parameters(solver)
@@ -131,93 +180,84 @@ parameters.default <- function(...) {
 
 #' The method returns all parameters supported by specific solver
 #' @param solver a solver object
+#' @return A table containing parameter names and possible values for each parameter.
 #' @export
 parameters <- function(solver) UseMethod("parameters")
 
 #' Sets time limitation for a solver
 #' @param x a variable name.
 #' @param value a value to be assigned to x.
+#' @return The solver with new timelimit set.
 #' @export
 `timelimit<-` <- function(x, value) {
     set_parameters(x, timelimit = value)
 }
 
+check_signals <- function(instance) {
+    if (!is.numeric(instance$signals) || !all(is.finite(instance$signals))) {
+        return("`signals` attribute is not a vector of finite numbers")
+    }
+
+    if (any(duplicated(names(instance$signals)))) {
+        return("Graph `signals` attribute has duplicated names")
+    }
+
+    if (!"signal" %in% list.vertex.attributes(instance)) {
+        return("No `signal` attribute for nodes")
+    }
+
+    if (!all(V(instance)$signal %in% names(instance$signals))) {
+        return("All node signals should be present in `signals` graph attribute")
+    }
+
+    if (!"signal" %in% list.edge.attributes(instance)) {
+        return("No `signal` attribute for edges")
+    }
+
+    if (!all(E(instance)$signal %in% names(instance$signals))) {
+        return("All edge signals should be present in `signals` graph attribute")
+    }
+    NULL
+}
 
 #' Check the type and the validity of an MWCS instance
 #' @param instance `igraph` object, containing an instance to be checked
-#' @return a list with members `type` containing the type of the instance,
+#' @return A list with members `type` containing the type of the instance,
 #' `valid` -- boolean flag indicating whether the instance is valid or not,
 #' `errors` -- a character vector containing the error messages
 #' @examples
 #' data(mwcs_example)
 #' get_instance_type(mwcs_example)
+#' @return A list with two fields: the type of the instance with which it will
+#' be treated by solve_mwcsp function and boolean showing validness of the instance.
 #' @export
 get_instance_type <- function(instance) {
-    res <- list(type="unknown", valid=FALSE, errors=character())
+    check_graph(instance)
+    res <- list(type="unknown", valid=FALSE, errors=NULL)
     if ("signals" %in% names(graph.attributes(instance))) {
         res$type <- "SGMWCS"
+        res$errors <- check_signals(instance)
+    } else if ("weight" %in% list.edge.attributes(instance) &&
+               "weight" %in% list.vertex.attributes(instance)) {
 
-        if (!is.numeric(instance$signals) || !all(is.finite(instance$signals))) {
-            res$errors <- "`signals` attribute is not a vector of finite numbers"
-            return(res)
-        }
-
-        if (!"signal" %in% list.vertex.attributes(instance)) {
-            res$errors <- "No `signal` attribute for nodes"
-            return(res)
-        }
-
-        if (!all(V(instance)$signal %in% names(instance$signals))) {
-            res$errors <- "All node signals should be present in `signals` graph attribute"
-            return(res)
-        }
-
-        if (!"signal" %in% list.edge.attributes(instance)) {
-            res$errors <- "No `signal` attribute for edges"
-            return(res)
-        }
-
-        if (!all(E(instance)$signal %in% names(instance$signals))) {
-            res$errors <- "All edge signals should be present in `signals` graph attribute"
-            return(res)
-        }
-
-        res$valid <- TRUE
-        return(res)
-    }
-
-    if ("weight" %in% list.edge.attributes(instance) &&
-        "weight" %in% list.vertex.attributes(instance)) {
         res$type <- "GMWCS"
-
-        if (!all(is.finite(V(instance)$weight))) {
-            res$errors <- "Nodes `weight` attribute is not a vector of finite numbers"
-            return(res)
+        res$errors <- c(validate_attr_values(instance, "weight", "V"),
+                        validate_attr_values(instance, "weight", "E"))
+    } else if ("weight" %in% list.vertex.attributes(instance)) {
+        if ("budget_cost" %in% list.vertex.attributes(instance)) {
+            res$type <- "Budget MWCS"
+            res$errors <- validate_attr_values(instance, "budget_cost", "V",
+                                               nonnegative = TRUE)
+        } else {
+            res$type <- "MWCS"
         }
-
-        if (!all(is.finite(E(instance)$weight))) {
-            res$errors <- "Edges `weight` attribute is not a vector of finite numbers"
-            return(res)
-        }
-
-
-        res$valid <- TRUE
-        return(res)
+        res$errors <- c(res$errors, validate_attr_values(instance,
+                                                         "weight", "V"))
+    } else {
+        res$errors <- "Can't determine type of the instance"
     }
 
-    if ("weight" %in% list.vertex.attributes(instance)) {
-        res$type <- "MWCS"
+    res$valid <- is.null(res$errors)
 
-        if (!all(is.finite(V(instance)$weight))) {
-            res$errors <- "Nodes `weight` attribute is not a vector of finite numbers"
-            return(res)
-        }
-
-        res$valid <- TRUE
-        return(res)
-    }
-
-    res$errors <- "Can't determine type of the instance"
-    return(res)
-
+    res
 }

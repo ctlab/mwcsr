@@ -1,3 +1,26 @@
+to_signal_instance <- function(instance) {
+    signal_instance <- NULL
+    inst_type <- get_instance_type(instance)
+
+    if (inst_type$type == "SGMWCS" && inst_type$valid) {
+        signal_instance <- instance
+    } else if (inst_type$type == "GMWCS" && inst_type$valid) {
+        signal_instance <- normalize_sgmwcs_instance(instance,
+                                                     nodes.group.by = NULL,
+                                                     edges.group.by = NULL)
+    } else if (inst_type$type == "MWCS" && inst_type$valid) {
+        inst2 <- instance
+        E(inst2)$weight <- 0
+        signal_instance <- normalize_sgmwcs_instance(inst2,
+                                                     nodes.group.by = NULL,
+                                                     edges.group.by = NULL)
+    } else {
+        stop("Not a valid MWCS, GMWCS or SGMWCS instance")
+    }
+    signal_instance
+}
+
+
 #' Helper function to convert an `igraph` object into a proper SGMWCS instance
 #'
 #' This function generates new `igraph` object with additional `signals` field added.
@@ -12,9 +35,10 @@
 #' @param nodes.group.by Nodes grouping column (e.g. signal, group, class)
 #' @param edges.group.by Edges grouping column
 #' @param group.only.positive Whether to group only positive-scored nodes/edges#'
+#' @return An `igraph` object with proper attributes set.
 #' @export
 #' @examples
-#' load(system.file("gatom_example.rda", package = "mwcsr"))
+#' data("gatom_example")
 #' normalize_sgmwcs_instance(gatom_example)
 #'
 #' @importFrom stats setNames
@@ -24,6 +48,7 @@ normalize_sgmwcs_instance <- function(g,
                                       nodes.group.by="signal",
                                       edges.group.by="signal",
                                       group.only.positive=TRUE) {
+    check_graph(g)
     if ("signals" %in% names(graph.attributes(g))) {
         warning("Input graph alredy looks like SGMWCS instance, doing nothing")
         return(g)

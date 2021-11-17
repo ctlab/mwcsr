@@ -11,6 +11,6 @@ An object of class \code{igraph} of length 10.
 sgmwcs_example
 }
 \description{
-Instance is based on `gatom` package.
+Instance is based on \code{gatom} package.
 }
 \keyword{datasets}

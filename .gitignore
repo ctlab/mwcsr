@@ -6,6 +6,9 @@
 .idea
 lib
 vignettes/tutorial_cache
+[Cc][Mm]ake*
+doc
+Meta
 
 # vim temp files
 *~

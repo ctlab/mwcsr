@@ -1,4 +1,4 @@
-data("GAM")
+data("gam_example")
 set.seed(42L)
 
 test_that("rmwcs solver can be constructed with specific parameters", {
@@ -8,10 +8,20 @@ test_that("rmwcs solver can be constructed with specific parameters", {
     expect_equal(solver$timelimit, 20)
 })
 
+
+test_that("one vertex best solution is returned", {
+    solver <- rmwcs_solver()
+    g <- igraph::make_graph(c("A", "B"), directed = FALSE)
+    V(g)$weight <- c(5, -2)
+    solution <- solve_mwcsp(solver, g)
+    expect_equal(solution$weight, 5)
+})
+
 test_that("rmwcs solver works on specific test", {
     solver <- rmwcs_solver()
-    g <- make_ring(5) %>% set.vertex.attribute("weight", value = 1:-3)
+    g <- make_ring(5) %>% set.vertex.attribute("weight", value = 2:-2)
     s <- solve_mwcsp(solver, g)
+    expect_equal(s$weight, 3)
     expect_true(s$solved_to_optimality)
 })
 
@@ -40,10 +50,8 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
     test_graph(make_full_graph)
 })
 
-test_that("rmwcs solver builds connected solutions on GAM instances", {
+test_that("rmwcs solver builds connected solutions on a GAM instance", {
     solver <- rmwcs_solver()
-    for (graph in GAM) {
-        sol <- solve_mwcsp(solver, graph)
-        expect_true(is.connected(sol$graph))
-    }
+    sol <- solve_mwcsp(solver, gam_example)
+    expect_true(is.connected(sol$graph))
 })

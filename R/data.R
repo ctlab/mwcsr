@@ -1,4 +1,4 @@
-#' GAM instances for MWCS problem
+#' GAM instance for MWCS problem
 #'
 #' A dataset containing some real-world instances appeared in network
 #' enrichment analysis tool
@@ -6,7 +6,7 @@
 #'
 #' @format A vector of named vertex-weighted igraph instances
 #' @source \url{http://dimacs11.zib.de/instances/MWCS-GAM.zip}
-"GAM"
+"gam_example"
 
 #' Example MWCS instance
 #'
@@ -24,6 +24,20 @@
 "sgmwcs_example"
 
 
-#' Example MWCS instance obtainet from BioNet package tutorial
+#' Example MWCS instance obtained from BioNet package tutorial
 #'
 "bionet_example"
+
+#' Example of graph from which an SGMWCS instance can be obtained
+#'
+#' The graph is based on `gatom` package
+"gatom_example"
+
+#' Small example of MWCS instance for demonstration purposes.
+"mwcs_small_instance"
+
+#' Small example of GMWCS instance for demonstration purposes.
+"gmwcs_small_instance"
+
+#' Small example of SGMWCS instance for demonstration purposes.
+"sgmwcs_small_instance"

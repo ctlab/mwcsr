@@ -7,7 +7,6 @@ parameters.scipjack_solver <- function(solver) {
         parameter("config_file", type="file", is_null_possible=TRUE))
 }
 
-#' @export
 write_stp <- function(g, stp_file) {
     edges <- igraph::as_edgelist(g, names = FALSE)
     nodes <- cbind("T", seq_along(V(g)), V(g)$weight)
@@ -93,9 +92,10 @@ run_scip_solver <- function(solver, instance) {
     solution(ret, get_weight(ret), TRUE, stats=NULL)
 }
 
-#' @export
+#' Construct a SCIP-jack solver
+#'
 #' This solver requires STP extension of \href{https://scipopt.org/#scipoptsuite}{SCIP-jack} solver.
-#' To use this class you first need download and build `SCIP-jack` and
+#' To use this class you first need to download and build `SCIP-jack` and
 #' `SCIPSTP` application.
 #'
 #' You can access solver directly using `run_scip` function. See example.
@@ -118,6 +118,7 @@ scipjack_solver <- function(scipstp_bin,
 }
 
 #' @rdname solve_mwcsp
+#' @order 5
 #' @export
 #'
 solve_mwcsp.scipjack_solver <- function(solver, instance, ...) {

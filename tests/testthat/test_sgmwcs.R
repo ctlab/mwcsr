@@ -38,3 +38,17 @@ test_that("normalize_sgmwcs_instance works", {
     expect_error(normalize_sgmwcs_instance(g1))
 
 })
+
+test_that("get_instance_type fails when signal names are repeated", {
+    et <- data.frame(from = c(1, 2, 2),
+                     to = c(2, 3, 4),
+                     signal = c("S5", "S6", "S7"),
+                     weight = c(-1, -1, -1))
+    nt <- data.frame(node=c(1, 2, 3, 4),
+                     signal=c("S1", "S2", "S3", "S4"),
+                     weight = c(-1, -1, -1, -1))
+    g <- graph_from_data_frame(et, directed = FALSE, vertices = nt)
+    instance <- normalize_sgmwcs_instance(g)
+    instance$signals <- c(instance$signals, instance$signals[1])
+    expect_true(!get_instance_type(instance)$valid)
+})
