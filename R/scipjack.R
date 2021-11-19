@@ -120,7 +120,6 @@ scipjack_solver <- function(scipstp_bin,
 #' @rdname solve_mwcsp
 #' @order 5
 #' @export
-#'
 solve_mwcsp.scipjack_solver <- function(solver, instance, ...) {
     inst_type <- get_instance_type(instance)
     if (inst_type$type == "MWCS" && inst_type$valid) {

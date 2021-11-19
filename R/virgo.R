@@ -21,8 +21,8 @@ init_solver <- function(solver) {
     if (is.null(solver$cplex_bin) || is.null(solver$cplex_jar)) {
         command <- c(command, "-cp", solver_jar, virgo_java_class)
     } else {
-        command <- c(command, sprintf("-Djava.library.path=%s", solver$cplex_bin),
-                    "-cp", paste(solver_jar, solver$cplex_jar, sep=':'),
+        command <- c(command, sprintf("-Djava.library.path=%s", shQuote(solver$cplex_bin)),
+                    "-cp", paste(shQuote(solver_jar), shQuote(solver$cplex_jar), sep=':'),
                     virgo_java_class
                     )
 
@@ -51,7 +51,8 @@ find_cplex_jar <- function(cplex_dir) {
 }
 
 find_cplex_bin <- function(cplex_dir) {
-    files <- list.files(cplex_dir, pattern = "libcplex\\d+.(so|jnilib|dll)", recursive=T, full.names = TRUE)
+    cplex_lib_pattern <- "(cplex\\d+\\.dll)|libcplex\\d+.(so|jnilib|dll)"
+    files <- list.files(cplex_dir, pattern = cplex_lib_pattern, recursive=T, full.names = TRUE)
     if (length(files) > 0) {
         return(dirname(files[1]))
     } else {
