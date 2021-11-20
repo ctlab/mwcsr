@@ -11,11 +11,11 @@ Authors@R: c(person("Alexander", "Loboda", email = "aleks.loboda@gmail.com", rol
     person("Barak Naveh and Contributors", role = "cph", comment = "Bundled JGraphT package"),
     person("The Apache Software Foundation", role = "cph", comment = "Bundled Apache Commons Math package"))
 Description: Algorithms for solving various Maximum
-    Weight Connected Subgraph Problems, including variants with 
+    Weight Connected Subgraph Problems, including variants with
     budget constraints, cardinality constraints, weighted edges and signals.
     The package represents an R interface to high-efficient solvers based on
-    relax-and-cut approach (Álvarez-Miranda E., Sinnl M. (2017) doi:10.1016/j.cor.2017.05.015)
-    mixed-integer programming (Loboda A., Artyomov M., and Sergushichev A. (2016) doi:10.1007/978-3-319-43681-4_17)
+    relax-and-cut approach (Álvarez-Miranda E., Sinnl M. (2017) <doi:10.1016/j.cor.2017.05.015>)
+    mixed-integer programming (Loboda A., Artyomov M., and Sergushichev A. (2016) <doi:10.1007/978-3-319-43681-4_17>)
     and simulated annealing.
 Depends: R (>= 3.5)
 Imports:
