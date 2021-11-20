@@ -113,14 +113,12 @@ run_scip_solver <- function(solver, instance) {
 
 scipjack_solver <- function(scipstp_bin,
                             config_file=NULL) {
-    scipstp_bin <- normalizePath(scipstp_bin)
     solver_ctor((c(scipjack_class, mwcs_solver_class)))
 }
 
 #' @rdname solve_mwcsp
 #' @order 5
 #' @export
-#'
 solve_mwcsp.scipjack_solver <- function(solver, instance, ...) {
     inst_type <- get_instance_type(instance)
     if (inst_type$type == "MWCS" && inst_type$valid) {
