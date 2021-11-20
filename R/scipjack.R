@@ -113,7 +113,6 @@ run_scip_solver <- function(solver, instance) {
 
 scipjack_solver <- function(scipstp_bin,
                             config_file=NULL) {
-    scipstp_bin <- normalizePath(scipstp_bin)
     solver_ctor((c(scipjack_class, mwcs_solver_class)))
 }
 

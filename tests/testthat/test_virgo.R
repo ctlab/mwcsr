@@ -1,4 +1,4 @@
-cplex_dir <- Sys.getenv("CPLEX_HOME")
+cplex_dir <- normalizePath(Sys.getenv("CPLEX_HOME"))
 
 test_that("virgo_solver works on MWCS", {
     if (!file.exists(cplex_dir)) {

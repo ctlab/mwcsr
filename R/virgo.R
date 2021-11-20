@@ -21,8 +21,9 @@ init_solver <- function(solver) {
     if (is.null(solver$cplex_bin) || is.null(solver$cplex_jar)) {
         command <- c(command, "-cp", solver_jar, virgo_java_class)
     } else {
+        sep <- ifelse(.Platform$OS.type == "unix", ":", ";")
         command <- c(command, sprintf("-Djava.library.path=%s", shQuote(solver$cplex_bin)),
-                    "-cp", paste(shQuote(solver_jar), shQuote(solver$cplex_jar), sep=':'),
+                    "-cp", shQuote(paste(solver_jar, solver$cplex_jar, sep=sep)),
                     virgo_java_class
                     )
 
