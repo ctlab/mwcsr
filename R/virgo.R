@@ -145,8 +145,10 @@ virgo_solver <- function (cplex_dir,
 write_files <- function(g, nodes_file, edges_file, signals_file, signals) {
     edges <- igraph::as_edgelist(g, names = FALSE)
     write_tbl <- function(x, file, rn) {
-        utils::write.table(x, file = file, quote = FALSE, sep = "\t",
-                       row.names = rn, col.names = FALSE)
+        utils::write.table(format(x, scientific = F),
+            file = file, quote = FALSE, sep = "\t",
+            row.names = rn, col.names = FALSE
+        )
     }
     if (is.null(signals)) {
         node_weights <- V(g)$weight

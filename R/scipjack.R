@@ -19,18 +19,18 @@ write_stp <- function(g, stp_file) {
 
     append("SECTION Comments ")
     append("Problem \"Maximum Node Weight Connected Subgraph\"")
-    append("END\n")
+    append("END\n\n")
 
     append("SECTION Graph")
     append(paste0("Nodes ", n))
     append(paste0("Edges ", length(edges)/2))
     utils::write.table(cbind("E", edges), file=stp_file, quote=FALSE, sep = " ",
             col.names=FALSE, row.names=FALSE, append=TRUE)
-    append("END\nSECTION Terminals")
+    append("END\n\nSECTION Terminals")
     append(paste0("Terminals ", n))
     utils::write.table(nodes, file=stp_file, quote = FALSE, sep = " ",
             col.names=FALSE, row.names=FALSE, append=TRUE)
-    append("END\nEOF")
+    append("END\n\nEOF")
 }
 
 append_output_file <- function(config_path, output_file) {
