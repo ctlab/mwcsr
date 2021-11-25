@@ -9,7 +9,7 @@ parameters.scipjack_solver <- function(solver) {
 
 write_stp <- function(g, stp_file) {
     edges <- igraph::as_edgelist(g, names = FALSE)
-    nodes <- cbind("T", seq_along(V(g)), V(g)$weight)
+    nodes <- cbind("T", seq_along(V(g)), format(V(g)$weight, scientific=F))
     n <- length(V(g))
     append <- function(s) {
         write(s, file=stp_file, append=TRUE)
