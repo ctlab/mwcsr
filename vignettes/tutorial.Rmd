@@ -254,6 +254,7 @@ Currently, four solvers are supported:
 * heuristic simulated annealing solver `annealing_solver` for MWCS/GMWCS/SGMWCS;
 * exact (if CPLEX library is available) or heuristic (without CPLEX) solver `virgo_solver` 
 for MWCS/GMWCS/SGMWCS. 
+* exact SCIP-Jack (if SCIP is available) solver `scipjack_solver` for MWCS;
 
 While selecting a particular solver depends on the particular class of instances, 
 the general recommendations are:
@@ -476,16 +477,16 @@ network. You need `BioNet` and `DLBCL` packages from Bioconductor to be
 installed in order to run following code examples.
 
 ```{r, message=FALSE} 
-BioNetAvailable <- FALSE
+BioNetInstalled <- FALSE
 if (requireNamespace("BioNet") && requireNamespace("DLBCL")) {
-    BioNetAvailable <- TRUE    
+    BioNetInstalled <- TRUE    
 }
 ```
 
 Let start with generating an example scored network, following BioNet tutorial:
 
 ```{r message=FALSE}
-if (BioNetAvailable) {
+if (BioNetInstalled) {
     library("BioNet")
     library("DLBCL")
     data(dataLym)
@@ -505,7 +506,7 @@ if (BioNetAvailable) {
 Here we have network object `subnet` of type `graphNEL` and a vector of node scores `scores`:
 
 ```{r}
-if (BioNetAvailable) {
+if (BioNetInstalled) {
     subnet
     str(scores)
 }
@@ -515,7 +516,7 @@ BioNet comes with a heuristic MWCS FastHeinz solver, that we can use to find the
 following the BioNet tutorial:
 
 ```{r}
-if (BioNetAvailable) {
+if (BioNetInstalled) {
     bionet_h <- runFastHeinz(subnet, scores)
     plotModule(bionet_h, scores=scores, diff.expr=logFC)
     sum(scores[nodes(bionet_h)])
@@ -526,7 +527,7 @@ We can construct an MWCS instance by converting `graphNEL` object into
 `igraph` and add node weights: 
 
 ```{r}
-if (BioNetAvailable) { 
+if (BioNetInstalled) { 
     bionet_example <- igraph.from.graphNEL(subnet, weight=FALSE) # ignoring edge weights of 1
     V(bionet_example)$weight <- scores[V(bionet_example)]
     get_instance_type(bionet_example)
@@ -536,7 +537,7 @@ if (BioNetAvailable) {
 Now the instance can be solved with the relax-and-cut solver:
 
 ```{r}
-if (BioNetAvailable) {
+if (BioNetInstalled) {
     rmwcs <- rmwcs_solver()
     bionet_m <- solve_mwcsp(rmwcs, bionet_example)
     plotModule(bionet_m$graph, scores=scores, diff.expr=logFC)
@@ -546,7 +547,7 @@ if (BioNetAvailable) {
 Note that the weight increased, compared to FastHeinz solution:
 
 ```{r}
-if (BioNetAvailable) {
+if (BioNetInstalled) {
     print(bionet_m$weight)
 }
 ```
@@ -555,7 +556,7 @@ Similarly, Virgo can be used to solve the instance to provable optimality,
 but in this case it produces the same results:
 
 ```{r, purl = FALSE, error = TRUE}
-if (BioNetAvailable) {
+if (BioNetInstalled) {
     bionet_m_exact <- solve_mwcsp(exact_solver, bionet_example)
     print(bionet_m_exact$weight)
     print(bionet_m_exact$solved_to_optimality)
