@@ -143,10 +143,12 @@ virgo_solver <- function (cplex_dir,
 }
 
 write_files <- function(g, nodes_file, edges_file, signals_file, signals) {
+    # avoid printing scientific values
+    scipen = getOption('scipen')
+    options(scipen=max(scipen, 50))
     edges <- igraph::as_edgelist(g, names = FALSE)
     write_tbl <- function(x, file, rn) {
-        utils::write.table(format(x, trim = T, scientific = F),
-            file = file, quote = FALSE, sep = "\t",
+        utils::write.table(x, file = file, quote = FALSE, sep = "\t",
             row.names = rn, col.names = FALSE
         )
     }
@@ -169,6 +171,7 @@ write_files <- function(g, nodes_file, edges_file, signals_file, signals) {
     }
     write_tbl(vertices, nodes_file, FALSE)
     write_tbl(edges, edges_file, FALSE)
+    options(scipen=scipen)
 }
 
 cli_args <- function(solver, nodes.file, edges.file, signals.file = NULL, stats.file = NULL) {
