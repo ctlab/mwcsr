@@ -17,7 +17,7 @@ parameters.virgo_solver <- function(solver) {
 init_solver <- function(solver) {
     solver_name <- "virgo-solver.jar"
     solver_jar <- system.file("java", solver_name, package="mwcsr")
-    command <- paste0("-XX:ActiveProcessorCount=", solver$threads)
+    command <- ""
     if (is.null(solver$cplex_bin) || is.null(solver$cplex_jar)) {
         command <- c(command, "-cp", solver_jar, virgo_java_class)
     } else {
