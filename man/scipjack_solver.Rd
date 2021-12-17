@@ -30,5 +30,5 @@ sol <- solve_mwcsp(scip, bionet_example)
 \references{
 Rehfeldt D., Koch T. (2019)
 "Combining NP-Hard Reduction Techniques and Strong Heuristics in an Exact Algorithm for the Maximum-Weight Connected Subgraph Problem."
-\url{doi:10.1137/17M1145963}
+\doi{10.1137/17M1145963}
 }

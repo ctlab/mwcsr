@@ -87,7 +87,7 @@ find_cplex_bin <- function(cplex_dir) {
 #' @return An object of class `mwcs_solver`.
 #' @references Loboda A., Artyomov M., and Sergushichev A. (2016)
 #' "Solving generalized maximum-weight connected subgraph problem for network enrichment analysis"
-#'  <doi:10.1007/978-3-319-43681-4_17>
+#' \doi{10.1007/978-3-319-43681-4_17}
 #' @export
 #' @examples
 #' data("sgmwcs_small_instance")

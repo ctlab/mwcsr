@@ -106,7 +106,7 @@ run_scip_solver <- function(solver, instance) {
 #' @export
 #' @references Rehfeldt D., Koch T. (2019)
 #' "Combining NP-Hard Reduction Techniques and Strong Heuristics in an Exact Algorithm for the Maximum-Weight Connected Subgraph Problem."
-#' <doi:10.1137/17M1145963>
+#' \doi{10.1137/17M1145963}
 #' @examples
 #' \dontrun{
 #' data("bionet_example")

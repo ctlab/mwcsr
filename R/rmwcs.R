@@ -81,7 +81,7 @@ parameters.rmwcs_solver <- function(solver) {
 #' @return An object of class `mwcs_solver`.
 #' @references Álvarez-Miranda E., Sinnl M. (2017)
 #' "A Relax-and-Cut framework for large-scale maximum weight connected subgraph problems"
-#' <doi:10.1016/j.cor.2017.05.015>
+#' \doi{10.1016/j.cor.2017.05.015}
 #' @export
 #' @import igraph
 rmwcs_solver <- function(timelimit = 1800L,
