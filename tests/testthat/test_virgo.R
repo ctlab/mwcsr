@@ -49,6 +49,15 @@ test_that("heuristic virgo_solver works on SGMWCS", {
     expect_equal(solution$weight, 51)
 })
 
+test_that("virgo solver doesn't fail on empty output", {
+    solver <- virgo_solver(cplex_dir = NULL)
+    g <- igraph::make_full_graph(2)
+    igraph::E(g)$signal <- "S1"
+    igraph::V(g)$signal <- c("S2", "S3")
+    g$signals <- stats::setNames(c(-1, -2, -1), c("S1", "S2", "S3"))
+    solve_mwcsp(solver, g)
+})
+
 test_that("virgo solver does not supported repeated negative signals", {
     sgmwcs_edges <- data.frame(from = c(1, 2, 2, 3, 4, 5, 1),
                                to = c(2, 3, 4, 4, 6, 6, 5),

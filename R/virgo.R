@@ -210,8 +210,19 @@ run_solver <- function(solver, instance, sgmwcs, signals = NULL) {
     args <- cli_args(solver, nodes.file, edges.file, signals.file, stats.file)
     solver$run_main(args, solver$log)
 
-    nodes <- utils::read.table(paste0(nodes.file, ".out"), comment.char = "#")
-    edges <- utils::read.table(paste0(edges.file, ".out"), comment.char = "#")
+    colnames <- NULL
+    if (sgmwcs) {
+        colnames <- list(nodes = c("node"),
+                         edges = c("from", "to", "signal"))
+    } else {
+        colnames <- list(nodes = c("node", "score"),
+                         edges = c("from", "to", "score"))
+    }
+
+    nodes <- utils::read.table(paste0(nodes.file, ".out"), comment.char = "#",
+                               col.names = colnames$nodes)
+    edges <- utils::read.table(paste0(edges.file, ".out"), comment.char = "#",
+                               col.names = colnames$edges)
 
     if (!sgmwcs) {
         nodes <- nodes[nodes[, 2] != "n/a", ]
