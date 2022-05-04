@@ -39,6 +39,20 @@ test_that("normalize_sgmwcs_instance works", {
 
 })
 
+# METNET-T-57
+test_that("normalize_sgmwcs_instance handles NA signals as unique", {
+    et <- data.frame(from = c(1, 2, 2),
+                     to = c(2, 3, 4),
+                     signal = c(NA, NA, NA),
+                     weight = c(-1, -2, 3))
+    nt <- data.frame(node=c(1, 2, 3, 4),
+                     signal=c(NA, NA, NA, "S4"),
+                     weight = c(-10, 1, 4, -1))
+    g <- graph_from_data_frame(et, directed = FALSE, vertices = nt)
+    instance <- normalize_sgmwcs_instance(g)
+    expect_true(get_instance_type(instance)$valid)
+})
+
 test_that("get_instance_type fails when signal names are repeated", {
     et <- data.frame(from = c(1, 2, 2),
                      to = c(2, 3, 4),

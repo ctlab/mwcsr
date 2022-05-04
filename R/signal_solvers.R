@@ -65,8 +65,9 @@ normalize_sgmwcs_instance <- function(g,
 
     if (!is.null(nodes.group.by)) {
         if (all(nodes.group.by %in% colnames(nt))) {
-            # :ToDo: add logic for NA handling
-            nt$signal <- do.call(paste, c(nt[, nodes.group.by, drop=F], sep="\r"))
+            signalParts <- nt[, nodes.group.by, drop=F]
+            signalParts[is.na(signalParts)] <- paste0("__n", seq_len(sum(is.na(signalParts))))
+            nt$signal <- do.call(paste, c(signalParts, sep="\r"))
             if (group.only.positive) {
                 nt$signal <- paste(nt$signal, ifelse(nt[[nodes.weight.column]] > 0,
                                                      "",
@@ -95,8 +96,10 @@ normalize_sgmwcs_instance <- function(g,
 
     if (!is.null(edges.group.by)) {
         if (all(edges.group.by %in% colnames(et))) {
-            # :ToDo: add logic for NA handling
-            et$signal <- do.call(paste, c(et[, edges.group.by, drop=F], sep="\r"))
+            signalParts <- et[, edges.group.by, drop=F]
+            signalParts[is.na(signalParts)] <- paste0("__e", seq_len(sum(is.na(signalParts))))
+            et$signal <- do.call(paste, c(signalParts, sep="\r"))
+
             if (group.only.positive) {
                 et$signal <- paste(et$signal, ifelse(et[[edges.weight.column]] > 0,
                                                      "",
