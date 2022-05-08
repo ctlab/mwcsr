@@ -55,3 +55,11 @@ test_that("rmwcs solver builds connected solutions on a GAM instance", {
     sol <- solve_mwcsp(solver, gam_example)
     expect_true(is.connected(sol$graph))
 })
+
+test_that("rmwcs solver works with empty solutions", {
+    solver <- rmwcs_solver()
+    g <- graph.ring(10)
+    V(g)$weight <- -1
+    sol <- solve_mwcsp(solver, g)
+    expect_true(vcount(sol$graph) == 0)
+})
