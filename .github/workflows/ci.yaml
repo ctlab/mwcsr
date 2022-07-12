@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.CTLAB_TOKEN }}
-
     steps:
       - uses: actions/checkout@v2
 
