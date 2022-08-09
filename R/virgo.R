@@ -11,13 +11,15 @@ parameters.virgo_solver <- function(solver) {
          parameter("penalty", type = "float", nonnegative = TRUE, is_null_possible=FALSE),
          parameter("memory", type = "char"),
          parameter("mst", type = "logical"),
+         parameter("dryrun", type = "logical", is_null_possible=FALSE),
+         parameter("jvmargs", type = "char", is_null_possible = TRUE),
          parameter("log", type = "integer", is_null_possible=TRUE))
 }
 
 init_solver <- function(solver) {
     solver_name <- "virgo-solver.jar"
     solver_jar <- system.file("java", solver_name, package="mwcsr")
-    command <- ""
+    command <- c(paste0("-Xmx", solver$memory), solver$jvmargs)
     if (is.null(solver$cplex_bin) || is.null(solver$cplex_jar)) {
         command <- c(command, "-cp", solver_jar, virgo_java_class)
     } else {
@@ -28,8 +30,13 @@ init_solver <- function(solver) {
                     )
 
     }
+
     solver$run_main <- function(cli_args, loglevel = 2) {
         exit_code <- NULL
+        if (solver$dryrun) {
+            cat(paste(c(shQuote("java"), command, cli_args), collapse=" "), "\n")
+            stop("Dry run")
+        }
         if (loglevel == 0) {
             exit_code <- system2("java", c(command, cli_args), stdout = FALSE)
         } else {
@@ -84,6 +91,8 @@ find_cplex_bin <- function(cplex_dir) {
 #' @param penalty additional edge penalty for graph edges
 #' @param mst whether to use approximate MST solver, no CPLEX files required with this parameter
 #'            is set to `TRUE`
+#' @param dryrun if set to `TRUE` only prints the solver command, without actually running it
+#' @param jvmargs character vector with additional arguments for Java Virtual Machine
 #' @return An object of class `mwcs_solver`.
 #' @references Loboda A., Artyomov M., and Sergushichev A. (2016)
 #' "Solving generalized maximum-weight connected subgraph problem for network enrichment analysis"
@@ -106,7 +115,10 @@ virgo_solver <- function (cplex_dir,
                           log = 0,
                           cplex_bin=NULL,
                           cplex_jar=NULL,
-                          mst=FALSE) {
+                          mst=FALSE,
+                          dryrun=FALSE,
+                          jvmargs=NULL
+                          ) {
 
     if (missing(cplex_dir)) {
         if (!mst && (is.null(cplex_bin) || is.null(cplex_jar))) {
