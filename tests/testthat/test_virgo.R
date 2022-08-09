@@ -55,7 +55,7 @@ test_that("virgo solver doesn't fail on empty output", {
     igraph::E(g)$signal <- "S1"
     igraph::V(g)$signal <- c("S2", "S3")
     g$signals <- stats::setNames(c(-1, -2, -1), c("S1", "S2", "S3"))
-    solve_mwcsp(solver, g)
+    expect_true(!is.null(solve_mwcsp(solver, g)))
 })
 
 test_that("virgo solver does not supported repeated negative signals", {
