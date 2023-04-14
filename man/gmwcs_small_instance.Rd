@@ -5,7 +5,7 @@
 \alias{gmwcs_small_instance}
 \title{Small example of GMWCS instance for demonstration purposes.}
 \format{
-An object of class \code{igraph} of length 10.
+An object of class \code{igraph} of length 5.
 }
 \usage{
 gmwcs_small_instance

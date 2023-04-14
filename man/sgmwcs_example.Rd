@@ -5,7 +5,7 @@
 \alias{sgmwcs_example}
 \title{Example SGMWCS instance}
 \format{
-An object of class \code{igraph} of length 10.
+An object of class \code{igraph} of length 194.
 }
 \usage{
 sgmwcs_example

@@ -13,7 +13,9 @@ virgo_solver(
   log = 0,
   cplex_bin = NULL,
   cplex_jar = NULL,
-  mst = FALSE
+  mst = FALSE,
+  dryrun = FALSE,
+  jvmargs = NULL
 )
 }
 \arguments{
@@ -36,6 +38,10 @@ setting this to NULL sets \verb{mst`` param to }TRUE`}
 
 \item{mst}{whether to use approximate MST solver, no CPLEX files required with this parameter
 is set to \code{TRUE}}
+
+\item{dryrun}{if set to \code{TRUE} only prints the solver command, without actually running it}
+
+\item{jvmargs}{character vector with additional arguments for Java Virtual Machine}
 }
 \value{
 An object of class \code{mwcs_solver}.

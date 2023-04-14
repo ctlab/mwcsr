@@ -5,7 +5,7 @@
 \alias{gatom_example}
 \title{Example of graph from which an SGMWCS instance can be obtained}
 \format{
-An object of class \code{igraph} of length 10.
+An object of class \code{igraph} of length 194.
 }
 \usage{
 gatom_example
