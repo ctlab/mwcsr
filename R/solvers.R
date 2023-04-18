@@ -120,7 +120,7 @@ solve_mwcsp <- function(solver, instance, ...) {
     UseMethod("solve_mwcsp")
 }
 
-solve_mwcsp.default <- function(solver, instance) {
+solve_mwcsp.default <- function(solver, instance, ...) {
     stop("A correct solver object should be provided")
 }
 
