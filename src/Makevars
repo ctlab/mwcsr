@@ -1,5 +1,3 @@
-CXX_STD = CXX11
-
 # echo rmwcs/*.cpp *.cpp annealing/*.cpp sgmwcs/*.cpp 
 SOURCES = rmwcs/Instance.cpp rmwcs/Parameters.cpp rmwcs/SolverBudget.cpp rmwcs/SolverCardinality.cpp rmwcs/SolverClassic.cpp rmwcs/SolverLag.cpp annealing.cpp graph.cpp monitor.cpp RcppExports.cpp r_helper.cpp rmwcs.cpp utils.cpp annealing/boltzmann_schedule.cpp annealing/cooling_schedule.cpp annealing/DynamicGraph.cpp annealing/EulerTourForest.cpp annealing/fast_schedule.cpp annealing/index.cpp annealing/module.cpp annealing/simulated_annealing.cpp annealing/subgraph.cpp sgmwcs/active_pool.cpp sgmwcs/components.cpp sgmwcs/cut.cpp sgmwcs/primal_heuristic.cpp sgmwcs/relax_and_cut.cpp sgmwcs/solution.cpp sgmwcs/variable.cpp
 # echo rmwcs/*.cpp *.cpp annealing/*.cpp sgmwcs/*.cpp | perl -pe "s/.cpp/.o/g" 
