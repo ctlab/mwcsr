@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/github/ctlab/mwcsr/branch/master/graphs/badge.svg)](https://codecov.io/gh/ctlab/mwcsr/branch/master)
+[![codecov](https://codecov.io/github/ctlab/mwcsr/branch/master/graphs/badge.svg)](https://app.codecov.io/gh/ctlab/mwcsr/branch/master)
 
 # mwcsr
 
