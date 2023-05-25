@@ -59,7 +59,7 @@ find_cplex_jar <- function(cplex_dir) {
 }
 
 find_cplex_bin <- function(cplex_dir) {
-    cplex_lib_pattern <- "(cplex\\d+\\.dll)|libcplex\\d+.(so|jnilib|dll)"
+    cplex_lib_pattern <- "(cplex\\d+\\.dll)|libcplex\\d+.(so|jnilib|dylib|dll)"
     files <- list.files(cplex_dir, pattern = cplex_lib_pattern, recursive=T, full.names = TRUE)
     if (length(files) > 0) {
         return(dirname(files[1]))
@@ -131,22 +131,30 @@ virgo_solver <- function (cplex_dir,
         }
     }
 
-
-    if (is.null(cplex_jar) && !mst) {
-        cplex_jar <- find_cplex_jar(cplex_dir)
+    if (!mst) {
         if (is.null(cplex_jar)) {
-            stop(paste0("Could not find `cplex.jar` in ", cplex_dir))
+            cplex_jar <- find_cplex_jar(cplex_dir)
+            if (is.null(cplex_jar)) {
+                stop(paste0("Could not find `cplex.jar` in ", cplex_dir))
+            }
+        } else if (!file.exists(cplex_jar)) {
+            stop("File ", cplex_jar, " doesn not exist")
+        } else if (file.info(cplex_jar)$isdir) {
+            stop("`cplex_jar` path should be a file, not a directory")
         }
-    }
 
-    if (is.null(cplex_bin) && !mst) {
-        cplex_bin <- find_cplex_bin(cplex_dir)
         if (is.null(cplex_bin)) {
-            stop(paste0("Could not find libcplex files in ", cplex_dir))
+            cplex_bin <- find_cplex_bin(cplex_dir)
+            if (is.null(cplex_bin)) {
+                stop(paste0("Could not find libcplex files in ", cplex_dir))
+            }
+        } else if (!file.exists(cplex_bin)) {
+            stop("Path ", cplex_bin, " doesn not exist")
+        } else if (!dir.exists(cplex_bin)) {
+            # cplex_bin should be directory, not the lib-file itself
+            cplex_bin <- dirname(cplex_bin)
         }
-    } else if (!mst && !dir.exists(cplex_bin)) {
-        # cplex_bin should be directory, not the lib-file itself
-        cplex_bin <- dirname(cplex_bin)
+
     }
 
     rm(cplex_dir) # don't need this parameter anymore

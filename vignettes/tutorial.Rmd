@@ -384,7 +384,7 @@ print(m$solved_to_optimality)
 Exact solver requires setting `cplex_dir` argument with a path to CPLEX installation.
 The `cplex_dir` requires, that `cplex.jar` file and CPLEX dynamic library
 file (depending on the operating system: `libcplex<version>.dll` for Windows,
-`libcplex<version>.so` for Linux, `libcplex<version>.jnilib` for OS X) 
+`libcplex<version>.so` for Linux, `libcplex<version>.dylib` for OS X) 
 can be found there with recursive search.
 Alternatively, `cplex_jar` argument pointing to `cplex.jar` file and `cplex_bin` argument 
 pointing to the directory with CPLEX dynamic library files can be specified.
