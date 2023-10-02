@@ -164,7 +164,7 @@ std::vector<size_t> Solver::solution_subgraph() {
 void Solver::separate_cuts(std::vector<size_t> edges) {
     std::vector<Component> components = Component::get_components(g, edges);
     for (int i = 0; i < (int)components.size() - 1; i++) {
-        for (int j = i + 1; j < (int)components.size() - 1; j++) {
+        for (int j = i + 1; j < (int)components.size(); j++) {
             auto& bigger = components[i];
             auto& smaller = components[i + 1];
             auto find_best = [this](const Component& c) -> size_t {
@@ -196,11 +196,11 @@ void Solver::probing(double bound) {
     for (auto i: active_variables.all_active()) {
         auto v = variables[i];
         if (v.instant_value() == 1) {
-            if (bound - v.weight() < lb) {
+            if (bound - v.weight() + EPS < lb) {
                 v.fix_value(1);
             }
         } else {
-            if (bound + v.weight() < lb) {
+            if (bound + v.weight() + EPS < lb) {
                 v.fix_value(0);
             }
         }
