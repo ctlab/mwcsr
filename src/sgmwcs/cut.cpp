@@ -3,7 +3,7 @@
 //
 
 #include "include/cut.h"
-#include <iostream>
+#include <cmath>
 
 namespace relax {
 
@@ -133,8 +133,7 @@ VariableSum& Cut::rhs() {
 }
 
 bool Cut::try_fix() const {
-    // TODO: include it in the code
-    if(left.lower_bound() == right.upper_bound()) {
+    if(std::fabs(left.lower_bound() - right.upper_bound()) < EPS)  {
         for (Variable v: left.variables()) {
             if (!v.fixed()) {
                 v.fix_value(0);

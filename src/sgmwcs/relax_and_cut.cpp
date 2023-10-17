@@ -4,6 +4,7 @@
 
 #include "include/relax_and_cut.h"
 #include "include/components.h"
+#include "include/cut.h"
 #include "include/primal_heuristic.h"
 #include <ostream>
 
@@ -107,7 +108,7 @@ void Solver::solve() {
         bool solution_found = false;
         if (it % parameters.heur_period == 0) {
             auto sol = primal_heuristic();
-            if (sol.objective() > lb) {
+            if (sol.objective() - EPS > lb) {
                 solution_found = true;
                 lb = sol.objective();
                 best_solution = sol;
@@ -166,7 +167,7 @@ void Solver::separate_cuts(std::vector<size_t> edges) {
     for (int i = 0; i < (int)components.size() - 1; i++) {
         for (int j = i + 1; j < (int)components.size(); j++) {
             auto& bigger = components[i];
-            auto& smaller = components[i + 1];
+            auto& smaller = components[j];
             auto find_best = [this](const Component& c) -> size_t {
                 auto ids = c.component_edges();
                 return *std::max_element(ids.begin(), ids.end(), [this](size_t i, size_t j) {
@@ -177,10 +178,19 @@ void Solver::separate_cuts(std::vector<size_t> edges) {
             size_t from_smaller = find_best(smaller);
             Cut cut({edge_variables[from_bigger], edge_variables[from_smaller]}, {});
             cut.rhs() += 1;
-            for (size_t e: components.at(i).component_edges()) {
-                cut.rhs() += {edge_variables[e]};
-            }
+            Cut for_smaller = cut;
+            auto add_rhs = [&components, this](Cut& cut, int comp) {
+                auto edges = components.at(comp).component_env();
+                for (size_t e: edges) {
+                    cut.rhs() += {edge_variables[e]};
+                }
+            };
+            add_rhs(cut, i);
             if (cuts.add(cut)) {
+                break;
+            }
+            add_rhs(for_smaller, j);
+            if (cuts.add(for_smaller)) {
                 break;
             }
         }
@@ -195,6 +205,7 @@ void Solver::probing(double bound) {
     // check if variable can be fixed to zero or one, remove zero valued variable from everywhere
     for (auto i: active_variables.all_active()) {
         auto v = variables[i];
+        if (v.fixed()) continue;
         if (v.instant_value() == 1) {
             if (bound - v.weight() + EPS < lb) {
                 v.fix_value(1);

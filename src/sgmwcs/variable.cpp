@@ -5,7 +5,6 @@
 #include "include/variable.h"
 
 #include <stdexcept>
-#include <iostream>
 
 namespace relax {
 
@@ -154,7 +153,6 @@ std::vector<Variable> VariableSum::variables() const {
 std::ostream& operator<<(std::ostream& os, const VariableSum& vs) {
     if (vs.summands.size() == 0) {
         os << 0;
-        return os;
     }
     for (size_t i = 0; i < vs.summands.size(); i++) {
         if (i != 0) {
