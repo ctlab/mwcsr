@@ -54,13 +54,17 @@ std::vector<Component> Component::get_components(mwcsr::Graph& g, std::vector<si
             }
             for (auto v: {g.edge(e).from(), g.edge(e).to()}) {
                 for (auto e: g.neighbours(v)) {
-                    if (!(visited.find(e.num()) == visited.end())) continue;
-                    visited.insert(e.num());
-                    if (solution.count(e.num())) {
-                        q.push(e.num());
-                    } else {
+                    if (!solution.count(e.num())) {
                         c.add_neighbour(e.num());
+                        continue;
                     }
+
+                    if (!(visited.find(e.num()) == visited.end())) {
+                        continue;
+                    }
+                    visited.insert(e.num());
+
+                    q.push(e.num());
                 }
             }
         }
