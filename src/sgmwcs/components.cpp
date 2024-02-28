@@ -17,7 +17,7 @@ void Component::add_edge(size_t edge) {
 }
 
 void Component::add_neighbour(size_t edge) {
-    adjs.push_back(edge);
+    adjs.insert(edge);
 }
 
 bool Component::operator<(const Component& other) const {
@@ -82,7 +82,7 @@ std::vector<size_t> Component::component_edges() const {
 }
 
 std::vector<size_t> Component::component_env() const {
-    return adjs;
+    return {adjs.begin(), adjs.end()};
 }
 
 void Component::set_revenue(double r) {

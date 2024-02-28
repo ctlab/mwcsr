@@ -8,12 +8,13 @@
 #include "../../include/graph.h"
 
 #include <vector>
+#include <unordered_set>
 
 namespace relax {
 
 class Component {
     std::vector<size_t> edges;
-    std::vector<size_t> adjs;
+    std::unordered_set<size_t> adjs;
     double max_revenue;
 public:
     Component();
