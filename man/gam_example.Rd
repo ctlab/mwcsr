@@ -16,6 +16,6 @@ gam_example
 \description{
 A dataset containing some real-world instances appeared in network
 enrichment analysis tool
-\href{https://doi.org/10.1093/nar/gkw266}{Shiny GAM}
+\doi{10.1093/nar/gkw266}{Shiny GAM}
 }
 \keyword{datasets}
