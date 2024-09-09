@@ -8,3 +8,5 @@
 ^src/.+\.o$
 ^lib$
 ^vignettes/tutorial_cache$
+^doc$
+^Meta$

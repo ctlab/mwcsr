@@ -1,26 +1,26 @@
 library(igraph)
 library(devtools)
 
-load(system.file("inst/gatom_example.rda", package="mwcsr"))
+load("data/gatom_example.rda")
 
 example <- gatom_example
 
 for (attr in setdiff(list.vertex.attributes(example), c("name", "label", "weight", "signal"))) {
-    example <- remove.vertex.attribute(example, attr)
+    example <- delete_vertex_attr(example, attr)
 }
 
 for (attr in setdiff(list.edge.attributes(example), c("name", "label", "weight", "signal"))) {
-    example <- remove.edge.attribute(example, attr)
+    example <- delete_edge_attr(example, attr)
 }
 
 sgmwcs_example <- mwcsr::normalize_sgmwcs_instance(example)
-sgmwcs_example <- remove.vertex.attribute(sgmwcs_example, "weight")
-sgmwcs_example <- remove.edge.attribute(sgmwcs_example, "weight")
+sgmwcs_example <- delete_vertex_attr(sgmwcs_example, "weight")
+sgmwcs_example <- delete_edge_attr(sgmwcs_example, "weight")
 
-example <- remove.vertex.attribute(example, "signal")
-example <- remove.edge.attribute(example, "signal")
+example <- delete_vertex_attr(example, "signal")
+example <- delete_edge_attr(example, "signal")
 
-mwcs_example <- remove.edge.attribute(example, "weight")
+mwcs_example <- delete_edge_attr(example, "weight")
 gmwcs_example <- example
 
 use_data(mwcs_example, overwrite = TRUE)

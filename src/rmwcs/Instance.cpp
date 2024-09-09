@@ -132,8 +132,12 @@ int Instance::degreeOneTest() {
         }
 
         for (unsigned i = 0; i < toRemove.size(); ++i) {
-
             int node = toRemove[i];
+
+            if (adjList[node].empty()) {
+                continue;
+            }
+
             int adjacentNode = adjList[node][0];
             adjList[node].clear();
 

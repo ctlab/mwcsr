@@ -12,7 +12,7 @@ subnet <- rmSelfLoops(subnet)
 subnet
 fb <- fitBumModel(pval, plot = FALSE)
 scores <- scoreNodes(subnet, fb, fdr = 0.001)
-bionet_example <- igraph.from.graphNEL(subnet, weight = FALSE)
+bionet_example <- graph_from_graphnel(subnet, weight = FALSE)
 V(bionet_example)$weight <- scores
 
 use_data(bionet_example, overwrite=TRUE)
