@@ -245,7 +245,7 @@ run_solver <- function(solver, instance, sgmwcs, signals = NULL) {
     mwcs <- (if (nrow(nodes) <= 1) {
         induced_subgraph(instance, as.integer(nodes[, 1]))
     } else {
-        eids <- get.edge.ids(instance, t(edges[,1:2]))
+        eids <- get_edge_ids(instance, c(t(edges[,1:2])))
         subgraph.edges(instance, eids)
     })
     list(mwcs=mwcs, stats=stats)
