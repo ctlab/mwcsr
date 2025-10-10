@@ -9,10 +9,10 @@ instance_from_graph <- function(graph) {
          size = length(V(graph)))
 }
 
-attr_sets <- list(V = list(list  = igraph::list.vertex.attributes,
+attr_sets <- list(V = list(list  = igraph::vertex_attr_names,
                       query = igraph::vertex_attr,
                       name  = "nodes"),
-                  E = list(list  = igraph::list.edge.attributes,
+                  E = list(list  = igraph::edge_attr_names,
                       query = igraph::edge_attr,
                       name  = "edges"))
 
@@ -43,7 +43,7 @@ check_mwcs_solver <- function(x) {
 }
 
 check_graph <- function(g) {
-    if (!igraph::is.igraph(g)) {
+    if (!igraph::is_igraph(g)) {
         stop("Not a graph object")
     }
     if (igraph::is_directed(g)) {
@@ -198,7 +198,7 @@ check_signals <- function(instance) {
         return("Graph `signals` attribute has duplicated names")
     }
 
-    if (!"signal" %in% list.vertex.attributes(instance)) {
+    if (!"signal" %in% vertex_attr_names(instance)) {
         return("No `signal` attribute for nodes")
     }
 
@@ -206,7 +206,7 @@ check_signals <- function(instance) {
         return("All node signals should be present in `signals` graph attribute")
     }
 
-    if (!"signal" %in% list.edge.attributes(instance)) {
+    if (!"signal" %in% edge_attr_names(instance)) {
         return("No `signal` attribute for edges")
     }
 
@@ -230,17 +230,17 @@ check_signals <- function(instance) {
 get_instance_type <- function(instance) {
     check_graph(instance)
     res <- list(type="unknown", valid=FALSE, errors=NULL)
-    if ("signals" %in% names(graph.attributes(instance))) {
+    if ("signals" %in% names(graph_attr(instance))) {
         res$type <- "SGMWCS"
         res$errors <- check_signals(instance)
-    } else if ("weight" %in% list.edge.attributes(instance) &&
-               "weight" %in% list.vertex.attributes(instance)) {
+    } else if ("weight" %in% edge_attr_names(instance) &&
+               "weight" %in% vertex_attr_names(instance)) {
 
         res$type <- "GMWCS"
         res$errors <- c(validate_attr_values(instance, "weight", "V"),
                         validate_attr_values(instance, "weight", "E"))
-    } else if ("weight" %in% list.vertex.attributes(instance)) {
-        if ("budget_cost" %in% list.vertex.attributes(instance)) {
+    } else if ("weight" %in% vertex_attr_names(instance)) {
+        if ("budget_cost" %in% vertex_attr_names(instance)) {
             res$type <- "Budget MWCS"
             res$errors <- validate_attr_values(instance, "budget_cost", "V",
                                                nonnegative = TRUE)

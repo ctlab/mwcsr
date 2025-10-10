@@ -87,7 +87,7 @@ solve_mwcsp.simulated_annealing_solver <- function(solver, instance, warm_start,
     if (length(res$edges) == 0) {
         g <- igraph::induced_subgraph(instance, vids = res$vertices)
     } else {
-        g <- igraph::subgraph.edges(instance, eids = res$edges)
+        g <- igraph::subgraph_from_edges(instance, eids = res$edges)
     }
     weight <- get_weight(g)
     res$weight <- weight

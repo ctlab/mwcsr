@@ -57,7 +57,7 @@ solve_mwcsp.rnc_solver <- function(solver, instance, ...) {
     if (length(res$edges) == 0) {
         g <- igraph::induced_subgraph(instance, vids = res$vertices)
     } else {
-        g <- igraph::subgraph.edges(instance, eids = res$edges)
+        g <- igraph::subgraph_from_edges(instance, eids = res$edges)
     }
 
     weight <- get_weight(g)

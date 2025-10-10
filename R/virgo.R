@@ -166,7 +166,7 @@ write_files <- function(g, nodes_file, edges_file, signals_file, signals) {
     }
     if (is.null(signals)) {
         node_weights <- V(g)$weight
-        if ("weight" %in% list.edge.attributes(g)) {
+        if ("weight" %in% edge_attr_names(g)) {
             edge_weights <- E(g)$weight
         } else {
             edge_weights <- rep(0, ecount(g))
@@ -245,8 +245,8 @@ run_solver <- function(solver, instance, sgmwcs, signals = NULL) {
     mwcs <- (if (nrow(nodes) <= 1) {
         induced_subgraph(instance, as.integer(nodes[, 1]))
     } else {
-        eids <- get.edge.ids(instance, t(edges[,1:2]))
-        subgraph.edges(instance, eids)
+        eids <- get_edge_ids(instance, c(t(edges[,1:2])))
+        subgraph_from_edges(instance, eids)
     })
     list(mwcs=mwcs, stats=stats)
 }
@@ -291,7 +291,7 @@ solve_sgmwcs <- function(solver, instance, ...) {
     sigs <- union(V(mwcs)$signal, E(mwcs)$signal)
     weight <- sum(signals[sigs])
     if (length(E(mwcs)) > 0) {
-        ret <- igraph::subgraph.edges(instance, E(mwcs)$index)
+        ret <- igraph::subgraph_from_edges(instance, E(mwcs)$index)
     } else {
         ret <- igraph::induced_subgraph(instance, V(mwcs)$index)
     }
