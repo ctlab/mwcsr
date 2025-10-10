@@ -19,7 +19,7 @@ test_that("one vertex best solution is returned", {
 
 test_that("rmwcs solver works on specific test", {
     solver <- rmwcs_solver()
-    g <- make_ring(5) %>% set.vertex.attribute("weight", value = 2:-2)
+    g <- make_ring(5) %>% set_vertex_attr("weight", value = 2:-2)
     s <- solve_mwcsp(solver, g)
     expect_equal(s$weight, 3)
     expect_true(s$solved_to_optimality)
@@ -32,13 +32,13 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
 
     test_graph <- function(make) {
         scores <- runif(size) - 0.5;
-        g <- make(size) %>% set.vertex.attribute("weight", value = scores)
+        g <- make(size) %>% set_vertex_attr("weight", value = scores)
         solve_mwcsp(solver, g)
 
         solution <- solve_mwcsp(solver, g, max_cardinality = card)
         expect_lte(length(V(solution$graph)), 3)
 
-        g <- set.vertex.attribute(g, name = "budget_cost", value = runif(size))
+        g <- set_vertex_attr(g, name = "budget_cost", value = runif(size))
         V(g)$weight <- 1
         solution <- solve_mwcsp(solver, g, budget = card)
 
@@ -53,12 +53,12 @@ test_that("rmwcs solver doesn't crash on simple graphs", {
 test_that("rmwcs solver builds connected solutions on a GAM instance", {
     solver <- rmwcs_solver()
     sol <- solve_mwcsp(solver, gam_example)
-    expect_true(is.connected(sol$graph))
+    expect_true(is_connected(sol$graph))
 })
 
 test_that("rmwcs solver works with empty solutions", {
     solver <- rmwcs_solver()
-    g <- graph.ring(10)
+    g <- make_ring(10)
     V(g)$weight <- -1
     sol <- solve_mwcsp(solver, g)
     expect_true(vcount(sol$graph) == 0)
