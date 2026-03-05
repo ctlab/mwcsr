@@ -171,7 +171,7 @@ bool SolverClassic::primalHeuristic() {
                         Rcout << l << " " << distance[l] << " " << distance[k]
                               << " " << toAdd << " " << inComponentBool[k]
                               << "\n";
-                        Rf_error("Primal heuristic bug.");
+                        Rcpp::stop("Primal heuristic bug.");
                     }
                 }
             } else {
@@ -237,7 +237,7 @@ bool SolverClassic::primalHeuristic() {
                 test += instance.myPrizes[i] * incumbent[i];
             }
             if (fabs(obj - test) > 1e-6) {
-                Rf_error("Assertion failed on test incumbent solution");
+                Rcpp::stop("Assertion failed on test incumbent solution");
             }
         }
     }
