@@ -201,7 +201,7 @@ bool SolverCardinality::primalHeuristic() {
                         Rcout << l << " " << distance[l] << " " << distance[k]
                               << " " << toAdd << " " << inComponentBool[k]
                               << "\n";
-                        Rf_error("Primal heuristic bug.");
+                        Rcpp::stop("Primal heuristic bug.");
                     }
                 }
             } else {
