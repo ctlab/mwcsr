@@ -1,4 +1,5 @@
 #include "include/subgraph.h"
+#include <stdexcept>
 
 namespace {
     using mwcsr::Graph;
@@ -41,6 +42,9 @@ namespace annealing {
 
 
     void Subgraph::add_edge(size_t e) {
+        if (!boundary.contains(e)) {
+            throw std::invalid_argument("add_edge: edge not in boundary");
+        }
         boundary.remove(e);
         module_edges.add(e);
         Edge edge = graph.edge(e);
@@ -60,9 +64,26 @@ namespace annealing {
     }
 
     bool Subgraph::remove_edge(size_t e) {
+        if (!module_edges.contains(e)) {
+            throw std::invalid_argument("remove_edge: zombie edge (not in module_edges)");
+        }
         Edge edge = graph.edge(e);
         auto v = edge.from();
         auto u = edge.to();
+
+        // Self-loops: DynamicGraph ignores them (returns null token), so they do
+        // not affect connectivity. Skip the connectivity check and vertex removal;
+        // simply remove from the module and return the edge to the boundary.
+        if (v == u) {
+            module_edges.remove(e);
+            weight += remove_edge_diff(e);
+            signals_remove(edge.edge_signals());
+            --vdegree[v];
+            --vdegree[u];
+            boundary.add(e);
+            return true;
+        }
+
         dynamic_graph.remove(std::move(tokens[e]));
         size_t comp_size = dynamic_graph.component_size(v);
         if (comp_size < n_vertices - 1 && comp_size != 1) {
@@ -81,7 +102,7 @@ namespace annealing {
             return true;
         }
 
-        if (comp_size == n_vertices - 1) {
+        if (comp_size == n_vertices - 1 && comp_size > 1) {
             remove_vertex(u);
         } else {
             remove_vertex(v);
@@ -93,8 +114,18 @@ namespace annealing {
     void Subgraph::remove_vertex(size_t v) {
         n_vertices--;
         for (Edge e: graph.neighbours(v)) {
-            if (boundary.contains(e.num())) {
-                boundary.remove(e.num());
+            size_t e_id = e.num();
+            // Self-loop edges are not tracked by DynamicGraph (null token), so
+            // they may remain in module_edges when the vertex becomes isolated.
+            // Clean them up here so no orphan edges are left behind.
+            if (e.from() == e.to() && module_edges.contains(e_id)) {
+                module_edges.remove(e_id);
+                weight += remove_edge_diff(e_id);
+                signals_remove(e.edge_signals());
+                vdegree[v] -= 2;
+            }
+            if (boundary.contains(e_id)) {
+                boundary.remove(e_id);
             }
         }
         module_vertices.remove(v);
