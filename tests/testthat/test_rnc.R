@@ -27,6 +27,16 @@ test_that("sgmwcs rnc solver does not crush on GAM instances", {
     expect_true(igraph::is_connected(solution$graph))
 })
 
+test_that("rnc solver handles non-integer signal weights in single-vertex solution (#10)", {
+    solver <- rnc_solver(max_iterations = 50)
+    g <- igraph::make_graph(c(1,2, 3,4, 3,5, 1,6, 4,6) + 0L, n = 6, directed = FALSE)
+    V(g)$signal <- c("s2","s2","s2","s2","s3","s2")
+    E(g)$signal <- c("s1","s2","s3","s2","s2")
+    g$signals <- c(s1 = -3.026, s2 = 2.193558, s3 = -4.921)
+    solution <- solve_mwcsp(solver, g)
+    expect_equal(solution$weight, 2.193558)
+})
+
 test_that("sgmwcs rnc solver gives good solution for a GAM instance", {
     rnc <- rnc_solver(max_iterations = 100)
     solution <- solve_mwcsp(rnc, gmwcs_example)

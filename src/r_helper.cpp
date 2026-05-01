@@ -44,7 +44,7 @@ List sgmwcs_solve(List& instance, List& solver_params) {
     for (size_t v = 0; v < g.size(); v++) {
         auto signals = g.vertex_signals(v);
         std::set<size_t> uniq(signals.begin(), signals.end());
-        double weight = std::accumulate(uniq.begin(), uniq.end(), 0, [&g](double w, size_t i) -> double {
+        double weight = std::accumulate(uniq.begin(), uniq.end(), 0.0, [&g](double w, size_t i) -> double {
             return w + g.signal_weight(i);
         });
 
