@@ -34,9 +34,10 @@ SystemRequirements: Java (>=8)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
-VignetteBuilder: knitr
+VignetteBuilder: knitr, rmarkdown
 URL: https://github.com/ctlab/mwcsr
 BugReports: https://github.com/ctlab/mwcsr/issues
 LinkingTo: Rcpp
+Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.3

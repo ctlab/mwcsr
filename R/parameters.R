@@ -58,6 +58,7 @@ check_parameter <- function(param, value) {
     UseMethod("check_parameter")
 }
 
+#' @export
 check_parameter.integer_parameter <- function (param, value) {
     value <- as.integer(value)
     if (is.na(value)) {
@@ -76,10 +77,12 @@ check_parameter.integer_parameter <- function (param, value) {
     value
 }
 
+#' @export
 check_parameter.char_parameter <- function(param, value) {
     value
 }
 
+#' @export
 check_parameter.float_parameter <- function (param, value) {
     value <- as.numeric(value)
     if (is.na(value)) {
@@ -98,6 +101,7 @@ check_parameter.float_parameter <- function (param, value) {
     value
 }
 
+#' @export
 check_parameter.logical_parameter <- function (param, value) {
     value <- as.logical(value)
     if (is.na(value)) {
@@ -106,10 +110,12 @@ check_parameter.logical_parameter <- function (param, value) {
     value
 }
 
+#' @export
 check_parameter.mc_parameter <- function (param, value) {
     match.arg(value, param$mc)
 }
 
+#' @export
 check_parameter.file_parameter <- function(param, value) {
     file <- normalizePath(value)
     if (!file.exists(file)) {
@@ -118,6 +124,7 @@ check_parameter.file_parameter <- function(param, value) {
     file
 }
 
+#' @export
 check_parameter.default <- function(param, value) {
     stop("Invalid state")
 }

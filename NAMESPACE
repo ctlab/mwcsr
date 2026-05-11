@@ -2,6 +2,13 @@
 
 S3method("[",mwcs_solver)
 S3method("[<-",mwcs_solver)
+S3method(check_parameter,char_parameter)
+S3method(check_parameter,default)
+S3method(check_parameter,file_parameter)
+S3method(check_parameter,float_parameter)
+S3method(check_parameter,integer_parameter)
+S3method(check_parameter,logical_parameter)
+S3method(check_parameter,mc_parameter)
 S3method(parameters,default)
 S3method(parameters,rmwcs_solver)
 S3method(parameters,rnc_solver)
