@@ -11,7 +11,7 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
 ```
 
 
@@ -441,8 +441,7 @@ of `min_m$weight`.
 ### SCIP-jack solver
 
 You can also use R interface to SCIP-jack solver. To use it you need to download
-SCIPOptSuite from the [official web-site](https://scipopt.org/#scipoptsuite)
-and build `scipstp` application.
+SCIPOptSuite and build `scipstp` application.
 Beware, that `scipstp` is not provided in the pre-built SCIPOptSuite version, so
 you have to build it manually from source.
 
@@ -456,8 +455,8 @@ cmake --build build --target scipstp
 cp build/applications/scipstp /usr/local/bin/
 ```
 
-For complete build and configuration instructions for this solver 
-visit [SCIP](https://www.scipopt.org/doc/html/INSTALL_APPLICATIONS_EXAMPLES.php) website.
+For complete build and configuration instructions for this solver,
+consult the SCIP documentation for the version you install.
 
 After installing and ensuring that scipstp application is correctly built,
 you can access `scipjack_solver` class to solve MWCS instances:
@@ -466,7 +465,7 @@ scip <- scipjack_solver(scipstp_bin=Sys.which("scipstp"))
 sol <- solve_mwcsp(scip, mwcs_example)
 ```
 
-The optimization parameters are passed using \href{https://www.scipopt.org/doc-6.0.2/html/PARAMETERS.php}{SCIPopt} config file. You can modify bundled file or
+The optimization parameters are passed using a SCIPopt config file. You can modify the bundled file or
 create a new one to fine-tune the solver.
 
 ## Integration with BioNet

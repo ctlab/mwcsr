@@ -9,11 +9,11 @@ scipjack_solver(scipstp_bin, config_file = NULL)
 \arguments{
 \item{scipstp_bin}{path to \verb{scipstp binary}.}
 
-\item{config_file}{scipstp-formatted file. Parameters list is accessible
-at  \href{https://www.scipopt.org/doc-6.0.2/html/PARAMETERS.php}{Official SCIP website}.}
+\item{config_file}{scipstp-formatted file. Parameter names and values follow
+the SCIP configuration format.}
 }
 \description{
-This solver requires STP extension of \href{https://scipopt.org/#scipoptsuite}{SCIP-jack} solver.
+This solver requires the STP extension of the SCIP-jack solver.
 To use this class you first need to download and build \code{SCIP-jack} and
 \code{SCIPSTP} application.
 }

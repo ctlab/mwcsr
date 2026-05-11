@@ -5,6 +5,8 @@
 .Ruserdata
 .idea
 lib
+vignettes/tutorial.html
+vignettes/tutorial_files
 vignettes/tutorial_cache
 [Cc][Mm]ake*
 doc

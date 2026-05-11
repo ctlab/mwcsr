@@ -94,14 +94,14 @@ run_scip_solver <- function(solver, instance) {
 
 #' Construct a SCIP-jack solver
 #'
-#' This solver requires STP extension of \href{https://scipopt.org/#scipoptsuite}{SCIP-jack} solver.
+#' This solver requires the STP extension of the SCIP-jack solver.
 #' To use this class you first need to download and build `SCIP-jack` and
 #' `SCIPSTP` application.
 #'
 #' You can access solver directly using `run_scip` function. See example.
 #' @param scipstp_bin path to `scipstp binary`.
-#' @param config_file scipstp-formatted file. Parameters list is accessible
-#' at  \href{https://www.scipopt.org/doc-6.0.2/html/PARAMETERS.php}{Official SCIP website}.
+#' @param config_file scipstp-formatted file. Parameter names and values follow
+#'        the SCIP configuration format.
 #'
 #' @export
 #' @references Rehfeldt D., Koch T. (2019)

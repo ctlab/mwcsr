@@ -20,7 +20,7 @@ virgo_solver(
 }
 \arguments{
 \item{cplex_dir}{a path to dir containing cplex_bin and cplex_jar,
-setting this to NULL sets \verb{mst`` param to }TRUE`}
+setting this to NULL sets \code{mst} param to \code{TRUE}}
 
 \item{threads}{number of threads for simultaneous computation}
 
@@ -65,7 +65,7 @@ approx_vs$run_main("-h")
 sol <- solve_mwcsp(approx_vs, sgmwcs_small_instance)
 \dontrun{
 vs <- virgo_solver(cplex_dir='/path/to/cplex')
-sol <- solve_mwcsp(approx_vs, sgmwcs_example)
+sol <- solve_mwcsp(vs, sgmwcs_example)
 }
 }
 \references{

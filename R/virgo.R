@@ -81,7 +81,7 @@ find_cplex_bin <- function(cplex_dir) {
 #'
 #' You can access solver directly using `run_main` function. See example.
 #' @param cplex_dir a path to dir containing cplex_bin and cplex_jar,
-#'        setting this to NULL sets `mst`` param to `TRUE`
+#'        setting this to NULL sets `mst` param to `TRUE`
 #' @param cplex_bin a path to cplex binary dir
 #' @param cplex_jar a path to cplex jar file
 #' @param threads number of threads for simultaneous computation
@@ -105,7 +105,7 @@ find_cplex_bin <- function(cplex_dir) {
 #' sol <- solve_mwcsp(approx_vs, sgmwcs_small_instance)
 #' \dontrun{
 #' vs <- virgo_solver(cplex_dir='/path/to/cplex')
-#' sol <- solve_mwcsp(approx_vs, sgmwcs_example)
+#' sol <- solve_mwcsp(vs, sgmwcs_example)
 #' }
 virgo_solver <- function (cplex_dir,
                           threads = parallel::detectCores(),
@@ -122,7 +122,7 @@ virgo_solver <- function (cplex_dir,
 
     if (missing(cplex_dir)) {
         if (!mst && (is.null(cplex_bin) || is.null(cplex_jar))) {
-            stop("Either provide `cplex_dir` paramter or both `cplex_bin` and `cplex_jar`")
+            stop("Either provide `cplex_dir` parameter or both `cplex_bin` and `cplex_jar`")
         }
         cplex_dir<-NULL
     } else {
