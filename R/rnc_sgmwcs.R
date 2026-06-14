@@ -62,7 +62,15 @@ solve_mwcsp.rnc_solver <- function(solver, instance, ...) {
 
     weight <- get_weight(g)
 
-    stopifnot(abs(weight - res$lb) < EPS)
+    if (abs(weight - res$lb) >= EPS) {
+        dump_path <- file.path("/tmp", paste0("mwcsr_rnc_bug_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".rds"))
+        saveRDS(list(instance = instance, signal_instance = signal_instance,
+                     res = res, weight = weight),
+                dump_path)
+        message("rnc_solver weight mismatch: weight=", weight, " lb=", res$lb,
+                " diff=", abs(weight - res$lb), ". Dumped to ", dump_path)
+        stopifnot(abs(weight - res$lb) < EPS)
+    }
 
     solution(g, weight, solved_to_optimality = abs(res$lb - res$ub) < EPS,
              upper_bound = res$ub)
