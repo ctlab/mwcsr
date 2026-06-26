@@ -37,6 +37,16 @@ test_that("rnc solver handles non-integer signal weights in single-vertex soluti
     expect_equal(solution$weight, 2.193558)
 })
 
+test_that("rnc solver handles self-loops with negative signal weights (#13)", {
+    solver <- rnc_solver(max_iterations=50)
+    g <- igraph::make_graph(c(1, 1), directed=FALSE) # loop
+    V(g)$signal <- "s1"
+    E(g)$signal <- "s2"
+    g$signals <- c(s1=0, s2=-1)
+    solution <- solve_mwcsp(solver, g)
+    expect_equal(solution$weight, 0)
+})
+
 test_that("sgmwcs rnc solver gives good solution for a GAM instance", {
     rnc <- rnc_solver(max_iterations = 100)
     solution <- solve_mwcsp(rnc, gmwcs_example)

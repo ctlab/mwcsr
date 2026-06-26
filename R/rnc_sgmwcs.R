@@ -56,6 +56,7 @@ solve_mwcsp.rnc_solver <- function(solver, instance, ...) {
 
     if (length(res$edges) == 0) {
         g <- igraph::induced_subgraph(instance, vids = res$vertices)
+        g <- igraph::delete_edges(g, igraph::E(g))
     } else {
         g <- igraph::subgraph_from_edges(instance, eids = res$edges)
     }
