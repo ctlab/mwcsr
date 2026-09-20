@@ -7,6 +7,7 @@
 #include "include/cut.h"
 #include "include/primal_heuristic.h"
 #include <ostream>
+#include <iterator>
 
 namespace {
 

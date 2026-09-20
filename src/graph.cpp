@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <algorithm>
+#include <iterator>
 
 #include "include/graph.h"
 
